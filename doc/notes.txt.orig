@@ -1,0 +1,147 @@
+NOTES ON THE GUI SYSTEM
+
+SYSTEM OVERVIEW
+The windows are containers for data objects (discussed later). Each window has the following:
+-	dimensions (INCLUDING WINDOW BORDER WIDTHS):
+	minimum width/height, (optional) maximum width/height
+-	edge links to the other windows (not actual links, just notes)
+-	contents
+	- viewport (displays map contents)
+		- takes a centerpoint as input, and uses window dims to figure out viewport size
+	- messages (displays a message log)
+		- takes a pointer to a particular message log
+	- prompt (contains an input prompt)
+		- special window that allows the user to input longform commands
+	- details (displays informational objects [ie HP bar, etc])
+		- contains a list of predefined stat objects with their own display methods
+
+WINDOW TYPES
+"game" windows are laid out within the base UI layer, where all windows are tiled together
+"menu" windows are drawn as self-contained units that appear to 'float' over the game display
+
+HOW TO PICK A CORNER CHAR
+Each of the corner chars is linked to a bitstring:
+
+CHAR	BITS
+		urdl
+   │	1010	(vertical)
+   ─	0101	(horizontal)
+   ┌	0110	(upper-left)
+   ┐	0011	(upper-right)
+   ┘	1001	(bottom-right)
+   └	1100	(bottom-left)
+   ┬	0111	(upper-vertical)
+   ┴	1101	(lower-vertical)
+   ┤	1011	(right-horizontal)
+   ├	1110	(left-horizontal)
+   ┼	1111	(cross)
+
+Each window uses the bitstrings to determine which corner char to display; if two windows are touching, then their corners can be bitwise-ORed together to obtain the compound corner shapes.
+
+<<<<<<< HEAD
+TIME AND ACTION
+Actions can be divided up into "instant" and "long"
+INSTANT Action
+	- Is performed "instantly"; may be prevented from happening by game conditions, but if allowed, will occur without any delay
+
+LONG Action
+	- May be disallowed or prevented by game conditions
+	- May be interrupted by changes in game state
+	- 
+
+GAME LOOP - Realtime
+The archetype loop looks like:
+1	If there is un-interpreted player input, translate it into a game action
+2	Perform the game action as per processing rules
+3	Inquire with all 'living' actors for any changes in their state
+4	Perform any outstanding actor state changes
+5	Render the game world
+
+GameEngine has a currentState that defines which methods it calls on its loop:
+STARTUP - The game engine has been started but no game is running
+	- Displays a background image and the main menu
+
+ACTIVE - The game is running at full speed (normal)
+	- Displays the full interface
+	- Accepts all valid inputs
+	
+DIALOG - The game state is 'paused' because Something Big has happened and the player needs to supply an input before the game will continue
+	- Displays the interface with a DIALOG overlay and an input prompt
+	- Will only accept inputs that are valid for the dialog request
+	- Game state is paused, ie no state updates will be processed
+
+PAUSED - The game is running but no updates will be processed
+	- Displays the interface with a "PAUSED" overlay
+	- Only accepts an UNPAUSE input
+
+VICTORY - The player has achieved a victory
+	- ENDGAME state
+	- Causes the ending cinematic to be played
+	- Displays an overview of the player's performance
+
+DEFEAT - The player has met with defeat
+	- ENDGAME state
+	- Causes a BAD END cinematic to be played
+	- Displays an overview of the player's performance
+=======
+THE GUI SYSTEM
+The GUI panels are contained in a binary tree, where all of the nodes that are NOT leaves are splits, and the leaf nodes are all GUI panels
+
+ A mockup of the GUI      ...and its associated binary tree
++----------+--------+    Vsplit______
+|          V        |    |           \
+|          V  VIT   |   bHsplit_     aHSplit_
+|   MAP    V        |    |      \     |      \
+|          +bbbbbbbb+   cHsplit (VIT)(MSG)   (MAP)
+|          V        |    |    \
+|          V  AUX   |	(AUX) (MTR)
+|---CLI----V        |
++aaaaaaaaaa+cccccccc+
+|          V        |
+|   MSG    V  MTR   |
+|          V        |
++----------+--------+
+
+([MAP, MSG, 66%], [[AUX, MTR, 50%], VIT, 33%], 66%)
+
+BREADTH		Vsplit, aHsplit, bHsplit, cHsplit, VIT, MSG, MSG, AUX, MTR
+
+PREORDER	Vsplit, aHsplit, cHsplit, AUX, MTR, VIT, bHSplit, MSG, MAP
+INORDER		AUX, cHSplit, MTR, aHsplit, VIT, Vsplit, MSG, bHsplit, MAP
+POSTORDER	AUX, MTR, cHsplit, VIT, aHsplit,  etc etc
+
+CLASS STRUCTURE
+	GameGUI
+		Panel
+			display(); VIRTUAL
+			+idNumber
+			+minWidth
+			+minHeight
+			+(maxWidth)  -if omitted, will fill available space
+			+(maxHeight) -if omitted, will fill available space
+			Split
+				%dimension (width or height)
+				Vertical
+					width
+				Horizontal
+					height
+			Viewport
+				*mapSource
+				focusPoint
+			DataDisplay
+				Text
+				Value
+				Meter
+			Message Log Readout
+				*messageLogSource
+			Command Prompt
+				// Consider making as a floating window
+				// Has a min of 1 tile in height (not including borders)
+				*commandDisplay
+		Layout (btree)
+		MessageLog
+			// More than one message log is possible; they are passive objects that rely on the UI to be seen
+			historySize //indicates when logs will be trimmed by recency to avoid overgrowth
+			messageLogContents //vector of strings which are valid for BLT printf etc
+		--needs pointers to any maps for Viewports
+>>>>>>> guiSystem

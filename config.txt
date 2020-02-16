@@ -1,0 +1,4 @@
+screenWidth=120
+screenHeight=48
+font=./fonts/TerminusTTF-4.47.0.ttf
+fontSize=12
