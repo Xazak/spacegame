@@ -18,25 +18,28 @@ class Actor {
 	public:
 	//  METHODS
 		Actor();
-		Actor(bool obstructFlag, bool visibleFlag, std::string inputName, cpair inputPosition, int inputSigil, std::string inputColor);
+		Actor(bool obstructFlag, bool visibleFlag, std::string inputName, cpair inputPosition, GameMap* inputArea, int inputSigil, std::string inputColor);
 		Actor(std::string inputName, int inputSigil, std::string inputColor, int xPos = 0, int yPos = 0);
 		virtual ~Actor() {}
 		virtual void update() {}
 		// GETS
 		std::string	getName() { return this->name; }
-//		cpair		getLocation();
+		cpair		getLocation() { return this->location; }
+		GameMap*	getLocality() { return this->locality; }
 		int			getSigil() { return this->sigil; }
 		std::string	getColor() { return this->color; }
 		// SETS
 		//setName
 		void		setAbsLocation(int newXPos, int newYPos);
 		void		setRelLocation(int xOffset, int yOffset);
+		void		setLocality(GameMap *inputArea);
 		//setSigil
 		//setColor
 	//  PROPERTIES
 		bool		obstructs;
 		bool		visible;
 		cpair		location;	// (x, y) coordinates on map
+		GameMap*	locality;
 		Sentience*	intent;
 
 	private:
@@ -44,7 +47,6 @@ class Actor {
 		int			sigil;		// Contains Unicode codepoint of display character
 		std::string	color;		// Contains the color name of the actor sigil
 };
-
 class Player : public Actor {
 	// Defines the Player object
 	public:

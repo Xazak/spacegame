@@ -30,11 +30,13 @@ enum class ActionType : uint {
 	INVENTORY //16: to list the contents of an actor's inventory
 };
 class Actor; // fwd-decl
+class GameMap; // fwd-decl
 struct ActionContext; // fwd-decl
 struct Action {
 	Action();
 	Action(const Action& inputAction);
 	virtual ~Action() {}
+	virtual bool precondition() { return true; } // Allow any action by default
 	virtual void execute() = 0;
 	virtual void undo() = 0;
 	virtual Action* clone() const = 0;
@@ -50,8 +52,9 @@ struct IdleAction : public Action {
 struct MoveAction : public Action {
 	MoveAction();
 	MoveAction(const ActionContext& inputContext);
-	MoveAction(Actor *inputTarget, int targetX, int targetY);
+	MoveAction(Actor *inputTarget, GameMap *inputArea, int targetX, int targetY);
 	~MoveAction();
+	bool precondition();
 	void execute();
 	void undo();
 	MoveAction* clone() const { return new MoveAction(*this); }

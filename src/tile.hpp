@@ -11,14 +11,27 @@ DESC Contains the definitions and methods of the Tile class.
 
 struct Tile {
 	int			sigil;
-	std::string color;
+//	std::string	color;
+	int			color;
+	int			bkcolor;
+	std::string	name;
 	bool		explored;
-//	bool		obstructs;
+	bool		obstructs;
 //	bool		opaque;
 //	Actor*		occupant;
 //	Actor*		itemList;
 	Tile();
-	Tile(int inputSigil, std::string inputColor, bool isExplored);
+//	Tile(int inputSigil, std::string inputColor, bool isExplored, bool blocksMovement);
+	Tile(int inputSigil, int inputColor, int inputBKColor, std::string inputName, bool isExplored, bool blocksMovement);
 };
 
+struct Wall : public Tile {
+	Wall();
+};
+struct Floor : public Tile {
+	Floor();
+};
+struct Vacuum : public Tile {
+	Vacuum();
+};
 #endif //SPACEGAME_TILE

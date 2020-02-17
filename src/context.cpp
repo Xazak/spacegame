@@ -12,6 +12,7 @@ using namespace std;
 ActionContext::ActionContext() :
 type(ActionType::IDLE),
 target(nullptr),
+vicinity(nullptr),
 echs(0),
 whye(0),
 zhee(0),
@@ -20,14 +21,16 @@ success(true)
 ActionContext::ActionContext(const ActionContext& inputContext) :
 type(inputContext.type),
 target(inputContext.target),
+vicinity(inputContext.vicinity),
 echs(inputContext.echs),
 whye(inputContext.whye),
 zhee(inputContext.zhee),
 success(inputContext.success)
 {	}
-ActionContext::ActionContext(ActionType inputType, Actor *inputTarget, int inputX, int inputY, int inputZ, bool inputFlag) :
+ActionContext::ActionContext(ActionType inputType, Actor *inputTarget, GameMap *inputArea, int inputX, int inputY, int inputZ, bool inputFlag) :
 type(inputType),
 target(inputTarget),
+vicinity(inputArea),
 echs(inputX),
 whye(inputY),
 zhee(inputZ),

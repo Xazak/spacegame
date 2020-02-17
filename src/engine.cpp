@@ -40,6 +40,7 @@ bool GameEngine::initialize(std::string configFile) {
 	LOGMSG("Generated BLT configuration:\n " << bltConfigString);
 	terminal_set(bltConfigString.c_str()); // Get BLT set up to its default state
 	// Perform any remaining setup and module creation
+	// parser, gui, meatspace, player objects are already created!
 	player.setAbsLocation(10, 10);
 	actorList.push_front(&player);
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage

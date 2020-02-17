@@ -21,13 +21,24 @@ width(inputWidth), height(inputHeight), size((width * height))
 // DTOR
 GameMap::~GameMap()
 {	delete [] mapArray; }
+// **** HELPERS
+string GameMap::getTileName(uint xPos, uint yPos) {
+	return mapArray[xPos * width + yPos].name;
+}
+bool GameMap::isBlocked(uint xPos, uint yPos) {
+	return mapArray[xPos * width + yPos].obstructs;
+}
 // **** UTILITIES
 void GameMap::generateMap() {
 	// Generates rooms and places them into the map array
 	mapArray = new Tile[width * height]; // Create a map of default tiles
-	mapIterator.linkToMap(mapArray);
+//	mapIterator.linkToMap(mapArray);
 	LOGMSG("Tilemap created: " << width << "x" << height);
 }
+
+
+
+// *************************
 // **** MAP ITERATOR METHODS (UNDER CONSTRUCTION)
 // CTOR DEFAULT
 GameMap::GameMapIterator::GameMapIterator() :

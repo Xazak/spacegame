@@ -54,16 +54,17 @@ class GameGUI {
 		void render(); // Draws the interface onto the screen
 		void testBLT(); // BearLibTerminal debugging/test function
 		void testMessageLog();
+		void addMessage(std::string messageText);
 
 	private:
 		struct MessageLog { // semantic wrapper around the message log object
-		// An advanced Message object might look like:
-		// message text
-		// message timestamp (using internal game time)
-		// message origin
-		// message recipient
-		// delivery status
-		// Pointers for data retrieval
+			// An advanced Message object might look like:
+			// message text
+			// message timestamp (using internal game time)
+			// message origin
+			// message recipient
+			// delivery status
+			// Pointers for data retrieval
 			std::vector<std::string> messageList;
 			int add(std::string newMessage); // Returns # of messages in log
 			uint size() { return messageList.size(); }

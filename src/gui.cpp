@@ -273,6 +273,9 @@ void GameGUI::testMessageLog() {
 //	globalMsgLog.add("Or don't, it's not my job to tell you what to do.");
 
 }
+void GameGUI::addMessage(string messageText) {
+	globalMsgLog.add(messageText);
+}
 // **** MessageLog Methods
 int GameGUI::MessageLog::add(string newMessage) {
 	// Adds the input string to the message log list
@@ -438,7 +441,7 @@ void GameGUI::Viewport::display() {
 			terminal_put(cursorXPosition + echs, cursorYPosition + whye, '+');
 		}
 	}
-//	terminal_color(playerObject->getColor());
+//	terminal_color(playerObj->getColor());
 	terminal_color("light blue");
 	terminal_put(cursorXPosition + playerObj->location.x, cursorYPosition + playerObj->location.y, playerObj->getSigil());
 }

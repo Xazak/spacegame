@@ -33,6 +33,8 @@ class GameMap {
 		uint getWidth() { return width; }
 		uint getHeight() { return height; }
 		uint getSize() { return (width * height); }
+		std::string getTileName(uint xPos, uint yPos);
+		bool isBlocked(uint xPos, uint yPos);
 
 		GameMapIterator mapIterator;
 		Tile* mapArray;

@@ -11,13 +11,14 @@ DESC Describes the ActionContext object, which provides details as needed to
 #include "action.hpp"
 
 class Actor; // fwd decl
+class GameMap; // fwd decl
 struct ActionContext {
 	// Collects and contains the context details for an actor's action
 	// All actors obtain one of these with their Sentience instantiation
 	// CONTROLS
 	ActionContext(); // gotta leave this in until a ctor chain is worked out
 	ActionContext(const ActionContext& inputContext);
-	ActionContext(ActionType inputType, Actor *inputTarget, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
+	ActionContext(ActionType inputType, Actor *inputTarget, GameMap *inputArea, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
 	ActionContext& operator=(const ActionContext& rhs);
 	friend void swap(ActionContext& lhs, ActionContext& rhs);
 	void clear(); // sets ALL details back to default values (incl prevAction)
@@ -32,6 +33,7 @@ struct ActionContext {
 //	Sentience::Action currentAction; // the next action to be performed
 	ActionType type;
 	Actor *target; // the target object of the action
+	GameMap *vicinity; // the local area where the action will take place
 	int echs, whye, zhee; // generic value containers for extra information
 	bool success; // = FALSE if an action is attempted and BLOCKED
 };

@@ -33,6 +33,7 @@ void GameParser::interpret(char inputKey) {
 		break;
 		case ActionType::MOVE:
 			localContext.target = player;
+			localContext.vicinity = player->getLocality();
 			if (currentKey == 'y' || currentKey == 'h' || currentKey == 'b') {
 				localContext.echs = -1;
 			}
