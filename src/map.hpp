@@ -10,39 +10,42 @@ DESC Contains the definitions and methods of the GameMap class.
 #include "tile.hpp"
 
 class GameMap {
-	private:
-		struct GameMapIterator {
-			GameMapIterator();
-			GameMapIterator(GameMap* inputSource);
+	public:
+		struct MapIterator {
+			MapIterator();
+			MapIterator(GameMap* inputSource);
+//			MapIterator(Tile** inputSource);
 		//	~GameMapIterator();
 			GameMap* mapSource;
+			Tile* target;
 			uint index;
-			void linkToMap(Tile* targetMap);
-			void moveToStart();
-			void forward();
-			void backward();
-			bool isAtEnd();
-		};
-	public:
+			void linkTo(GameMap* inputSource);
+			void reset();
+			void next();
+			void previous();
+			bool hasNext();
+		} mapIndexIter;
 		GameMap();
 		GameMap(uint inputWidth, uint inputHeight);
 		~GameMap();
 		void generateMap();
+		void generateMap(uint newWidth, uint newHeight);
 
 		// GETS
 		uint getWidth() { return width; }
 		uint getHeight() { return height; }
 		uint getSize() { return (width * height); }
+		int getTileSigil(uint xPos, uint yPos);
+		int getTileColor(uint xPos, uint yPos);
+		int getTileBkcolor(uint xPos, uint yPos);
 		std::string getTileName(uint xPos, uint yPos);
 		bool isBlocked(uint xPos, uint yPos);
-
-		GameMapIterator mapIterator;
-		Tile* mapArray;
+//		bool isBlocked(cpair absPosition);
 
 	private:
+		Tile** mapArray;
 		uint width;
 		uint height;
-		uint size;
 };
 
 #endif //SPACEGAME_MAP

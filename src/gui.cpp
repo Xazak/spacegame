@@ -425,25 +425,34 @@ playerObj(playerPtr)
 */
 void GameGUI::Viewport::display() {
 	// Display the currently-explored map
-	terminal_layer(2);// Move to the Terrain layer
 	// Get the size of the map
 	uint mapWidth = mapSource->getWidth();
 	uint mapHeight = mapSource->getHeight();
 	int mapViewHorizontalOffset = (this->minWidth - mapWidth) / 2;
 	int mapViewVerticalOffset = (this->minHeight - mapHeight) / 2;
-	int cursorXPosition = mapViewHorizontalOffset + this->origin.x;
-	int cursorYPosition = mapViewVerticalOffset + this->origin.y;
+	int cursorXOrigin = mapViewHorizontalOffset + this->origin.x;
+	int cursorYOrigin = mapViewVerticalOffset + this->origin.y;
+	int currentXPos = 0;
+	int currentYPos = 0;
 //	LOGMSG("cursor loc: " << cursorXPosition << ", " << cursorYPosition);
-	// Display a test pattern for now
-	terminal_color("darker green");
+	// Paint the background first
 	for (uint echs = 0; echs < mapWidth; echs++) {
 		for (uint whye = 0; whye < mapHeight; whye++) {
-			terminal_put(cursorXPosition + echs, cursorYPosition + whye, '+');
+			currentXPos = cursorXOrigin + echs;
+			currentYPos = cursorYOrigin + whye;
+			terminal_layer(0);
+//			FIXME: doesn't seem to work right?
+//			terminal_bkcolor(mapSource->getTileBkcolor(echs, whye));
+//			terminal_bkcolor("magenta");
+//			terminal_put(currentXPos, currentXPos, ' ');
+			terminal_layer(2);// Move to the Terrain layer
+			terminal_color(mapSource->getTileColor(echs, whye));
+			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));
 		}
 	}
 //	terminal_color(playerObj->getColor());
 	terminal_color("light blue");
-	terminal_put(cursorXPosition + playerObj->location.x, cursorYPosition + playerObj->location.y, playerObj->getSigil());
+	terminal_put(cursorXOrigin + playerObj->location.x, cursorYOrigin + playerObj->location.y, playerObj->getSigil());
 }
 // **** MESSAGE READOUT
 GameGUI::MessageReadout::MessageReadout(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, MessageLog *inputSource) :
