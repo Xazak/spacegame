@@ -21,11 +21,12 @@ struct ActionContext {
 	ActionContext(ActionType inputType, Actor *inputTarget, GameMap *inputArea, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
 	ActionContext& operator=(const ActionContext& rhs);
 	friend void swap(ActionContext& lhs, ActionContext& rhs);
-	void clear(); // sets ALL details back to default values (incl prevAction)
-	void set(Actor *inputTarget = nullptr, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
+	void clear(); // Sets ALL components of this back to defaults
+	void reset(); // Sets ONLY the x/y/z and successflag to defaults
 	void setSuccess(bool newValue = true) { success = newValue; }
 	bool isSuccessful() { return success; }
 	void setTarget(Actor *inputPtr) { target = inputPtr; }
+	void dump(); // Write contents of object to stdlog (DEBUG)
 
 	// CONTENTS
 //	Sentience::Action previousAction; // the last action that was successful

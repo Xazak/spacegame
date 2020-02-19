@@ -36,9 +36,10 @@ struct Action {
 	Action();
 	Action(const Action& inputAction);
 	virtual ~Action() {}
-	virtual bool precondition() { return true; } // Allow any action by default
+	virtual bool isPlausible() { return true; } // Allow any action by default
 	virtual void execute() = 0;
-	virtual void undo() = 0;
+	virtual bool result() { return true; } // All actions succeed by default
+//	virtual void undo() = 0;
 	virtual Action* clone() const = 0;
 	ActionContext* context;
 };
@@ -46,7 +47,6 @@ struct Action {
 struct IdleAction : public Action {
 	IdleAction();
 	void execute();
-	void undo();
 	IdleAction* clone() const { return new IdleAction(*this); }
 };
 struct MoveAction : public Action {
@@ -54,10 +54,12 @@ struct MoveAction : public Action {
 	MoveAction(const ActionContext& inputContext);
 	MoveAction(Actor *inputTarget, GameMap *inputArea, int targetX, int targetY);
 	~MoveAction();
-	bool precondition();
+	bool isPlausible();
 	void execute();
-	void undo();
+//	bool result();
+//	void undo();
 	MoveAction* clone() const { return new MoveAction(*this); }
+	cpair moveIncrement;
 };
 
 #endif //SPACEGAME_ACTIONS

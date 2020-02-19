@@ -32,10 +32,10 @@ obstructs(blocksMovement)
 // **** SPECIFIC TILE TYPES
 // **** Wall
 Wall::Wall() :
-Tile(0x002B, 0xAA777777, 0xFF777777, "wall", true, true)
+Tile(0x002B, 0xAAAAAAAA, 0xFF777777, "wall", true, true)
 {	}
 Floor::Floor() :
-Tile(0x00AC, 0xAA777777, 0x55777777, "floor", true, false)
+Tile(0x00AC, 0xAA333333, 0x55777777, "floor", true, false)
 {	}
 Vacuum::Vacuum() :
 Tile(0x00B7, 0x00000000, 0x33333333, "vacuum", true, false)

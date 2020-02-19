@@ -27,10 +27,19 @@ void PlayerSentience::pushAction(Action* inputAction) {
 		nextAction = inputAction->clone();
 	}
 	actionReady = true;*/
-	inputAction->execute();
+//	LOGMSG("Testing action...");
+//	inputAction->context->dump();
+	if (inputAction->isPlausible()) {
+		// Should probably throw some kind of warning message if NOT plausible
+//		LOGMSG("Action is valid");
+		inputAction->execute();
+	} else {
+//		LOGMSG("Action is INVALID");
+		// FIXME: Throw an error message describing the implausibility
+	}
 }
 void PlayerSentience::doNextAction() {
-	LOGMSG("Performing action of type " << (uint)nextAction->context->type);
+//	LOGMSG("Performing action of type " << (uint)nextAction->context->type);
 	actionReady = false;
 	nextAction->execute();
 }

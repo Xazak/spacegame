@@ -57,6 +57,7 @@ void Actor::setRelLocation(int xOffset, int yOffset) {
 }
 void Actor::setLocality(GameMap *inputArea) {
 	this->locality = inputArea;
+//	LOGMSG(this->getName() <<" locality set to " << locality);
 }
 
 // *** PLAYER METHODS

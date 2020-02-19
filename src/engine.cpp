@@ -37,11 +37,12 @@ bool GameEngine::initialize(std::string configFile) {
 	}
 	// Set up BearLibTerminal
 	string bltConfigString = generateBLTConfigString();
-	LOGMSG("Generated BLT configuration:\n " << bltConfigString);
+//	LOGMSG("Generated BLT configuration:\n " << bltConfigString);
 	terminal_set(bltConfigString.c_str()); // Get BLT set up to its default state
 	// Perform any remaining setup and module creation
 	// parser, gui, meatspace, player objects are already created!
 	meatspace.generateMap(20, 20);
+	player.setLocality(&meatspace);
 	player.setAbsLocation(5, 5);
 //	actorList.push_front(&player);
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
@@ -61,11 +62,11 @@ void GameEngine::execGameLoop() {
 			// Need to trap meta and debug calls before passing to the parser
 			int inputValue = terminal_read(); // Find out what key was struck
 			char inputKey = char(terminal_state(TK_CHAR));
-//			LOGMSG("Keypress: " << inputKey);
+//			LOGMSG("@@@ Keypress: " << inputKey);
 			if (inputValue == TK_Q) { // Press Q to quit
 				break;
 			} else if (inputValue == TK_M) { // test message log
-				LOGMSG("Testing message log.");
+//				LOGMSG("Testing message log.");
 				gui.testMessageLog();
 			} else {
 				parser.interpret(inputKey);
@@ -90,6 +91,7 @@ void GameEngine::update() {
 			(*actorIter)->update();
 		}
 	}
+//	LOGMSG("Player position: " << player.location);
 }
 void GameEngine::terminate() {
 	// Performs closing-of-the-game methods before the engine itself shuts down
@@ -97,6 +99,11 @@ void GameEngine::terminate() {
 	terminal_close(); // Halt the BearLibTerminal instance
 }
 // *** UTILITIES
+void GameEngine::sendMessage(string messageText) {
+//	LOGMSG(messageText);
+//	this->gui.addMessage(messageText);
+
+}
 bool GameEngine::loadConfiguration(std::string inputFile) {
 	std::ifstream config(inputFile); // Open the configuration file
 	if (!config) { // Was the config file opened successfully?

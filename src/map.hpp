@@ -8,6 +8,7 @@ DESC Contains the definitions and methods of the GameMap class.
 #define SPACEGAME_MAP
 
 #include "tile.hpp"
+#include "main.hpp"
 
 class GameMap {
 	public:
@@ -40,7 +41,7 @@ class GameMap {
 		int getTileBkcolor(uint xPos, uint yPos);
 		std::string getTileName(uint xPos, uint yPos);
 		bool isBlocked(uint xPos, uint yPos);
-//		bool isBlocked(cpair absPosition);
+		bool isBlocked(cpair target);
 
 	private:
 		Tile** mapArray;

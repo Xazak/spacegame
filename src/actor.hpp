@@ -17,9 +17,16 @@ class Actor {
 	// as a base class from which characters and items can be derived
 	public:
 	//  METHODS
+		// Default ctor
 		Actor();
-		Actor(bool obstructFlag, bool visibleFlag, std::string inputName, cpair inputPosition, GameMap* inputArea, int inputSigil, std::string inputColor);
-		Actor(std::string inputName, int inputSigil, std::string inputColor, int xPos = 0, int yPos = 0);
+		// Specific ctor
+		Actor(bool obstructFlag, bool visibleFlag, std::string inputName,
+			cpair inputPosition, GameMap* inputArea, int inputSigil,
+			std::string inputColor);
+		// Shorthand ctors
+		// name, sigil, color, x=0, y=0
+		Actor(std::string inputName, int inputSigil, std::string inputColor,
+			int xPos = 0, int yPos = 0);
 		virtual ~Actor() {}
 		virtual void update() {}
 		// GETS

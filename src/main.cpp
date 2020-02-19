@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 		return 1; // Exit the program by throwing a generic error code
 	}
 	// Start loading up the various game modules and initializing them
-	LOGMSG("Creating and initializing engine.");
+//	LOGMSG("Creating and initializing engine.");
 	GameEngine engine;
 	if (!engine.initialize(configFileName)) { // Try initializing the engine
 		// If it didn't work for some reason, say so and exit
@@ -33,12 +33,12 @@ int main(int argc, char** argv)
 		ERRMSG("The game will now exit.");
 		return 5; // Exit the program and throw a (different) error code
 	}
-	LOGMSG("Engine started successfully.");
+//	LOGMSG("Engine started successfully.");
 	// Invoke the game loop
-	LOGMSG("Starting the game...");
+//	LOGMSG("Starting the game...");
 	engine.execGameLoop();
 	// WHEN the player has closed the game:
-	LOGMSG("The engine will now halt and terminate.");
+//	LOGMSG("The engine will now halt and terminate.");
 	engine.terminate();
 }
 
@@ -49,4 +49,11 @@ x(inputX), y(inputY) { } // The specific ctor
 ostream& operator<< (ostream &output, const CoordinatePair& inputPair) {
 	output << inputPair.x << ", " << inputPair.y;
 	return output;
+}
+CoordinatePair CoordinatePair::operator+(const CoordinatePair& rhs) {
+	cpair lhs;
+	lhs.x = this->x + rhs.x;
+	lhs.y = this->y + rhs.y;
+//	LOGMSG(*this << " + " << rhs << " + " << lhs);
+	return lhs;
 }

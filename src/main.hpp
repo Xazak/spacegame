@@ -23,6 +23,7 @@ struct CoordinatePair {
 	//operator=(const CoordinatePair& inputPair); // assign by copy
 	friend std::ostream& operator<< (std::ostream &output, const CoordinatePair &inputPair);
 //	std::ostream& operator<< (std::ostream &output);
+	CoordinatePair operator+(const CoordinatePair& rhs);
 	//uint distanceToAbs(int x, int y);
 	//uint distanceToRel(int x, int y);
 	//uint distanceTo(const CoordinatePair& targetLocation);

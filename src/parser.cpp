@@ -21,7 +21,7 @@ void GameParser::interpret(char inputKey) {
 	previousKey = currentKey;
 	currentKey = inputKey;
 	// Perform the lookup
-	localContext.clear();
+	localContext.reset();
 	localContext.type = keycodeLookup[currentKey];
 	// Use the derived type to obtain any needed details and push an action
 	switch(localContext.type) {
@@ -32,6 +32,8 @@ void GameParser::interpret(char inputKey) {
 			LOGMSG("Action: WAIT unimplemented");
 		break;
 		case ActionType::MOVE:
+//			LOGMSG("Action::MOVE detected");
+//			LOGMSG("Player located at " << player->location);
 			localContext.target = player;
 			localContext.vicinity = player->getLocality();
 			if (currentKey == 'y' || currentKey == 'h' || currentKey == 'b') {
@@ -46,8 +48,10 @@ void GameParser::interpret(char inputKey) {
 			if (currentKey == 'b' || currentKey == 'j' || currentKey == 'n') {
 				localContext.whye = 1;
 			}
+//			LOGMSG("Creating MOVE action");
+//			LOGMSG("Player moving from " << player->location << " to " << player->location.x + localContext.echs << ", " << player->location.y + localContext.whye);
+			localContext.dump();
 			input = new MoveAction(localContext);
-//			LOGMSG("Action: MOVE pushed via parser");
 			player->intent->pushAction(input);
 			delete input;
 		break;

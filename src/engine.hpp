@@ -22,6 +22,7 @@ class GameEngine {
 		void execGameLoop(); // Performs the game itself and handles BLT
 		void update(); // Requests game module updates
 		void terminate(); // Performs cleanup when the game is closed
+		void sendMessage(std::string messageText);
 		
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }

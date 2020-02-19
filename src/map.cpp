@@ -32,7 +32,16 @@ string GameMap::getTileName(uint xPos, uint yPos) {
 	return mapArray[xPos * width + yPos]->name;
 }
 bool GameMap::isBlocked(uint xPos, uint yPos) {
-	return mapArray[xPos * width + yPos]->obstructs;
+//	LOGMSG("Checking for blockage at " << xPos << ", " << yPos);
+	if (xPos >= width || yPos >= height) {
+		return false;
+	} else {
+		return mapArray[xPos * width + yPos]->obstructs;
+	}
+}
+bool GameMap::isBlocked(cpair target) {
+//	LOGMSG("called");
+	return isBlocked(target.x, target.y);
 }
 // **** UTILITIES
 void GameMap::generateMap() {
@@ -64,7 +73,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 			}
 		}
 	}
-	LOGMSG("Tilemap created: " << width << "x" << height);
+//	LOGMSG("Tilemap created: " << width << "x" << height);
 }
 int GameMap::getTileSigil(uint xPos, uint yPos) {
 	return this->mapArray[xPos * width + yPos]->sigil;

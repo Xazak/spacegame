@@ -147,8 +147,8 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr, GameMa
 	// Obtain pointers to the game objects we want to display
 	avatar = playerPtr;
 	worldMap = meatspacePtr;
-	LOGMSG("Player located at: " << avatar);
-	LOGMSG("Meatspace located at: " << worldMap);
+//	LOGMSG("Player located at: " << avatar);
+//	LOGMSG("Meatspace located at: " << worldMap);
 	// Assign the maximum parameters
 	windowWidth = maxWidth;
 	windowHeight = maxHeight;
@@ -316,14 +316,14 @@ GUIPanel(inputID, xOrigin, yOrigin, inputWidth, inputHeight),
 verticalSplit(inputType),
 splitRatio(ratioPercent)
 {	
-	LOGMSG("Created:" << inputID << ": " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
+	//LOGMSG("Created #" << inputID << ": " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
 }
 GameGUI::Splitter::Splitter(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, bool inputType, uint ratioPercent) :
 GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
 verticalSplit(inputType),
 splitRatio(ratioPercent)
 {	
-	LOGMSG("Created:" << inputID << ": " << inputOrigin.x << ", " << inputOrigin.y << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
+	//LOGMSG("Created #" << inputID << ": " << inputOrigin.x << ", " << inputOrigin.y << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
 }
 void GameGUI::Splitter::display() {
 	// Draw a line
