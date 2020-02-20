@@ -24,8 +24,9 @@ class Sentience {
 //		Action* getAction();
 //		Action popAction();
 //		ActionType peekAction();
-	private:
+	protected:
 		// Note that Action objects contain their own context!
+		MessageLog* msgOutput;
 };
 
 class PlayerSentience : public Sentience {

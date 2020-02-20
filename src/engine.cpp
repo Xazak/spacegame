@@ -48,6 +48,7 @@ bool GameEngine::initialize(std::string configFile) {
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
 	// Initialize the GUI
 	gui.initialize(screenWidth, screenHeight, &player, &meatspace);
+	ServiceLocator::provide(gui.getMessageLog());
 	return true;
 }
 void GameEngine::execGameLoop() {

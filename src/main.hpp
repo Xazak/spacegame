@@ -7,6 +7,7 @@ DESC Contains the definitions of various useful data structures
 #ifndef MAIN_HPP_HEADER_GUARD
 #define MAIN_HPP_HEADER_GUARD
 
+#include "services.hpp"
 #include <iostream>
 
 // *** DEFINITIONS AND ALIASES

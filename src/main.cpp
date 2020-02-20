@@ -5,15 +5,19 @@ DESC Contains the implementation of main()
 */
 
 
-// *** INCLUDES
+// **** INCLUDES
 #include "actor.hpp"
 #include "engine.hpp"
 #include "gui.hpp"
+#include "services.hpp"
 #include "main.hpp"
 #include <iostream>
 
 using namespace std;
 
+// **** GLOBALS
+
+// **** MAIN
 int main(int argc, char** argv)
 {
 	// Load the configuration and any command line options

@@ -7,13 +7,20 @@ DESC Describes the Sentience module for Actors, which enables access to the
 
 #include "sentience.hpp"
 #include "context.hpp"
+#include "gui.hpp"
+#include <string>
 
 using namespace std;
 
 PlayerSentience::PlayerSentience() {
-//	LOGMSG("Player sentience initialized.");
+//	NOTE: This line below occurs too early to obtain a valid ptr!
+//	FIXME: Consider moving this line to someplace 'later' so as to prevent the
+//	pushAction() from constantly reacquiring the service pointer?
+//	this->msgOutput = ServiceLocator::getMsgLog();
+	LOGMSG("Player sentience initialized: msgOutput: " << this->msgOutput);
 }
 void PlayerSentience::pushAction(Action* inputAction) {
+	if (this->msgOutput == nullptr) this->msgOutput = ServiceLocator::getMsgLog();
 /*	LOGMSG("Pushing action #" << (uint)inputAction->context->type);
 	delete prevAction;
 	if (nextAction == nullptr) {
@@ -36,6 +43,7 @@ void PlayerSentience::pushAction(Action* inputAction) {
 	} else {
 //		LOGMSG("Action is INVALID");
 		// FIXME: Throw an error message describing the implausibility
+		msgOutput->add("An object blocks your path.");
 	}
 }
 void PlayerSentience::doNextAction() {

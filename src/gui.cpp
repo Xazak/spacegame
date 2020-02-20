@@ -277,7 +277,7 @@ void GameGUI::addMessage(string messageText) {
 	globalMsgLog.add(messageText);
 }
 // **** MessageLog Methods
-int GameGUI::MessageLog::add(string newMessage) {
+int MessageLog::add(string newMessage) {
 	// Adds the input string to the message log list
 	messageList.push_back(newMessage);
 	return messageList.size();
