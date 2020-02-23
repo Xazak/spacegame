@@ -440,11 +440,11 @@ void GameGUI::Viewport::display() {
 		for (uint whye = 0; whye < mapHeight; whye++) {
 			currentXPos = cursorXOrigin + echs;
 			currentYPos = cursorYOrigin + whye;
-			terminal_layer(0);
 //			FIXME: doesn't seem to work right?
-//			terminal_bkcolor(mapSource->getTileBkcolor(echs, whye));
-//			terminal_bkcolor("magenta");
-//			terminal_put(currentXPos, currentXPos, ' ');
+			terminal_bkcolor(mapSource->getTileBkcolor(echs, whye));
+			terminal_layer(0);
+			terminal_put(currentXPos, currentYPos, 0x0020);
+
 			terminal_layer(2);// Move to the Terrain layer
 			terminal_color(mapSource->getTileColor(echs, whye));
 			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));

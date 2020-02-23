@@ -17,21 +17,26 @@ struct Tile {
 	std::string	name;
 	bool		explored;
 	bool		obstructs;
-//	bool		opaque;
+	bool		opaque;
 //	Actor*		occupant;
 //	Actor*		itemList;
 	Tile();
-//	Tile(int inputSigil, std::string inputColor, bool isExplored, bool blocksMovement);
-	Tile(int inputSigil, int inputColor, int inputBKColor, std::string inputName, bool isExplored, bool blocksMovement);
+	Tile(int inputSigil, int inputColor, int inputBKColor, std::string inputName, bool isExplored, bool blocksMovement, bool blocksVision);
 };
 
-struct Wall : public Tile {
-	Wall();
+struct Vacuum : public Tile {
+	Vacuum();
+};
+struct Tunnel : public Tile {
+	Tunnel();
 };
 struct Floor : public Tile {
 	Floor();
 };
-struct Vacuum : public Tile {
-	Vacuum();
+struct Wall : public Tile {
+	Wall();
+};
+struct Solid : public Tile {
+	Solid();
 };
 #endif //SPACEGAME_TILE

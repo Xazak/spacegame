@@ -29,14 +29,14 @@ GameMap::~GameMap()
 }
 // **** HELPERS
 string GameMap::getTileName(uint xPos, uint yPos) {
-	return mapArray[xPos * width + yPos]->name;
+	return mapArray[xPos + yPos * width]->name;
 }
 bool GameMap::isBlocked(uint xPos, uint yPos) {
 //	LOGMSG("Checking for blockage at " << xPos << ", " << yPos);
 	if (xPos >= width || yPos >= height) {
 		return false;
 	} else {
-		return mapArray[xPos * width + yPos]->obstructs;
+		return mapArray[xPos + yPos * width]->obstructs;
 	}
 }
 bool GameMap::isBlocked(cpair target) {
@@ -60,29 +60,154 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 	mapArray = new Tile*[width * height]; // Create an empty pointer map
 	mapIndexIter.linkTo(this); // Init the public iterator
 	// Create the actual tile objects
-	// mapArray[x * width + y]
-	// Build a test room
+	// mapArray[x + y * width]
+	/* Build a test room
 	for (uint xOffset = 0; xOffset < width; xOffset++) {
 		for (uint yOffset = 0; yOffset < height; yOffset++) {
-			if (xOffset == 3 || xOffset == 13) {
+			if (xOffset == 0 || xOffset == width - 1 ) {
 				mapArray[xOffset * width + yOffset] = new Wall();
-			} else if (yOffset == 3 || yOffset == 13) {
+			} else if (yOffset == 0 || yOffset == height - 1) {
 				mapArray[xOffset * width + yOffset] = new Wall();
 			} else {
 				mapArray[xOffset * width + yOffset] = new Floor();
 			}
 		}
 	}
-//	LOGMSG("Tilemap created: " << width << "x" << height);
+	*/
+	
+/*	void add(int x, int y, int w, int h) {
+        for (int i = x; i < x + w; i++) {
+            set(i, y, 1);
+            set(i, y + h - 1, 1);
+        }
+        for (int i = y + 1; i < y + h - 1; i++) {
+            set(x, i, 1);
+            set(x + w - 1, i, 1);
+        }
+    }*/
+
+	// Build a test structure
+	uint arrWidth = 28;
+	uint tempWidth = arrWidth;
+	uint arrHeight = 12;
+	uint tempHeight = arrHeight;
+	uint mapTemplate[arrWidth * arrHeight] = {0}; // 0 == vacuum (see Tile class)
+	uint xOffset = 0;
+	uint yOffset = 0;
+	uint index = 0;
+	for (index = xOffset; index < (xOffset + tempWidth); index++) {
+		mapTemplate[index + yOffset * tempWidth] = 5;
+		mapTemplate[index + (yOffset + tempHeight - 1) * arrWidth] = 5;
+	}
+	for (index = yOffset; index < (yOffset + tempHeight); index++) {
+		mapTemplate[xOffset + index * tempWidth] = 5;
+		mapTemplate[(xOffset + tempWidth - 1) + index * arrWidth] = 5;
+	}
+//	xOffset++;
+//	yOffset++;
+//	tempWidth--;
+//	tempHeight--;
+	for (index = xOffset; index < (xOffset + tempWidth); index++) {
+		mapTemplate[index + yOffset * tempWidth] = 4;
+		mapTemplate[index + (yOffset + tempHeight - 2) * arrWidth] = 4;
+	}
+	for (index = yOffset; index < (yOffset + tempHeight); index++) {
+		mapTemplate[xOffset + index * tempWidth] = 4;
+		mapTemplate[(xOffset + tempWidth - 2) + index * arrWidth] = 4;
+	}
+	/*
+	xOffset++;
+	yOffset++;
+	tempWidth--;
+	tempHeight--;
+	for ( ; xOffset < tempWidth; xOffset++) {
+		for ( ; yOffset < tempHeight; yOffset++) {
+			mapTemplate[xOffset + yOffset * arrWidth] = 3;
+		}
+	}
+	*/
+	// FIXME: fill in some internal walls
+	// Use the template to build the map
+	uint tileType = 0;
+	for (xOffset = 0; xOffset < width; xOffset++) {
+		for (yOffset = 0; yOffset < height; yOffset++) {
+//			mapArray[xOffset + yOffset * width] = new Vacuum();
+			if (xOffset > 0 && xOffset <= arrWidth) {
+				if (yOffset > 0 && yOffset <= arrHeight) {
+					// call into the template
+					mapArray[xOffset + yOffset * width] = new Floor();
+					tileType = mapTemplate[(xOffset - 1) + (yOffset - 1) * arrWidth];
+					clog << tileType;
+					/*
+					switch(tileType) {
+						case 1:
+							mapArray[xOffset + yOffset * arrWidth] = new Vacuum();
+							break;
+						case 2:
+							mapArray[xOffset + yOffset * arrWidth] = new Tunnel();
+							break;
+						case 3:
+							mapArray[xOffset + yOffset * arrWidth] = new Floor();
+							break;
+						case 4:
+							mapArray[xOffset + yOffset * arrWidth] = new Wall();
+							break;
+						case 5:
+							mapArray[xOffset + yOffset * arrWidth] = new Solid();
+							break;
+						default:
+							mapArray[xOffset + yOffset * arrWidth] = new Vacuum();
+							break;
+					}
+					*/
+				} else {
+					mapArray[xOffset + yOffset * width] = new Vacuum();
+				}
+			} else {
+				mapArray[xOffset + yOffset * width] = new Vacuum();
+			}
+			/*
+			if (xOffset == 0 || xOffset >= arrWidth) {
+				mapArray[xOffset * width + yOffset] = new Vacuum();
+			} else if (yOffset == 0 || yOffset >= arrHeight) {
+				mapArray[xOffset * width + yOffset] = new Vacuum();
+			} else {
+				tileType = mapTemplate[(xOffset - 1) + (yOffset - 1) * arrWidth];
+				switch(tileType) {
+					case 1:
+						mapArray[xOffset * arrWidth + yOffset] = new Vacuum();
+						break;
+					case 2:
+						mapArray[xOffset * arrWidth + yOffset] = new Tunnel();
+						break;
+					case 3:
+						mapArray[xOffset * arrWidth + yOffset] = new Floor();
+						break;
+					case 4:
+						mapArray[xOffset * arrWidth + yOffset] = new Wall();
+						break;
+					case 5:
+						mapArray[xOffset * arrWidth + yOffset] = new Solid();
+						break;
+					default:
+						mapArray[xOffset * arrWidth + yOffset] = new Vacuum();
+						break;
+				}
+			}
+			*/
+		}
+		clog << endl;
+	}
+	LOGMSG("Tilemap created: " << width << "x" << height);
 }
 int GameMap::getTileSigil(uint xPos, uint yPos) {
-	return this->mapArray[xPos * width + yPos]->sigil;
+	return this->mapArray[xPos + yPos * width]->sigil;
 }
 int GameMap::getTileColor(uint xPos, uint yPos) {
-	return this->mapArray[xPos * width + yPos]->color;
+	return this->mapArray[xPos + yPos * width]->color;
 }
 int GameMap::getTileBkcolor(uint xPos, uint yPos) {
-	return this->mapArray[xPos * width + yPos]->bkcolor;
+	return this->mapArray[xPos + yPos * width]->bkcolor;
 }
 
 // *************************
