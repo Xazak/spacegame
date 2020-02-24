@@ -62,7 +62,7 @@ void Actor::setLocality(GameMap *inputArea) {
 
 // *** PLAYER METHODS
 Player::Player() :
-Actor("Jenaryk", 0x3113, "light green") {
+Actor("Jenaryk", 0x2135, "light green") {
 	intent = new PlayerSentience();
 //	LOGMSG("Player object initialized.");
 }

@@ -41,7 +41,7 @@ bool GameEngine::initialize(std::string configFile) {
 	terminal_set(bltConfigString.c_str()); // Get BLT set up to its default state
 	// Perform any remaining setup and module creation
 	// parser, gui, meatspace, player objects are already created!
-	meatspace.generateMap(40, 30);
+	meatspace.generateMap(30, 14);
 	player.setLocality(&meatspace);
 	player.setAbsLocation(5, 5);
 //	actorList.push_front(&player);
