@@ -15,6 +15,6 @@ void ServiceLocator::provide(MessageLog* msgLogSource) {
 //	LOGMSG("Message service created: " << msgLogService);
 }
 MessageLog* ServiceLocator::getMsgLog() {
-	LOGMSG("Dispatching message log service to caller");
+//	LOGMSG("Dispatching message log service to caller");
 	return msgLogService;
 }

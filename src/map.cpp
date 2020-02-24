@@ -96,6 +96,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 	uint xOffset = 0;
 	uint yOffset = 0;
 	uint index = 0;
+	// Draw the 'solid' hull around the outside
 	for (index = xOffset; index < (xOffset + tempWidth); index++) {
 		mapTemplate[index + yOffset * tempWidth] = 5;
 		mapTemplate[index + (yOffset + tempHeight - 1) * arrWidth] = 5;
@@ -104,6 +105,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		mapTemplate[xOffset + index * tempWidth] = 5;
 		mapTemplate[(xOffset + tempWidth - 1) + index * arrWidth] = 5;
 	}
+	// Draw the walls around the inside of the hull
 	xOffset++;
 	yOffset++;
 	tempWidth--;
@@ -116,6 +118,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		mapTemplate[xOffset + index * arrWidth] = 4;
 		mapTemplate[(xOffset + tempWidth - 2) + index * arrWidth] = 4;
 	}
+	// Fill in the remaining space with flooring
 	xOffset++;
 	yOffset++;
 	tempWidth--;
@@ -125,7 +128,21 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 			mapTemplate[foo + bar * arrWidth] = 3;
 		}
 	}
-	// FIXME: fill in some internal walls
+	// Fill in some internal walls
+	for (index = 2; index < 10; index++) {
+		if (index != 8) {
+			mapTemplate[11 + index * arrWidth] = 4;
+		}
+	}
+	for (index = 2; index < 10; index++) {
+		if (index == 5) {
+			mapTemplate[22 + index * arrWidth] = 2;
+			mapTemplate[23 + index * arrWidth] = 2;
+		} else {
+			mapTemplate[22 + index * arrWidth] = 4;
+			mapTemplate[23 + index * arrWidth] = 4;
+		}
+	}
 	// Use the template to build the map
 	uint tileType = 0;
 	for (xOffset = 0; xOffset < width; xOffset++) {
@@ -136,7 +153,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 					// call into the template
 					mapArray[xOffset + yOffset * width] = new Floor();
 					tileType = mapTemplate[(xOffset - 1) + (yOffset - 1) * arrWidth];
-					LOGMSG("Placing " << tileType << " at " << xOffset << ", " << yOffset);
+//					LOGMSG("Placing " << tileType << " at " << xOffset << ", " << yOffset);
 					switch(tileType) {
 						case 1:
 							mapArray[xOffset + yOffset * width] = new Vacuum();
@@ -165,7 +182,8 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 			}
 		}
 	}
-	LOGMSG("Tilemap created: " << width << "x" << height);
+//	LOGMSG("Tilemap created: " << width << "x" << height);
+	/*
 	clog << "TEMPLATE DUMP:" << endl;
 	xOffset = 1;
 	yOffset = 1;
@@ -175,6 +193,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		}
 		clog << endl;
 	}
+	*/
 }
 int GameMap::getTileSigil(uint xPos, uint yPos) {
 	return this->mapArray[xPos + yPos * width]->sigil;
