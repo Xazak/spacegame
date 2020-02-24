@@ -17,7 +17,7 @@ PlayerSentience::PlayerSentience() {
 //	FIXME: Consider moving this line to someplace 'later' so as to prevent the
 //	pushAction() from constantly reacquiring the service pointer?
 //	this->msgOutput = ServiceLocator::getMsgLog();
-	LOGMSG("Player sentience initialized: msgOutput: " << this->msgOutput);
+//	LOGMSG("Player sentience initialized");
 }
 void PlayerSentience::pushAction(Action* inputAction) {
 	if (this->msgOutput == nullptr) this->msgOutput = ServiceLocator::getMsgLog();
