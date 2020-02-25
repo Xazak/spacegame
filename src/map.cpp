@@ -138,9 +138,11 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		if (index == 5) {
 			mapTemplate[22 + index * arrWidth] = 2;
 			mapTemplate[23 + index * arrWidth] = 2;
+			mapTemplate[24 + index * arrWidth] = 2;
 		} else {
 			mapTemplate[22 + index * arrWidth] = 4;
 			mapTemplate[23 + index * arrWidth] = 4;
+			mapTemplate[24 + index * arrWidth] = 4;
 		}
 	}
 	// Use the template to build the map

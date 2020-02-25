@@ -54,6 +54,8 @@ bool GameEngine::initialize(std::string configFile) {
 	return true;
 }
 void GameEngine::execGameLoop() {
+	// Handler function called by main() that coordinates the game loop and
+	// some setup methods
 	// BLT display explicitly requires an initial call to _refresh() prior to
 	// displaying anything onscreen
 	terminal_refresh();
@@ -75,7 +77,9 @@ void GameEngine::execGameLoop() {
 				parser.interpret(inputKey);
 			}
 		}
-		update();
+		// Set flag HERE for detecting whether the player's input has created a
+		// VICTORY or DEFEAT engine state
+		update(); // Perform game update routines based on engine state
 //		gui.update(); // Make sure the GUI catches any state changes
 		gui.render(); // Update the game screen
 	};
@@ -85,28 +89,31 @@ void GameEngine::update() {
 	// of change to the game state by way of their available actions
 	switch(currMode) {
 		case STARTUP:
-				// Things that occur only once, when the game loop is started
-				this->switchMode(ONGOING);
+			// Things that occur only once, when the game loop is started
+			this->switchMode(ONGOING);
 			break;
 		case ONGOING:
-				// The 'default' running game state
-//				if (player.location.isEqual(
+			// The 'default' running game state
+			// EZ flags for testing engine state changes
+			if (player.location.isEqual(26, 10)) this->switchMode(VICTORY);
+			if (player.location.isEqual(26, 3)) this->switchMode(DEFEAT);
 			break;
 		case PAUSED:
-				// Halts all in-game action, allows metagame functions
+			// Halts all in-game action, allows metagame functions
 			break;
 		case VICTORY:
-				// Displays a GOOD END banner and halts the game
+			// Displays a GOOD END banner and halts the game
+			LOGMSG("VICTORY state attained");
 			break;
 		case DEFEAT:
-				// Displays a BAD END banner and halts the game
+			// Displays a BAD END banner and halts the game
+			LOGMSG("DEFEAT state attained");
 			break;
 		default:
 			ERRMSG("An invalid engine state was encountered!");
 			this->terminate();
 			break;
 	}
-
 //	LOGMSG("Updating game state.");
 	for (auto actorIter = actorList.begin(); actorIter != actorList.end(); actorIter++) {
 //		LOGMSG("Update request: " << (*actorIter)->getName());

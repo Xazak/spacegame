@@ -39,7 +39,6 @@ struct Action {
 	virtual bool isPlausible() { return true; } // Allow any action by default
 	virtual void execute() = 0;
 	virtual bool result() { return true; } // All actions succeed by default
-//	virtual void undo() = 0;
 	virtual Action* clone() const = 0;
 	ActionContext* context;
 };
@@ -56,10 +55,37 @@ struct MoveAction : public Action {
 	~MoveAction();
 	bool isPlausible();
 	void execute();
-//	bool result();
-//	void undo();
 	MoveAction* clone() const { return new MoveAction(*this); }
 	cpair moveIncrement;
+};
+struct GetAction : public Action {
+	GetAction();
+	GetAction(Actor *inputTarget, GameMap *inputArea); // take specific object
+//	GetAction(GameMap *inputArea, int xPos, int yPos); // take by location
+	bool isPlausible();
+	void execute();
+	GetAction* clone() const { return new GetAction(*this); }
+};
+struct DropAction : public Action {
+	DropAction();
+	DropAction(Actor *dropTarget); // drop an object from carried inventory
+	bool isPlausible();
+	void execute();
+	DropAction* clone() const { return new DropAction(*this); }
+};
+struct OpenAction : public Action {
+	OpenAction();
+	OpenAction(Actor *openTarget, GameMap *inputArea); // open target
+	bool isPlausible();
+	void execute();
+	OpenAction* clone() const { return new OpenAction(*this); }
+};
+struct CloseAction : public Action {
+	CloseAction();
+	CloseAction(Actor *closeTarget, GameMap *inputArea); // open target
+	bool isPlausible();
+	void execute();
+	CloseAction* clone() const { return new CloseAction(*this); }
 };
 
 #endif //SPACEGAME_ACTIONS
