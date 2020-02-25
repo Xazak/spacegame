@@ -173,7 +173,7 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr, GameMa
 	layoutIndex->right = new Splitter(2, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, maxHeight, false, 33);
 	layoutIndex = layoutIndex->right;
 	// put VIT at root->R->U		o: r->R->U, statpanel, maxHeight * 33%
-//	layoutIndex->left = new DataDisplay();
+	layoutIndex->left = new DataDisplay(5, layoutIndex->leftPanelOrigin(), statPanelWidthMinimum, statPanelHeightMinimum, avatar);
 	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
 	layoutIndex->right = new Splitter(3, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, (maxHeight * 67 / 100), false, 50);
 	layoutIndex = layoutIndex->right;
@@ -471,4 +471,22 @@ void GameGUI::MessageReadout::display() {
 			terminal_print(cursorXPosition, cursorYPosition++, (*msgLogIter).c_str());
 		}
 	}
+}
+// **** DATA DISPLAY
+GameGUI::DataDisplay::DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor) :
+	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
+	targetActor(inputActor)
+{	}
+void GameGUI::DataDisplay::display() {
+	int cursorXPosition = this->origin.x + 1;
+	int cursorYPosition = this->origin.y + 1;
+	terminal_color("white"); // Default text color, can be overridden inline
+	terminal_print(cursorXPosition, cursorYPosition, targetActor->getName().c_str());
+	
+	cursorYPosition++;
+	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().x).c_str());
+	cursorXPosition += 2;
+	terminal_print(cursorXPosition, cursorYPosition, ", ");
+	cursorXPosition += 2;
+	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
 }

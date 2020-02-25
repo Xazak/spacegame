@@ -45,6 +45,13 @@ sigil(inputSigil),
 color(inputColor)
 {	}
 // Need some cpair overrides for these two fxns
+string Actor::getLocString() {
+	string actorLocString;
+	actorLocString.push_back((char)this->location.x);
+	actorLocString.append(", ");
+	actorLocString.push_back((char)this->location.y);
+	return actorLocString;
+}
 void Actor::setAbsLocation(int newXPos, int newYPos) {
 	// Sets the actor's location to the exact specified coordinates
 	this->location.x = newXPos;

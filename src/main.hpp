@@ -25,6 +25,7 @@ struct CoordinatePair {
 	friend std::ostream& operator<< (std::ostream &output, const CoordinatePair &inputPair);
 //	std::ostream& operator<< (std::ostream &output);
 	CoordinatePair operator+(const CoordinatePair& rhs);
+	bool isEqual(const int& inputX, const int& inputY);
 	//uint distanceToAbs(int x, int y);
 	//uint distanceToRel(int x, int y);
 	//uint distanceTo(const CoordinatePair& targetLocation);

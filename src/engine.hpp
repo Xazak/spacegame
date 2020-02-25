@@ -16,13 +16,20 @@ DESC Contains definitions of the GameEngine class
 
 class GameEngine {
 	public:
+		enum EngineState {
+			STARTUP,	//0
+			ONGOING,	//1
+			PAUSED,		//2
+			VICTORY,	//3
+			DEFEAT		//4
+		} currMode, prevMode;
 		GameEngine();
 //		~GameEngine();
 		bool initialize(std::string configFile); // Loads state from config
 		void execGameLoop(); // Performs the game itself and handles BLT
 		void update(); // Requests game module updates
 		void terminate(); // Performs cleanup when the game is closed
-		void sendMessage(std::string messageText);
+		void switchMode(EngineState newMode); // handles engine state changes
 		
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }

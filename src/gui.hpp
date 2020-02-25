@@ -147,13 +147,13 @@ class GameGUI {
 			MessageLog* logObject;
 			void display();
 		};
-		/*
 		struct DataDisplay : public GUIPanel {
 			// misc/catch-all category for data visualizations such as stat
 			// bars, meters, buttons/switches, etc
+			DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor);
+			Actor* targetActor;
 			void display();
 		};
-		*/
 		/*
 		struct CommandPrompt : public GUIPanel {
 			// might elect to make this a floating panel so as to autohide it

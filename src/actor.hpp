@@ -32,6 +32,7 @@ class Actor {
 		// GETS
 		std::string	getName() { return this->name; }
 		cpair		getLocation() { return this->location; }
+		std::string	getLocString();
 		GameMap*	getLocality() { return this->locality; }
 		int			getSigil() { return this->sigil; }
 		std::string	getColor() { return this->color; }

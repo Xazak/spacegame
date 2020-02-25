@@ -14,8 +14,10 @@ DESC Contains implementation of game engine
 using namespace std;
 
 GameEngine::GameEngine() :
-screenWidth(80),
-screenHeight(50)
+	screenWidth(80),
+	screenHeight(50),
+	currMode(STARTUP),
+	prevMode(STARTUP)
 {
 //	LOGMSG("Default ctor called.");
 	// The default constructor
@@ -81,6 +83,30 @@ void GameEngine::execGameLoop() {
 void GameEngine::update() {
 	// Polls various game modules to see if they would like to make some kind
 	// of change to the game state by way of their available actions
+	switch(currMode) {
+		case STARTUP:
+				// Things that occur only once, when the game loop is started
+				this->switchMode(ONGOING);
+			break;
+		case ONGOING:
+				// The 'default' running game state
+//				if (player.location.isEqual(
+			break;
+		case PAUSED:
+				// Halts all in-game action, allows metagame functions
+			break;
+		case VICTORY:
+				// Displays a GOOD END banner and halts the game
+			break;
+		case DEFEAT:
+				// Displays a BAD END banner and halts the game
+			break;
+		default:
+			ERRMSG("An invalid engine state was encountered!");
+			this->terminate();
+			break;
+	}
+
 //	LOGMSG("Updating game state.");
 	for (auto actorIter = actorList.begin(); actorIter != actorList.end(); actorIter++) {
 //		LOGMSG("Update request: " << (*actorIter)->getName());
@@ -99,12 +125,34 @@ void GameEngine::terminate() {
 	// If we wanted to save the game automatically, we could do so here
 	terminal_close(); // Halt the BearLibTerminal instance
 }
-// *** UTILITIES
-void GameEngine::sendMessage(string messageText) {
-//	LOGMSG(messageText);
-//	this->gui.addMessage(messageText);
-
+void GameEngine::switchMode(EngineState newMode) {
+	prevMode = currMode;
+	currMode = newMode;
+/*	switch (currMode) {
+		case STARTUP:
+			LOGMSG("mode switch: " << currMode << ": STARTUP");
+			break;
+		case IDLE:
+			LOGMSG("mode switch: " << currMode << ": IDLE");
+			break;
+		case ONGOING:
+			LOGMSG("mode switch: " << currMode << ": ONGOING");
+			break;
+		case NEWTURN:
+			LOGMSG("mode switch: " << currMode << ": NEWTURN");
+			break;
+		case VICTORY:
+			LOGMSG("mode switch: " << currMode << ": VICTORY");
+			break;
+		case DEFEAT:
+			LOGMSG("mode switch: " << currMode << ": DEFEAT");
+			break;
+		default:
+			break;
+	}
+	*/
 }
+// *** UTILITIES
 bool GameEngine::loadConfiguration(std::string inputFile) {
 	std::ifstream config(inputFile); // Open the configuration file
 	if (!config) { // Was the config file opened successfully?
