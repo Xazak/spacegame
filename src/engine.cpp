@@ -14,10 +14,10 @@ DESC Contains implementation of game engine
 using namespace std;
 
 GameEngine::GameEngine() :
-	screenWidth(80),
-	screenHeight(50),
 	currMode(STARTUP),
-	prevMode(STARTUP)
+	prevMode(STARTUP),
+	screenWidth(80),
+	screenHeight(50)
 {
 //	LOGMSG("Default ctor called.");
 	// The default constructor

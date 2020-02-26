@@ -89,3 +89,17 @@ void MoveAction::undo() {
 	context->whye *= -1;
 	context->target->setRelLocation(context->echs, context->whye);
 }*/
+// **** GET Action
+GetAction::GetAction() {
+
+}
+GetAction::GetAction(Actor *inputTarget, GameMap *inputArea) {
+
+}
+bool GetAction::isPlausible() {
+	// tests against the action context
+
+}
+void GetAction::execute() {
+
+}

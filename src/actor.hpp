@@ -12,6 +12,7 @@ DESC Contains the definitions of the Actor class, which handles the player
 #include "main.hpp"
 #include <string>
 
+class Container; // fwd-decl
 class Actor {
 	// Defines the Actor prototype, which (should not) be used on its own, but
 	// as a base class from which characters and items can be derived
@@ -43,12 +44,23 @@ class Actor {
 		void		setLocality(GameMap *inputArea);
 		//setSigil
 		//setColor
-	//  PROPERTIES
+	//  PROPERTIES - Guaranteed
 		bool		obstructs;
 		bool		visible;
 		cpair		location;	// (x, y) coordinates on map
 		GameMap*	locality;
-		Sentience*	intent;
+	//  PROPERTIES - Optional
+		Sentience*	intent; 	// Goal-seeking and action-taking
+		Container*	contents;	// Allows an Actor to hold objects
+		Portable*	portable;	// Allows an Actor to be picked up
+		/*
+		Violence*	// Damage-causing methods
+		Consumable* // Allows an actor to be consumed by another
+		Mortality*	// Allows an actor to be damaged and killed
+		Vitality*	// Provides access to core stats and skill checks
+		? device	// Allows access to an Actor's 'internal mechanisms'
+		? barrier	// Allows an Actor to change its obstruction?
+		*/
 
 	private:
 		std::string	name;		// Contains actor's (visible) name

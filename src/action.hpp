@@ -38,7 +38,6 @@ struct Action {
 	virtual ~Action() {}
 	virtual bool isPlausible() { return true; } // Allow any action by default
 	virtual void execute() = 0;
-	virtual bool result() { return true; } // All actions succeed by default
 	virtual Action* clone() const = 0;
 	ActionContext* context;
 };
