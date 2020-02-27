@@ -10,6 +10,7 @@ DESC Defines the GameParser class, which collects and interprets player input
 
 #include "parser.hpp"
 #include "action.hpp"
+#include "sentience.hpp"
 
 using namespace std;
 

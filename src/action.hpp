@@ -34,31 +34,34 @@ class GameMap; // fwd-decl
 struct ActionContext; // fwd-decl
 struct Action {
 	Action();
+//	Action(const ActionContext& inputContext, const Actor& inputSubject);
 	Action(const Action& inputAction);
-	virtual ~Action() {}
+//	Action& operator*();
+	virtual ~Action();
 	virtual bool isPlausible() { return true; } // Allow any action by default
 	virtual void execute() = 0;
 	virtual Action* clone() const = 0;
 	ActionContext* context;
+	Actor* subject; // Points to the entity who is 'doing' the action
+
 };
 // *** ACTION CLASSES
 struct IdleAction : public Action {
-	IdleAction();
+//	IdleAction();
 	void execute();
 	IdleAction* clone() const { return new IdleAction(*this); }
 };
 struct MoveAction : public Action {
-	MoveAction();
+//	MoveAction();
 	MoveAction(const ActionContext& inputContext);
 	MoveAction(Actor *inputTarget, GameMap *inputArea, int targetX, int targetY);
-	~MoveAction();
 	bool isPlausible();
 	void execute();
 	MoveAction* clone() const { return new MoveAction(*this); }
 	cpair moveIncrement;
 };
 struct GetAction : public Action {
-	GetAction();
+//	GetAction();
 	GetAction(Actor *inputTarget, GameMap *inputArea); // take specific object
 //	GetAction(GameMap *inputArea, int xPos, int yPos); // take by location
 	bool isPlausible();

@@ -6,6 +6,8 @@ DESC Contains the definitions of the Actor class, which handles the player
 */
 
 #include "actor.hpp"
+#include "sentience.hpp"
+#include "container.hpp"
 
 using namespace std;
 
@@ -18,6 +20,8 @@ visible(true),
 location(0, 0),
 locality(nullptr),
 intent(nullptr),
+container(nullptr),
+portable(nullptr),
 name("n0b0dY"),
 sigil(0x2112),
 color("white")
@@ -29,6 +33,8 @@ visible(visibleFlag),
 location(inputPosition),
 locality(inputArea),
 intent(nullptr),
+container(nullptr),
+portable(nullptr),
 name(inputName),
 sigil(inputSigil),
 color(inputColor)
@@ -40,6 +46,8 @@ visible(true),
 location(xPos, yPos),
 locality(nullptr),
 intent(nullptr),
+container(nullptr),
+portable(nullptr),
 name(inputName),
 sigil(inputSigil),
 color(inputColor)
@@ -57,10 +65,16 @@ void Actor::setAbsLocation(int newXPos, int newYPos) {
 	this->location.x = newXPos;
 	this->location.y = newYPos;
 }
+void Actor::setAbsLocation(cpair inputPosition) {
+	this->setAbsLocation(inputPosition.x, inputPosition.y);
+}
 void Actor::setRelLocation(int xOffset, int yOffset) {
 	// Sets the actor's position by a relative offset
 	this->location.x += xOffset;
 	this->location.y += yOffset;
+}
+void Actor::setRelLocation(cpair inputPosition) {
+	this->setRelLocation(inputPosition.x, inputPosition.y);
 }
 void Actor::setLocality(GameMap *inputArea) {
 	this->locality = inputArea;
@@ -71,6 +85,7 @@ void Actor::setLocality(GameMap *inputArea) {
 Player::Player() :
 Actor("Jenaryk", 0x2135, "light green") {
 	intent = new PlayerSentience();
+	container = new Container(2);
 //	LOGMSG("Player object initialized.");
 }
 void Player::update() {

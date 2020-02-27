@@ -18,8 +18,9 @@ struct ActionContext {
 	// CONTROLS
 	ActionContext(); // gotta leave this in until a ctor chain is worked out
 	ActionContext(const ActionContext& inputContext);
-	ActionContext(ActionType inputType, Actor *inputTarget, GameMap *inputArea, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
+	ActionContext(ActionType inputType, GameMap *inputArea, Actor *inputTarget, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
 	ActionContext& operator=(const ActionContext& rhs);
+	ActionContext& operator*();
 	friend void swap(ActionContext& lhs, ActionContext& rhs);
 	void clear(); // Sets ALL components of this back to defaults
 	void reset(); // Sets ONLY the x/y/z and successflag to defaults
@@ -33,7 +34,8 @@ struct ActionContext {
 	// v This v may be replaced with a queue later on.... ?
 //	Sentience::Action currentAction; // the next action to be performed
 	ActionType type;
-	Actor *target; // the target object of the action
+	Actor *target; // the target (or object) of the action
+	Actor *subject; // the entity performing the action
 	GameMap *vicinity; // the local area where the action will take place
 	int echs, whye, zhee; // generic value containers for extra information
 	bool success; // = FALSE if an action is attempted and BLOCKED

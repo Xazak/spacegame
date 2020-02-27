@@ -8,11 +8,15 @@ DESC Contains the definitions of the Actor class, which handles the player
 #ifndef SPACEGAME_ACTOR
 #define SPACEGAME_ACTOR
 
-#include "sentience.hpp"
 #include "main.hpp"
 #include <string>
 
-class Container; // fwd-decl
+// **** FORWARD DECLARES
+class Sentience;
+class Container;
+class Portable;
+class GameMap;
+
 class Actor {
 	// Defines the Actor prototype, which (should not) be used on its own, but
 	// as a base class from which characters and items can be derived
@@ -40,7 +44,9 @@ class Actor {
 		// SETS
 		//setName
 		void		setAbsLocation(int newXPos, int newYPos);
+		void		setAbsLocation(cpair inputPosition);
 		void		setRelLocation(int xOffset, int yOffset);
+		void		setRelLocation(cpair inputPosition);
 		void		setLocality(GameMap *inputArea);
 		//setSigil
 		//setColor
@@ -51,7 +57,7 @@ class Actor {
 		GameMap*	locality;
 	//  PROPERTIES - Optional
 		Sentience*	intent; 	// Goal-seeking and action-taking
-		Container*	contents;	// Allows an Actor to hold objects
+		Container*	container;	// Allows an Actor to hold objects
 		Portable*	portable;	// Allows an Actor to be picked up
 		/*
 		Violence*	// Damage-causing methods

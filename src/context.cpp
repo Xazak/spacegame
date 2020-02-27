@@ -32,7 +32,7 @@ success(inputContext.success)
 //	LOGMSG("Context-input ctor");
 //	this->dump();
 }
-ActionContext::ActionContext(ActionType inputType, Actor *inputTarget, GameMap *inputArea, int inputX, int inputY, int inputZ, bool inputFlag) :
+ActionContext::ActionContext(ActionType inputType, GameMap *inputArea, Actor *inputTarget, int inputX, int inputY, int inputZ, bool inputFlag) :
 type(inputType),
 target(inputTarget),
 vicinity(inputArea),
@@ -53,6 +53,11 @@ ActionContext& ActionContext::operator= (const ActionContext& rhs) {
 	this->success = rhs.success;
 	return *this;
 }
+/*
+ActionContext& ActionContext::operator* () {
+	return this;
+}
+*/
 void ActionContext::clear() {
 	// Resets ALL components of a context obj to default values
 	this->type = ActionType::IDLE;

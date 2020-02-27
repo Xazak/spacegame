@@ -24,6 +24,9 @@ context(inputAction.context)
 //	LOGMSG("Action(Action) ctor");
 //	this->context->dump();
 }
+Action::~Action() {
+	delete context;
+}
 
 // **** IDLE Action
 void IdleAction::execute() {
@@ -31,17 +34,16 @@ void IdleAction::execute() {
 	LOGMSG("Idling.");
 }
 // **** MOVE Action
+/*
 MoveAction::MoveAction() {
 	context = new ActionContext();
 }
+*/
 MoveAction::MoveAction(const ActionContext& inputContext) {
 	context = new ActionContext(inputContext);
 }
 MoveAction::MoveAction(Actor* inputTarget, GameMap* inputArea, int targetX, int targetY) {
-	context = new ActionContext(ActionType::MOVE, inputTarget, inputArea, targetX, targetY);
-}
-MoveAction::~MoveAction() {
-	delete context;
+	context = new ActionContext(ActionType::MOVE, inputArea, inputTarget, targetX, targetY);
 }
 bool MoveAction::isPlausible() {
 	// Clamp the target position to the actor's movement speed
@@ -90,9 +92,6 @@ void MoveAction::undo() {
 	context->target->setRelLocation(context->echs, context->whye);
 }*/
 // **** GET Action
-GetAction::GetAction() {
-
-}
 GetAction::GetAction(Actor *inputTarget, GameMap *inputArea) {
 
 }
