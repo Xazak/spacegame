@@ -40,10 +40,22 @@ sigil(inputSigil),
 color(inputColor)
 {	}
 // A shorthand ctor: name, sigil, color, x = 0, y = 0
-Actor::Actor(string inputName, int inputSigil, string inputColor, int xPos, int yPos) :
-obstructs(true),
-visible(true),
+Actor::Actor(string inputName, int inputSigil, string inputColor, int xPos, int yPos, bool obstructFlag, bool visibleFlag) :
+obstructs(obstructFlag),
+visible(visibleFlag),
 location(xPos, yPos),
+locality(nullptr),
+intent(nullptr),
+container(nullptr),
+portable(nullptr),
+name(inputName),
+sigil(inputSigil),
+color(inputColor)
+{	}
+Actor::Actor(string inputName, int inputSigil, string inputColor, cpair inputLocation, bool obstructFlag, bool visibleFlag) :
+obstructs(obstructFlag),
+visible(visibleFlag),
+location(inputLocation),
 locality(nullptr),
 intent(nullptr),
 container(nullptr),

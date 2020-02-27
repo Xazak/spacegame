@@ -6,6 +6,7 @@ DESC Contains implementation of game engine
 
 #include "BearLibTerminal.h"
 #include "engine.hpp"
+#include "item.hpp"
 #include "main.hpp"
 #include <iostream>		// Provides access to stdin/stdout (cout, cerr, etc)
 #include <sstream>		// Object for conversion from std::string to input stream
@@ -73,6 +74,10 @@ void GameEngine::execGameLoop() {
 			} else if (inputValue == TK_M) { // test message log
 //				LOGMSG("Testing message log.");
 				gui.testMessageLog();
+			} else if (inputValue == TK_P) { // do some in-game testing
+				LOGMSG("Dropping a wrench...");
+				// drop a wrench for the player to pick up
+//				Wrench myWrench(7, 7);
 			} else {
 				parser.interpret(inputKey);
 			}

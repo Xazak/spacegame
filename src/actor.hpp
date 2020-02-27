@@ -31,7 +31,12 @@ class Actor {
 		// Shorthand ctors
 		// name, sigil, color, x=0, y=0
 		Actor(std::string inputName, int inputSigil, std::string inputColor,
-			int xPos = 0, int yPos = 0);
+			int xPos = 0, int yPos = 0, bool obstructFlag = false,
+			bool visibleFlag = true);
+		Actor(std::string inputName, int inputSigil, std::string inputColor,
+			cpair inputLocation, bool obstructFlag = false,
+			bool visibleFlag = true);
+		// ***
 		virtual ~Actor() {}
 		virtual void update() {}
 		// GETS
@@ -73,6 +78,7 @@ class Actor {
 		int			sigil;		// Contains Unicode codepoint of display character
 		std::string	color;		// Contains the color name of the actor sigil
 };
+
 class Player : public Actor {
 	// Defines the Player object
 	public:
