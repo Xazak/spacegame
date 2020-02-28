@@ -24,6 +24,8 @@ void GameParser::interpret(char inputKey) {
 	// Perform the lookup
 	localContext.reset();
 	localContext.type = keycodeLookup[currentKey];
+	localContext.subject = player; // The player originates all actions
+	localContext.vicinity = player->getLocality(); // Same as player usually
 	// Use the derived type to obtain any needed details and push an action
 	switch(localContext.type) {
 		case ActionType::IDLE:
@@ -36,7 +38,6 @@ void GameParser::interpret(char inputKey) {
 //			LOGMSG("Action::MOVE detected");
 //			LOGMSG("Player located at " << player->location);
 			localContext.target = player;
-			localContext.vicinity = player->getLocality();
 			if (currentKey == 'y' || currentKey == 'h' || currentKey == 'b') {
 				localContext.echs = -1;
 			}
@@ -51,16 +52,15 @@ void GameParser::interpret(char inputKey) {
 			}
 //			LOGMSG("Creating MOVE action");
 //			LOGMSG("Player moving from " << player->location << " to " << player->location.x + localContext.echs << ", " << player->location.y + localContext.whye);
-			localContext.dump();
 			input = new MoveAction(localContext);
-			player->intent->pushAction(input);
-			delete input;
 		break;
 		case ActionType::JUMP:
 			LOGMSG("Action: JUMP unimplemented");
 		break;
 		case ActionType::GET:
-			LOGMSG("Action: GET unimplemented");
+			LOGMSG("Action: GET detected");
+//			localContext.target = TILE CONTENTS;
+			input = new GetAction(localContext);
 		break;
 		case ActionType::DROP:
 			LOGMSG("Action: DROP unimplemented");
@@ -103,4 +103,6 @@ void GameParser::interpret(char inputKey) {
 		break;
 	}
 //	player->intention.doAction(context);
+	player->intent->pushAction(input);
+	delete input;
 }

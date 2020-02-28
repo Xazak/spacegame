@@ -8,7 +8,10 @@ DESC Contains the definitions and methods of the Tile class.
 #define SPACEGAME_TILE
 
 #include <string>
+#include <list>
 
+class Actor;
+class Container;
 struct Tile {
 	int			sigil;
 //	std::string	color;
@@ -18,8 +21,8 @@ struct Tile {
 	bool		explored;
 	bool		obstructs;
 	bool		opaque;
-//	Actor*		occupant;
-//	Actor*		itemList;
+	Actor*		occupant;
+	Actor*		contents; // only one item allowed per tile for now
 	Tile();
 	Tile(int inputSigil, int inputColor, int inputBKColor, std::string inputName, bool isExplored, bool blocksMovement, bool blocksVision);
 };

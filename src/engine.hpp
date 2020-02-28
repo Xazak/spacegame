@@ -1,4 +1,4 @@
-/*   engine.cpp
+/*   engine.hpp
 DATE Jan 27 2020
 AUTH xazak
 DESC Contains definitions of the GameEngine class
@@ -43,7 +43,7 @@ class GameEngine {
 		GameGUI gui;
 		GameMap meatspace;
 		Player player;
-		std::list<Actor*> actorList;
+		std::list<Actor*> sentientActors; // Actors who will be taking actions
 		// Properties
 		uint screenWidth; // Width of terminal in # of monospace chars
 		uint screenHeight; // Height of terminal in # of monospace chars

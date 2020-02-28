@@ -6,6 +6,7 @@ DESC Describes the Action class, which represents the set of possible 'verbs'
 */
 
 #include "action.hpp"
+#include "container.hpp"
 #include "actor.hpp"
 #include "map.hpp"
 #include "context.hpp"
@@ -19,10 +20,12 @@ context(nullptr)
 //	LOGMSG("Action() ctor");
 }
 Action::Action(const Action& inputAction) :
-context(inputAction.context)
-{	
-//	LOGMSG("Action(Action) ctor");
-//	this->context->dump();
+	context(inputAction.context)
+	{//	LOGMSG("Action(Action) ctor");
+//		this->context->dump();
+	}
+Action::Action(const ActionContext& inputContext) {
+	context = new ActionContext(inputContext);
 }
 Action::~Action() {
 	delete context;
@@ -34,14 +37,9 @@ void IdleAction::execute() {
 	LOGMSG("Idling.");
 }
 // **** MOVE Action
-/*
-MoveAction::MoveAction() {
-	context = new ActionContext();
-}
-*/
-MoveAction::MoveAction(const ActionContext& inputContext) {
-	context = new ActionContext(inputContext);
-}
+MoveAction::MoveAction(const ActionContext& inputContext) :
+	Action(inputContext)
+{	}
 MoveAction::MoveAction(Actor* inputTarget, GameMap* inputArea, int targetX, int targetY) {
 	context = new ActionContext(ActionType::MOVE, inputArea, inputTarget, targetX, targetY);
 }
@@ -70,7 +68,7 @@ bool MoveAction::isPlausible() {
 		targetY += -1;
 	}
 	*/
-	this->context->dump();
+//	this->context->dump();
 	cpair moveTarget(this->context->target->location);
 	moveTarget = moveTarget + moveIncrement;
 //	if (this->context->vicinity->isBlocked(moveIncrement + this->context->target->location)) {
@@ -92,12 +90,12 @@ void MoveAction::undo() {
 	context->target->setRelLocation(context->echs, context->whye);
 }*/
 // **** GET Action
-GetAction::GetAction(Actor *inputTarget, GameMap *inputArea) {
-
-}
+GetAction::GetAction(const ActionContext& inputContext) :
+	Action(inputContext)
+{	}
 bool GetAction::isPlausible() {
 	// tests against the action context
-
+	return (context->target->portable && context->subject->container->hasRoom());
 }
 void GetAction::execute() {
 

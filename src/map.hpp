@@ -9,7 +9,9 @@ DESC Contains the definitions and methods of the GameMap class.
 
 #include "tile.hpp"
 #include "main.hpp"
+#include <list>
 
+class Actor; // fwd-decl
 class GameMap {
 	public:
 		struct MapIterator {
@@ -31,7 +33,6 @@ class GameMap {
 		~GameMap();
 		void generateMap();
 		void generateMap(uint newWidth, uint newHeight);
-
 		// GETS
 		uint getWidth() { return width; }
 		uint getHeight() { return height; }
@@ -42,6 +43,14 @@ class GameMap {
 		std::string getTileName(uint xPos, uint yPos);
 		bool isBlocked(uint xPos, uint yPos);
 		bool isBlocked(cpair target);
+
+		Actor* getOccupant(uint xPos, uint yPos);
+		Actor* getOccupant(cpair inputLocation);
+		void setOccupant(Actor *occupier); // occupancy is a reflexive relation
+		void unsetOccupant(uint xPos, uint yPos);
+		void addItem(const Actor& newItem, uint xPos, uint yPos);
+
+		std::list<Actor*> allActors; // List of pointers to ALL actors in this
 
 	private:
 		Tile** mapArray;

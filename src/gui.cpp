@@ -367,7 +367,7 @@ mapSource(inputSource),
 focusPoint(mapCenterpoint),
 playerObj(playerPtr)
 {	}
-/*  void GameGUI::displayMap() {
+/*  COMMENTS: void GameGUI::displayMap() {
 	// Display the currently-explored map
 	// Get the size of the map
 	uint mapWidth = worldMap->getWidth();
@@ -435,23 +435,31 @@ void GameGUI::Viewport::display() {
 	int currentXPos = 0;
 	int currentYPos = 0;
 //	LOGMSG("cursor loc: " << cursorXPosition << ", " << cursorYPosition);
-	// Paint the background first
+	// Paint the background terrain
 	for (uint echs = 0; echs < mapWidth; echs++) {
 		for (uint whye = 0; whye < mapHeight; whye++) {
+			// Calculate the new cursor position
 			currentXPos = cursorXOrigin + echs;
 			currentYPos = cursorYOrigin + whye;
-//			FIXME: doesn't seem to work right?
+			// Paint the background
 			terminal_bkcolor(mapSource->getTileBkcolor(echs, whye));
 			terminal_layer(0);
 			terminal_put(currentXPos, currentYPos, 0x0020);
-
-			terminal_layer(2);// Move to the Terrain layer
+			// Paint the terrain layer
+			terminal_layer(2);
 			terminal_color(mapSource->getTileColor(echs, whye));
 			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));
 		}
 	}
-//	terminal_color(playerObj->getColor());
-	terminal_color("light blue");
+	// Paint the actors (including Items and sentients) onto the map
+	terminal_layer(3);
+	for (list<Actor*>::iterator actorIter = mapSource->allActors.begin(); actorIter != mapSource->allActors.end(); actorIter++) {
+//		int color = (*actorIter)->getColor();
+		if ((*actorIter) == playerObj) continue; // draw the player last
+		terminal_color((*actorIter)->getColor());
+		terminal_put(cursorXOrigin + (*actorIter)->getLocation().x, cursorYOrigin + (*actorIter)->getLocation().y, (*actorIter)->getSigil());
+	}
+	terminal_color(playerObj->getColor());
 	terminal_put(cursorXOrigin + playerObj->location.x, cursorYOrigin + playerObj->location.y, playerObj->getSigil());
 }
 // **** MESSAGE READOUT

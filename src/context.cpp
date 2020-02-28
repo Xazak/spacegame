@@ -78,7 +78,7 @@ void ActionContext::reset() {
 //	LOGMSG("Context is reset");
 }
 void ActionContext::dump() {
-//	LOGMSG("CTXT: target: " << this->target << " in map@" << this->vicinity << "\n    type - " << (uint)this->type << ", x: " << echs << " y: " << whye << " z: " << zhee << " success: " << success);
+	LOGMSG("CTXT: target: " << this->target << " in map@" << this->vicinity << "\n    type - " << (uint)this->type << ", x: " << echs << " y: " << whye << " z: " << zhee << " success: " << success);
 }
 /*
 void ActionContext::set(Actor *inputTarget, int inputX, int inputY, int inputZ, bool inputFlag) {

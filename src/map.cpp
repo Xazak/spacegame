@@ -4,6 +4,7 @@ DATE Jan 30 2020
 DESC Contains the definitions and methods of the Map and Tile classes.
 */
 
+#include "actor.hpp"
 #include "map.hpp"
 #include "main.hpp"
 
@@ -206,7 +207,21 @@ int GameMap::getTileColor(uint xPos, uint yPos) {
 int GameMap::getTileBkcolor(uint xPos, uint yPos) {
 	return this->mapArray[xPos + yPos * width]->bkcolor;
 }
-
+Actor* GameMap::getOccupant(uint xPos, uint yPos) {
+	return this->mapArray[xPos + yPos * width]->occupant;
+}
+Actor* GameMap::getOccupant(cpair inputLocation) {
+	return getOccupant(inputLocation.x, inputLocation.y);
+}
+void GameMap::setOccupant(Actor *occupier) {
+	this->mapArray[occupier->getLocation().x + occupier->getLocation().y * width]->occupant = occupier;
+}
+void GameMap::unsetOccupant(uint xPos, uint yPos) {
+	this->mapArray[xPos + yPos * width]->occupant = nullptr;
+}
+void GameMap::addItem(const Actor& newItem, uint xPos, uint yPos) {
+	this->mapArray[xPos + yPos * width]->contents = nullptr;
+}
 // *************************
 // **** MAP ITERATOR METHODS
 GameMap::MapIterator::MapIterator() :

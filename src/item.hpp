@@ -14,10 +14,10 @@ DESC Describes the GameItem class, which inherits from the Actor class to
 class Item : public Actor {
 	public:
 		Item();
-		Item(std::string inputName, int inputSigil, std::string inputColor,
+		Item(std::string inputName, int inputSigil, int inputColor,
 			int xPos, int yPos, bool obstructFlag = false,
 			bool visibleFlag = true);
-		Item(std::string inputName, int inputSigil, std::string inputColor,
+		Item(std::string inputName, int inputSigil, int inputColor,
 			cpair inputLocation, bool obstructFlag = false,
 			bool visibleFlag = true);
 //		~Item();

@@ -45,9 +45,12 @@ bool GameEngine::initialize(std::string configFile) {
 	// Perform any remaining setup and module creation
 	// parser, gui, meatspace, player objects are already created!
 	meatspace.generateMap(30, 14);
-	player.setLocality(&meatspace);
-	player.setAbsLocation(5, 5);
-//	actorList.push_front(&player);
+	// FIXME: Need to wrap some of this up in a player init method...
+	// Establish the player in meatspace
+	player.setLocality(&meatspace); // Set the player's map pointer
+	player.setAbsLocation(5, 5); // Set a valid location
+	meatspace.allActors.push_back(&player); // Add to the visibility list
+	sentientActors.push_back(&player); // Add to the sentients list
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
 	// Initialize the GUI
 	gui.initialize(screenWidth, screenHeight, &player, &meatspace);
@@ -77,7 +80,11 @@ void GameEngine::execGameLoop() {
 			} else if (inputValue == TK_P) { // do some in-game testing
 				LOGMSG("Dropping a wrench...");
 				// drop a wrench for the player to pick up
-//				Wrench myWrench(7, 7);
+				Wrench *myWrench = new Wrench(7, 7);
+				myWrench->setLocality(&meatspace);
+				meatspace.addItem(*myWrench, 7, 7);
+//				myWrench->setAbsLocation(7, 7);
+				meatspace.allActors.push_back(myWrench);
 			} else {
 				parser.interpret(inputKey);
 			}
@@ -120,7 +127,7 @@ void GameEngine::update() {
 			break;
 	}
 //	LOGMSG("Updating game state.");
-	for (auto actorIter = actorList.begin(); actorIter != actorList.end(); actorIter++) {
+	for (auto actorIter = sentientActors.begin(); actorIter != sentientActors.end(); actorIter++) {
 //		LOGMSG("Update request: " << (*actorIter)->getName());
 		if (*actorIter == &player) {
 			// do some player-specific stuff?

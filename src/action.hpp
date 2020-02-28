@@ -34,7 +34,7 @@ class GameMap; // fwd-decl
 struct ActionContext; // fwd-decl
 struct Action {
 	Action();
-//	Action(const ActionContext& inputContext, const Actor& inputSubject);
+	Action(const ActionContext& inputContext);
 	Action(const Action& inputAction);
 //	Action& operator*();
 	virtual ~Action();
@@ -62,7 +62,7 @@ struct MoveAction : public Action {
 };
 struct GetAction : public Action {
 //	GetAction();
-	GetAction(Actor *inputTarget, GameMap *inputArea); // take specific object
+	GetAction(const ActionContext& inputContext);
 //	GetAction(GameMap *inputArea, int xPos, int yPos); // take by location
 	bool isPlausible();
 	void execute();

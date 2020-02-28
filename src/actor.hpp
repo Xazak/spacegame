@@ -27,13 +27,13 @@ class Actor {
 		// Specific ctor
 		Actor(bool obstructFlag, bool visibleFlag, std::string inputName,
 			cpair inputPosition, GameMap* inputArea, int inputSigil,
-			std::string inputColor);
+			int inputColor);
 		// Shorthand ctors
 		// name, sigil, color, x=0, y=0
-		Actor(std::string inputName, int inputSigil, std::string inputColor,
+		Actor(std::string inputName, int inputSigil, int inputColor,
 			int xPos = 0, int yPos = 0, bool obstructFlag = false,
 			bool visibleFlag = true);
-		Actor(std::string inputName, int inputSigil, std::string inputColor,
+		Actor(std::string inputName, int inputSigil, int inputColor,
 			cpair inputLocation, bool obstructFlag = false,
 			bool visibleFlag = true);
 		// ***
@@ -45,7 +45,7 @@ class Actor {
 		std::string	getLocString();
 		GameMap*	getLocality() { return this->locality; }
 		int			getSigil() { return this->sigil; }
-		std::string	getColor() { return this->color; }
+		int			getColor() { return this->color; }
 		// SETS
 		//setName
 		void		setAbsLocation(int newXPos, int newYPos);
@@ -76,7 +76,7 @@ class Actor {
 	private:
 		std::string	name;		// Contains actor's (visible) name
 		int			sigil;		// Contains Unicode codepoint of display character
-		std::string	color;		// Contains the color name of the actor sigil
+		int			color;		// Contains the color name of the actor sigil
 };
 
 class Player : public Actor {
