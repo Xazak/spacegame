@@ -82,10 +82,11 @@ void GameEngine::execGameLoop() {
 				// drop a wrench for the player to pick up
 				Wrench *myWrench = new Wrench(7, 7);
 				myWrench->setLocality(&meatspace);
-				meatspace.addItem(*myWrench, 7, 7);
+				meatspace.addItem(myWrench, 7, 7);
 //				myWrench->setAbsLocation(7, 7);
 				meatspace.allActors.push_back(myWrench);
 			} else {
+				LOGMSG("@@@ Keypress: " << inputKey);
 				parser.interpret(inputKey);
 			}
 		}

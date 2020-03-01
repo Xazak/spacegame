@@ -219,8 +219,9 @@ void GameMap::setOccupant(Actor *occupier) {
 void GameMap::unsetOccupant(uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->occupant = nullptr;
 }
-void GameMap::addItem(const Actor& newItem, uint xPos, uint yPos) {
-	this->mapArray[xPos + yPos * width]->contents = nullptr;
+void GameMap::addItem(Actor* newItem, uint xPos, uint yPos) {
+	this->mapArray[xPos + yPos * width]->contents = newItem;
+	LOGMSG("Contents of " << xPos << ", " << yPos << " set to " << this->mapArray[xPos + yPos * width]->contents);
 }
 // *************************
 // **** MAP ITERATOR METHODS

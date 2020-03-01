@@ -30,12 +30,13 @@ Action::Action(const ActionContext& inputContext) {
 Action::~Action() {
 	delete context;
 }
-
+// ****************
 // **** IDLE Action
 void IdleAction::execute() {
 	// Do nothing
 	LOGMSG("Idling.");
 }
+// ****************
 // **** MOVE Action
 MoveAction::MoveAction(const ActionContext& inputContext) :
 	Action(inputContext)
@@ -89,7 +90,8 @@ void MoveAction::undo() {
 	context->whye *= -1;
 	context->target->setRelLocation(context->echs, context->whye);
 }*/
-// **** GET Action
+// ****************
+// ****  GET Action
 GetAction::GetAction(const ActionContext& inputContext) :
 	Action(inputContext)
 {	}

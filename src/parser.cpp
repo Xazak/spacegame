@@ -29,7 +29,7 @@ void GameParser::interpret(char inputKey) {
 	// Use the derived type to obtain any needed details and push an action
 	switch(localContext.type) {
 		case ActionType::IDLE:
-			ERRMSG("Action: IDLE was passed to the parser!");
+			ERRMSG("Action: IDLE was passed to the parser! keycode: " << currentKey);
 		break;
 		case ActionType::WAIT:
 			LOGMSG("Action: WAIT unimplemented");
@@ -103,6 +103,6 @@ void GameParser::interpret(char inputKey) {
 		break;
 	}
 //	player->intention.doAction(context);
-	player->intent->pushAction(input);
+	if (input->context->type != ActionType::IDLE) player->intent->pushAction(input);
 	delete input;
 }

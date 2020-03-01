@@ -38,12 +38,13 @@ void PlayerSentience::pushAction(Action* inputAction) {
 //	inputAction->context->dump();
 	if (inputAction->isPlausible()) {
 		// Should probably throw some kind of warning message if NOT plausible
-//		LOGMSG("Action is valid");
+		LOGMSG("Action #" << (uint)inputAction->context->type << " is valid");
 		inputAction->execute();
 	} else {
-//		LOGMSG("Action is INVALID");
+		LOGMSG("Action #" << (uint)inputAction->context->type << " is INVALID");
+		inputAction->context->dump();
 		// FIXME: Throw an error message describing the implausibility
-		msgOutput->add("An object blocks your path.");
+//		msgOutput->add("An object blocks your path.");
 	}
 }
 void PlayerSentience::doNextAction() {
