@@ -62,7 +62,7 @@ class Actor {
 		GameMap*	locality;
 	//  PROPERTIES - Optional
 		Sentience*	intent; 	// Goal-seeking and action-taking
-		Container*	container;	// Allows an Actor to hold objects
+		Container*	contents;	// Allows an Actor to hold objects
 		Portable*	portable;	// Allows an Actor to be picked up
 		/*
 		Violence*	// Damage-causing methods

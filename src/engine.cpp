@@ -81,12 +81,12 @@ void GameEngine::execGameLoop() {
 				LOGMSG("Dropping a wrench...");
 				// drop a wrench for the player to pick up
 				Wrench *myWrench = new Wrench(7, 7);
-				myWrench->setLocality(&meatspace);
+//				myWrench->setLocality(&meatspace);
 				meatspace.addItem(myWrench, 7, 7);
 //				myWrench->setAbsLocation(7, 7);
-				meatspace.allActors.push_back(myWrench);
+//				meatspace.allActors.push_back(myWrench);
 			} else {
-				LOGMSG("@@@ Keypress: " << inputKey);
+//				LOGMSG("@@@ Keypress: " << inputKey);
 				parser.interpret(inputKey);
 			}
 		}

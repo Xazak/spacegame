@@ -11,6 +11,8 @@ DESC Defines the GameParser class, which collects and interprets player input
 #include "parser.hpp"
 #include "action.hpp"
 #include "sentience.hpp"
+#include "container.hpp"
+#include "map.hpp"
 
 using namespace std;
 
@@ -35,6 +37,7 @@ void GameParser::interpret(char inputKey) {
 			LOGMSG("Action: WAIT unimplemented");
 		break;
 		case ActionType::MOVE:
+			// REQ: x, y coords of destination Tile
 //			LOGMSG("Action::MOVE detected");
 //			LOGMSG("Player located at " << player->location);
 			localContext.target = player;
@@ -59,11 +62,14 @@ void GameParser::interpret(char inputKey) {
 		break;
 		case ActionType::GET:
 			LOGMSG("Action: GET detected");
-//			localContext.target = TILE CONTENTS;
+			localContext.target = localContext.vicinity->getContents(player->location);
+//			localContext.dump();
 			input = new GetAction(localContext);
 		break;
 		case ActionType::DROP:
-			LOGMSG("Action: DROP unimplemented");
+			LOGMSG("Action: DROP detected");
+			localContext.target = localContext.subject->contents->itemList.front();
+			input = new DropAction(localContext);
 		break;
 		case ActionType::CONSUME:
 			LOGMSG("Action: CONSUME unimplemented");
@@ -104,5 +110,5 @@ void GameParser::interpret(char inputKey) {
 	}
 //	player->intention.doAction(context);
 	if (input->context->type != ActionType::IDLE) player->intent->pushAction(input);
-	delete input;
+	if (input) delete input;
 }

@@ -213,6 +213,12 @@ Actor* GameMap::getOccupant(uint xPos, uint yPos) {
 Actor* GameMap::getOccupant(cpair inputLocation) {
 	return getOccupant(inputLocation.x, inputLocation.y);
 }
+Actor* GameMap::getContents(uint xPos, uint yPos) {
+	return this->mapArray[xPos + yPos * width]->contents;
+}
+Actor* GameMap::getContents(cpair inputLocation) {
+	return getContents(inputLocation.x, inputLocation.y);
+}
 void GameMap::setOccupant(Actor *occupier) {
 	this->mapArray[occupier->getLocation().x + occupier->getLocation().y * width]->occupant = occupier;
 }
@@ -221,7 +227,18 @@ void GameMap::unsetOccupant(uint xPos, uint yPos) {
 }
 void GameMap::addItem(Actor* newItem, uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->contents = newItem;
+	newItem->setLocality(this);
+	newItem->setAbsLocation(xPos, yPos);
+	this->allActors.push_back(newItem);
 	LOGMSG("Contents of " << xPos << ", " << yPos << " set to " << this->mapArray[xPos + yPos * width]->contents);
+}
+void GameMap::addItem(Actor* newItem, cpair inputLocation) {
+	this->addItem(newItem, inputLocation.x, inputLocation.y);
+}
+void GameMap::removeItem(Actor *target) {
+	mapArray[target->location.x + target->location.y * width]->contents = nullptr;
+	target->setLocality(nullptr);
+	allActors.remove(target);
 }
 // *************************
 // **** MAP ITERATOR METHODS

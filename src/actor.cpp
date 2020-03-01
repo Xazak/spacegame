@@ -21,7 +21,7 @@ visible(true),
 location(0, 0),
 locality(nullptr),
 intent(nullptr),
-container(nullptr),
+contents(nullptr),
 portable(nullptr),
 name("n0b0dY"),
 sigil(0x2112),
@@ -34,7 +34,7 @@ visible(visibleFlag),
 location(inputPosition),
 locality(inputArea),
 intent(nullptr),
-container(nullptr),
+contents(nullptr),
 portable(nullptr),
 name(inputName),
 sigil(inputSigil),
@@ -47,7 +47,7 @@ visible(visibleFlag),
 location(xPos, yPos),
 locality(nullptr),
 intent(nullptr),
-container(nullptr),
+contents(nullptr),
 portable(nullptr),
 name(inputName),
 sigil(inputSigil),
@@ -59,7 +59,7 @@ visible(visibleFlag),
 location(inputLocation),
 locality(nullptr),
 intent(nullptr),
-container(nullptr),
+contents(nullptr),
 portable(nullptr),
 name(inputName),
 sigil(inputSigil),
@@ -94,14 +94,14 @@ void Actor::setRelLocation(cpair inputPosition) {
 void Actor::setLocality(GameMap *inputArea) {
 	// FIXME: does NOT remove actors from localities!
 	this->locality = inputArea;
-	LOGMSG(this->getName() <<" locality set to " << locality);
+	LOGMSG(this->getName() << "(" << this << ") locality set to " << locality);
 }
 
 // *** PLAYER METHODS
 Player::Player() :
 Actor("Jenaryk", 0x2135, 0xFF996600) {
 	intent = new PlayerSentience();
-	container = new Container(2);
+	contents = new Container(2);
 //	LOGMSG("Player object initialized.");
 }
 void Player::update() {

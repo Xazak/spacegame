@@ -6,6 +6,8 @@ DESC Describes the GameItem class, which inherits from the Actor class to
 */
 
 #include "item.hpp"
+#include "portable.hpp"
+#include "container.hpp"
 #include <string>
 
 using namespace std;
@@ -20,6 +22,6 @@ Actor(inputName, inputSigil, inputColor, inputLocation, obstructFlag, visibleFla
 // **** SPECIFIC ITEMS
 Wrench::Wrench(int xPos, int yPos) :
 Item("wrench", 0x00A5, 0xFF666699, xPos, yPos, false, true)
-{	//this->portable = new Portable();
+{	this->portable = new Portable();
 
 }

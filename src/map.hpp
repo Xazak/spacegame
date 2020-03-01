@@ -46,9 +46,13 @@ class GameMap {
 
 		Actor* getOccupant(uint xPos, uint yPos);
 		Actor* getOccupant(cpair inputLocation);
+		Actor* getContents(uint xPos, uint yPos);
+		Actor* getContents(cpair inputLocation);
 		void setOccupant(Actor *occupier); // occupancy is a reflexive relation
 		void unsetOccupant(uint xPos, uint yPos);
 		void addItem(Actor* newItem, uint xPos, uint yPos);
+		void addItem(Actor* newItem, cpair inputLocation);
+		void removeItem(Actor *target);
 
 		std::list<Actor*> allActors; // List of pointers to ALL actors in this
 

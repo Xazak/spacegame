@@ -18,7 +18,7 @@ struct ActionContext {
 	// CONTROLS
 	ActionContext(); // gotta leave this in until a ctor chain is worked out
 	ActionContext(const ActionContext& inputContext);
-	ActionContext(ActionType inputType, GameMap *inputArea, Actor *inputTarget, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
+	ActionContext(ActionType inputType, GameMap *inputArea, Actor *inputTarget, Actor *inputSubject, int inputX = 0, int inputY = 0, int inputZ = 0, bool inputFlag = true);
 	ActionContext& operator=(const ActionContext& rhs);
 	ActionContext& operator*();
 	friend void swap(ActionContext& lhs, ActionContext& rhs);

@@ -6,6 +6,7 @@ DESC Describes the Action class, which represents the set of possible 'verbs'
 */
 
 #include "action.hpp"
+#include "portable.hpp"
 #include "container.hpp"
 #include "actor.hpp"
 #include "map.hpp"
@@ -42,7 +43,7 @@ MoveAction::MoveAction(const ActionContext& inputContext) :
 	Action(inputContext)
 {	}
 MoveAction::MoveAction(Actor* inputTarget, GameMap* inputArea, int targetX, int targetY) {
-	context = new ActionContext(ActionType::MOVE, inputArea, inputTarget, targetX, targetY);
+	context = new ActionContext(ActionType::MOVE, inputArea, inputTarget, inputTarget, targetX, targetY);
 }
 bool MoveAction::isPlausible() {
 	// Clamp the target position to the actor's movement speed
@@ -97,8 +98,20 @@ GetAction::GetAction(const ActionContext& inputContext) :
 {	}
 bool GetAction::isPlausible() {
 	// tests against the action context
-	return (context->target->portable && context->subject->container->hasRoom());
+	return (context->target && context->target->portable && context->subject->contents && context->subject->contents->hasRoom());
 }
 void GetAction::execute() {
-
+	context->target->portable->take(context->subject, context->target);
+	context->subject->contents->dump();
+}
+// ****************
+// **** DROP Action
+DropAction::DropAction(const ActionContext& inputContext) :
+	Action(inputContext)
+{	}
+bool DropAction::isPlausible() {
+	return (context->subject->contents->getSize());
+}
+void DropAction::execute() {
+	context->target->portable->drop(context->subject, context->target);
 }

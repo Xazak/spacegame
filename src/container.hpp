@@ -21,11 +21,13 @@ class Container {
 		void remove(Actor *object);
 		void setCapacity(uint inputSize);
 		uint getCapacity() { return capacity; }
-		uint getSize() { return contents.size(); }
+		uint getSize() { return itemList.size(); }
 		bool hasRoom();
+		bool isEmpty();
 		bool isFull();
+		void dump();
 		uint capacity;
-		std::list<Actor*> contents;
+		std::list<Actor*> itemList;
 };
 
 #endif // SPACEGAME_ACTOR_CONTAINER

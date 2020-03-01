@@ -69,8 +69,9 @@ struct GetAction : public Action {
 	GetAction* clone() const { return new GetAction(*this); }
 };
 struct DropAction : public Action {
-	DropAction();
-	DropAction(Actor *dropTarget); // drop an object from carried inventory
+//	DropAction();
+//	DropAction(Actor *dropTarget); // drop an object from carried inventory
+	DropAction(const ActionContext& inputContext);
 	bool isPlausible();
 	void execute();
 	DropAction* clone() const { return new DropAction(*this); }

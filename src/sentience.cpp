@@ -21,7 +21,8 @@ PlayerSentience::PlayerSentience() {
 }
 void PlayerSentience::pushAction(Action* inputAction) {
 	if (this->msgOutput == nullptr) this->msgOutput = ServiceLocator::getMsgLog();
-/*	LOGMSG("Pushing action #" << (uint)inputAction->context->type);
+/*	xxx DISABLED
+	LOGMSG("Pushing action #" << (uint)inputAction->context->type);
 	delete prevAction;
 	if (nextAction == nullptr) {
 		prevAction = nullptr;
@@ -33,17 +34,20 @@ void PlayerSentience::pushAction(Action* inputAction) {
 	} else {
 		nextAction = inputAction->clone();
 	}
-	actionReady = true;*/
-//	LOGMSG("Testing action...");
+	actionReady = true;
+	xxx */
+	LOGMSG("Testing action of type #" << (uint)inputAction->context->type);
 //	inputAction->context->dump();
 	if (inputAction->isPlausible()) {
 		// Should probably throw some kind of warning message if NOT plausible
 		LOGMSG("Action #" << (uint)inputAction->context->type << " is valid");
 		inputAction->execute();
+		//reportSuccess(inputAction);
 	} else {
 		LOGMSG("Action #" << (uint)inputAction->context->type << " is INVALID");
 		inputAction->context->dump();
 		// FIXME: Throw an error message describing the implausibility
+		//reportFailure(inputAction);
 //		msgOutput->add("An object blocks your path.");
 	}
 }
