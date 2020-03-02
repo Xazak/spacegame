@@ -102,7 +102,7 @@ bool GetAction::isPlausible() {
 }
 void GetAction::execute() {
 	context->target->portable->take(context->subject, context->target);
-	context->subject->contents->dump();
+//	context->subject->contents->dump();
 }
 // ****************
 // **** DROP Action

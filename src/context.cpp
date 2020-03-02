@@ -75,7 +75,10 @@ void ActionContext::clear() {
 //	LOGMSG("Context is CLEARED");
 }
 void ActionContext::reset() {
-	// Resets the details of the context obj but not its type, target, subject, or place
+	// Resets the details of the context obj but not its type, subject, or place
+	// This allows objects to keep a context obj as a private member without
+	// losing the contextual bits that refer to the context's owner
+	this->target = nullptr;
 	this->echs = 0;
 	this->whye = 0;
 	this->zhee = 0;

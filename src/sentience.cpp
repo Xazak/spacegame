@@ -36,7 +36,7 @@ void PlayerSentience::pushAction(Action* inputAction) {
 	}
 	actionReady = true;
 	xxx */
-	LOGMSG("Testing action of type #" << (uint)inputAction->context->type);
+//	LOGMSG("Testing action of type #" << (uint)inputAction->context->type);
 //	inputAction->context->dump();
 	if (inputAction->isPlausible()) {
 		// Should probably throw some kind of warning message if NOT plausible

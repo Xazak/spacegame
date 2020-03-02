@@ -94,7 +94,7 @@ void Actor::setRelLocation(cpair inputPosition) {
 void Actor::setLocality(GameMap *inputArea) {
 	// FIXME: does NOT remove actors from localities!
 	this->locality = inputArea;
-	LOGMSG(this->getName() << "(" << this << ") locality set to " << locality);
+//	LOGMSG(this->getName() << "(" << this << ") locality set to " << locality);
 }
 
 // *** PLAYER METHODS

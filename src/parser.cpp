@@ -29,6 +29,7 @@ void GameParser::interpret(char inputKey) {
 	localContext.subject = player; // The player originates all actions
 	localContext.vicinity = player->getLocality(); // Same as player usually
 	// Use the derived type to obtain any needed details and push an action
+	bool validInput = false; // Help prevent crashes w/ unimplemented actions
 	switch(localContext.type) {
 		case ActionType::IDLE:
 			ERRMSG("Action: IDLE was passed to the parser! keycode: " << currentKey);
@@ -56,20 +57,23 @@ void GameParser::interpret(char inputKey) {
 //			LOGMSG("Creating MOVE action");
 //			LOGMSG("Player moving from " << player->location << " to " << player->location.x + localContext.echs << ", " << player->location.y + localContext.whye);
 			input = new MoveAction(localContext);
+			validInput = true;
 		break;
 		case ActionType::JUMP:
 			LOGMSG("Action: JUMP unimplemented");
 		break;
 		case ActionType::GET:
-			LOGMSG("Action: GET detected");
-			localContext.target = localContext.vicinity->getContents(player->location);
+//			LOGMSG("Action: GET detected");
+			localContext.target = localContext.vicinity->getContents(localContext.subject->location);
 //			localContext.dump();
 			input = new GetAction(localContext);
+			validInput = true;
 		break;
 		case ActionType::DROP:
-			LOGMSG("Action: DROP detected");
+//			LOGMSG("Action: DROP detected");
 			localContext.target = localContext.subject->contents->itemList.front();
 			input = new DropAction(localContext);
+			validInput = true;
 		break;
 		case ActionType::CONSUME:
 			LOGMSG("Action: CONSUME unimplemented");
@@ -109,6 +113,13 @@ void GameParser::interpret(char inputKey) {
 		break;
 	}
 //	player->intention.doAction(context);
-	if (input->context->type != ActionType::IDLE) player->intent->pushAction(input);
-	if (input) delete input;
+	// ALL actions should have a target set; if not, DO NOT attempt the action
+	if (validInput) {
+		if (input->context->target == nullptr) {
+			ERRMSG("Action type #" << (uint)input->context->type << " attempted with NO TARGET");
+		} else {
+			player->intent->pushAction(input);
+			delete input;
+		}
+	}
 }

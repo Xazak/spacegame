@@ -17,7 +17,9 @@ bkcolor(0x99FF00FF),
 name("TILE_PROTOTYPE"),
 explored(true),
 obstructs(false),
-opaque(false)
+opaque(false),
+occupant(nullptr),
+contents(nullptr)
 {	}
 // CTOR SPECIFIC
 //Tile::Tile(int inputSigil, string inputColor, bool isExplored, bool blocksMovement) :
@@ -28,13 +30,14 @@ bkcolor(inputBKColor),
 name(inputName),
 explored(isExplored),
 obstructs(blocksMovement),
-opaque(blocksVision)
+opaque(blocksVision),
+occupant(nullptr),
+contents(nullptr)
 {	}
 
 // **** SPECIFIC TILE TYPES
 // Five basic types, ranging in mass:
-
-//   sigil,    fg color,   bg color,   name,   expl. obst.
+//   sigil,  fg color,   bg color,   name,     seen? block? transp?
 Vacuum::Vacuum() : // Empty vacuum
 Tile(0x2022, 0x22FFFFFF, 0xFF000000, "vacuum", true, false, false)
 {	}
