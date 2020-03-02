@@ -30,6 +30,13 @@ class Item : public Actor {
 };
 
 // **** SPECIFIC ITEMS AND TYPES
+// **** Large Items (NEVER portable, USUALLY obstructs)
+struct Door : public Item {
+	Door(int xPos, int yPos);
+	bool isOpen;
+};
+
+// **** Small Items (ALWAYS portable, NEVER obstructs)
 struct Wrench : public Item {
 	Wrench(int xPos, int yPos);
 };

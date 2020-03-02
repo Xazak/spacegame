@@ -15,6 +15,7 @@ DESC Contains the definitions of the Actor class, which handles the player
 class Sentience;
 class Container;
 class Portable;
+class Openable;
 class GameMap;
 
 class Actor {
@@ -64,6 +65,7 @@ class Actor {
 		Sentience*	intent; 	// Goal-seeking and action-taking
 		Container*	contents;	// Allows an Actor to hold objects
 		Portable*	portable;	// Allows an Actor to be picked up
+		Openable*	aperture;	// Allows an Actor to be opened/closed
 		/*
 		Violence*	// Damage-causing methods
 		Consumable* // Allows an actor to be consumed by another

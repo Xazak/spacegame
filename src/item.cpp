@@ -20,6 +20,9 @@ Actor(inputName, inputSigil, inputColor, inputLocation, obstructFlag, visibleFla
 {	}
 
 // **** SPECIFIC ITEMS
+// **** Large Items
+
+// **** Small Items
 Wrench::Wrench(int xPos, int yPos) :
 Item("wrench", 0x00A5, 0xFF666699, xPos, yPos, false, true)
 {	this->portable = new Portable();

@@ -8,7 +8,7 @@ DESC Describes the Portable class property: when attached to an Actor, allows
 #ifndef SPACEGAME_ACTOR_PORTABLE
 #define SPACEGAME_ACTOR_PORTABLE
 
-#include "actor.hpp"
+class Actor; //fwd-decl
 
 class Portable {
 	public:
