@@ -17,7 +17,7 @@ using namespace std;
 // The default ctor
 Actor::Actor() :
 obstructs(true),
-visible(true),
+occludes(true),
 location(0, 0),
 locality(nullptr),
 intent(nullptr),
@@ -28,9 +28,9 @@ sigil(0x2112),
 color(0xFF345678)
 {	}
 // The specific ctor
-Actor::Actor(bool obstructFlag, bool visibleFlag, string inputName, cpair inputPosition, GameMap* inputArea, int inputSigil, int inputColor) :
+Actor::Actor(bool obstructFlag, bool occludesFlag, string inputName, cpair inputPosition, GameMap* inputArea, int inputSigil, int inputColor) :
 obstructs(obstructFlag),
-visible(visibleFlag),
+occludes(occludesFlag),
 location(inputPosition),
 locality(inputArea),
 intent(nullptr),
@@ -41,9 +41,9 @@ sigil(inputSigil),
 color(inputColor)
 {	}
 // A shorthand ctor: name, sigil, color, x = 0, y = 0
-Actor::Actor(string inputName, int inputSigil, int inputColor, int xPos, int yPos, bool obstructFlag, bool visibleFlag) :
+Actor::Actor(string inputName, int inputSigil, int inputColor, int xPos, int yPos, bool obstructFlag, bool occludesFlag) :
 obstructs(obstructFlag),
-visible(visibleFlag),
+occludes(occludesFlag),
 location(xPos, yPos),
 locality(nullptr),
 intent(nullptr),
@@ -53,9 +53,9 @@ name(inputName),
 sigil(inputSigil),
 color(inputColor)
 {	}
-Actor::Actor(string inputName, int inputSigil, int inputColor, cpair inputLocation, bool obstructFlag, bool visibleFlag) :
+Actor::Actor(string inputName, int inputSigil, int inputColor, cpair inputLocation, bool obstructFlag, bool occludesFlag) :
 obstructs(obstructFlag),
-visible(visibleFlag),
+occludes(occludesFlag),
 location(inputLocation),
 locality(nullptr),
 intent(nullptr),

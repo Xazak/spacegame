@@ -12,17 +12,26 @@ DESC Describes the GameItem class, which inherits from the Actor class to
 #include "main.hpp"
 
 class Item : public Actor {
+	// As inheritors of Actor, all Items may implement:
+	//	virtual ~Actor() {}
+	//	virtual void update() {}
+	//	virtual int getSigil() { return this->sigil; }
+	// Available modules:
+	//	Sentience*	intent; 	// Goal-seeking and action-taking
+	//	Container*	contents;	// Allows an Actor to contain objects
+	//	Portable*	portable;	// Allows an Actor to be picked up
+	//	Openable*	aperture;	// Allows an Actor to be opened/closed
 	public:
 		Item();
 		Item(std::string inputName, int inputSigil, int inputColor,
 			int xPos, int yPos, bool obstructFlag = false,
-			bool visibleFlag = true);
+			bool occludesFlag = true);
 		Item(std::string inputName, int inputSigil, int inputColor,
 			cpair inputLocation, bool obstructFlag = false,
-			bool visibleFlag = true);
+			bool occludesFlag = true);
 //		~Item();
-		// needs a name, sigil, color, position, [obstructs], [visible]
-		// ASSUME visible (invisible objects are probably very special)
+		// needs a name, sigil, color, position, [obstructs], [occludes]
+		// ASSUME occludes (inoccludes objects are probably very special)
 		// Will need to set up the Container, Portable, etc modules according
 		// to its particular setup
 	private:
@@ -33,7 +42,11 @@ class Item : public Actor {
 // **** Large Items (NEVER portable, USUALLY obstructs)
 struct Door : public Item {
 	Door(int xPos, int yPos);
+	int getSigil();
+//	void update();
 	bool isOpen;
+	int closedSigil;
+	int openSigil;
 };
 
 // **** Small Items (ALWAYS portable, NEVER obstructs)

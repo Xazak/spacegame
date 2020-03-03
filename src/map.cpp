@@ -7,6 +7,7 @@ DESC Contains the definitions and methods of the Map and Tile classes.
 #include "actor.hpp"
 #include "map.hpp"
 #include "main.hpp"
+#include "item.hpp"
 
 using namespace std;
 
@@ -75,7 +76,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		}
 	}
 	*/
-	/* RAINCOMPLEX BOXDRAW METHOD
+	/* note: RAINCOMPLEX BOXDRAW METHOD
 	void add(int x, int y, int w, int h) {
 			for (int i = x; i < x + w; i++) {
 				set(i, y, 1);
@@ -87,7 +88,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 			}
 		}*/
 
-	// Build a test structure
+	// *** TEST STRUCTURE
 	// Start by generating a template
 	uint arrWidth = 28;
 	uint tempWidth = arrWidth;
@@ -185,6 +186,10 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 			}
 		}
 	}
+	// Add some furniture
+	Door *localDoor = new Door(12, 9);
+	addItem(localDoor, 12, 9);
+	// *** END TEST STRUCTURE
 //	LOGMSG("Tilemap created: " << width << "x" << height);
 	/*
 	clog << "TEMPLATE DUMP:" << endl;
