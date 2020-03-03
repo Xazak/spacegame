@@ -25,9 +25,9 @@ Actor(inputName, inputSigil, inputColor, inputLocation, obstructFlag, occludesFl
 Door::Door(int xPos, int yPos) :
 	Item("door", 0x03A6, 0xFF666699, xPos, yPos, true, true),
 	isOpen(false),
-	closedSigil(0x03AD),
+	closedSigil(0x03A6),
 	openSigil(0x00D4)
-{	this->aperture = new Openable();
+{	this->aperture = new Openable(openSigil, closedSigil);
 
 }
 /*
@@ -40,5 +40,6 @@ int Door::getSigil() {
 Wrench::Wrench(int xPos, int yPos) :
 Item("wrench", 0x00A5, 0xFF666699, xPos, yPos, false, true)
 {	this->portable = new Portable();
+	this->aperture = new Openable();
 
 }

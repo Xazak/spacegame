@@ -77,15 +77,17 @@ struct DropAction : public Action {
 	DropAction* clone() const { return new DropAction(*this); }
 };
 struct OpenAction : public Action {
-	OpenAction();
-	OpenAction(Actor *openTarget, GameMap *inputArea); // open target
+//	OpenAction();
+	OpenAction(const ActionContext& inputContext);
+//	OpenAction(Actor *openTarget, GameMap *inputArea); // open target
 	bool isPlausible();
 	void execute();
 	OpenAction* clone() const { return new OpenAction(*this); }
 };
 struct CloseAction : public Action {
-	CloseAction();
-	CloseAction(Actor *closeTarget, GameMap *inputArea); // open target
+//	CloseAction();
+	CloseAction(const ActionContext& inputContext);
+//	CloseAction(Actor *closeTarget, GameMap *inputArea); // open target
 	bool isPlausible();
 	void execute();
 	CloseAction* clone() const { return new CloseAction(*this); }

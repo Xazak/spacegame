@@ -30,6 +30,9 @@ void GameParser::interpret(char inputKey) {
 	localContext.vicinity = player->getLocality(); // Same as player usually
 	// Use the derived type to obtain any needed details and push an action
 	bool validInput = false; // Help prevent crashes w/ unimplemented actions
+	// ALL HANDLERS must set the localContext.target if nothing else!
+	// Even a reflexive command takes the player as the context target
+	Actor* tileContents = nullptr;
 	switch(localContext.type) {
 		case ActionType::IDLE:
 			ERRMSG("Action: IDLE was passed to the parser! keycode: " << currentKey);
@@ -79,10 +82,53 @@ void GameParser::interpret(char inputKey) {
 			LOGMSG("Action: CONSUME unimplemented");
 		break;
 		case ActionType::OPEN:
-			LOGMSG("Action: OPEN unimplemented");
+			LOGMSG("Action: OPEN detected");
+			// Scan the neighborhood for any external openable objects
+			// FIXME: Does not handle multiple Openable objects
+			// FIXME: Should not have to duplicate this code for CLOSE...
+			tileContents = nullptr;
+			for (int xIndex = -1; xIndex <= 1; xIndex++) {
+				for (int yIndex = -1; yIndex <= 1; yIndex++) {
+					// Obtain access to the contents of the nearby tile
+					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					// Check all items in tile contents for Openability
+					// If the target can't be opened, don't use it as a target
+					LOGMSG("Checking " << tileContents);
+					if (tileContents != nullptr) {
+						if (tileContents->aperture) {
+							localContext.target = tileContents;
+						}
+					}
+				}
+			}
+			if (localContext.target != nullptr) {
+				input = new OpenAction(localContext);
+				validInput = true;
+				localContext.dump();
+			}
 		break;
 		case ActionType::CLOSE:
-			LOGMSG("Action: CLOSE unimplemented");
+			LOGMSG("Action: CLOSE detected");
+			tileContents = nullptr;
+			for (int xIndex = -1; xIndex <= 1; xIndex++) {
+				for (int yIndex = -1; yIndex <= 1; yIndex++) {
+					// Obtain access to the contents of the nearby tile
+					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					// Check all items in tile contents for Openability
+					// If the target can't be opened, don't use it as a target
+					LOGMSG("Checking " << tileContents);
+					if (tileContents != nullptr) {
+						if (tileContents->aperture) {
+							localContext.target = tileContents;
+						}
+					}
+				}
+			}
+			if (localContext.target != nullptr) {
+				input = new CloseAction(localContext);
+				validInput = true;
+				localContext.dump();
+			}
 		break;
 		case ActionType::TOGGLE:
 			LOGMSG("Action: TOGGLE unimplemented");

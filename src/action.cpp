@@ -8,6 +8,7 @@ DESC Describes the Action class, which represents the set of possible 'verbs'
 #include "action.hpp"
 #include "portable.hpp"
 #include "container.hpp"
+#include "openable.hpp"
 #include "actor.hpp"
 #include "map.hpp"
 #include "context.hpp"
@@ -98,6 +99,10 @@ GetAction::GetAction(const ActionContext& inputContext) :
 {	}
 bool GetAction::isPlausible() {
 	// tests against the action context
+	// Does the target exist...?
+	//  AND is the target portable...?
+	//  AND does the subject have pockets...?
+	//  AND does the subject have room in his pockets?
 	return (context->target && context->target->portable && context->subject->contents && context->subject->contents->hasRoom());
 }
 void GetAction::execute() {
@@ -115,3 +120,31 @@ bool DropAction::isPlausible() {
 void DropAction::execute() {
 	context->target->portable->drop(context->subject, context->target);
 }
+// ****************
+// **** OPEN Action
+OpenAction::OpenAction(const ActionContext& inputContext) :
+	Action(inputContext)
+{	}
+bool OpenAction::isPlausible() {
+	// Does the target exist...?
+	//  AND does the target have an aperture to be opened?
+	//  AND is that aperture currently closed?
+	return (context->target && context->target->aperture && !context->target->aperture->isOpen());
+}
+void OpenAction::execute() {
+	context->target->aperture->open(*context->target);
+}
+// *****************
+// **** CLOSE Action
+CloseAction::CloseAction(const ActionContext& inputContext) :
+	Action(inputContext)
+{	}
+bool CloseAction::isPlausible() {
+	// Does the target exist...?
+	//  AND does the target have an aperture to be closed?
+	return (context->target && context->target->aperture && context->target->aperture->isOpen());
+}
+void CloseAction::execute() {
+	context->target->aperture->close(*context->target);
+}
+

@@ -12,10 +12,14 @@ class Actor; //fwd-decl
 
 class Openable {
 	public:
-		bool open();
-		bool close();
-		void toggle();
+		Openable();
+		Openable(int sigilOne, int sigilTwo);
+		bool open(Actor &parent);
+		bool close(Actor &parent);
+		void toggle(Actor &parent);
 		bool isOpen() { return this->apertureState; }
+		int openSigil;
+		int shutSigil;
 	
 	private:
 		bool apertureState; // TRUE if open, FALSE if closed
