@@ -41,11 +41,11 @@ sigil(inputSigil),
 color(inputColor)
 {	}
 // A shorthand ctor: name, sigil, color, x = 0, y = 0
-Actor::Actor(string inputName, int inputSigil, int inputColor, int xPos, int yPos, bool obstructFlag, bool occludesFlag) :
+Actor::Actor(string inputName, int inputSigil, int inputColor, int xPos, int yPos, GameMap* inputArea, bool obstructFlag, bool occludesFlag) :
 obstructs(obstructFlag),
 occludes(occludesFlag),
 location(xPos, yPos),
-locality(nullptr),
+locality(inputArea),
 intent(nullptr),
 contents(nullptr),
 portable(nullptr),
@@ -53,11 +53,11 @@ name(inputName),
 sigil(inputSigil),
 color(inputColor)
 {	}
-Actor::Actor(string inputName, int inputSigil, int inputColor, cpair inputLocation, bool obstructFlag, bool occludesFlag) :
+Actor::Actor(string inputName, int inputSigil, int inputColor, cpair inputLocation, GameMap* inputArea, bool obstructFlag, bool occludesFlag) :
 obstructs(obstructFlag),
 occludes(occludesFlag),
 location(inputLocation),
-locality(nullptr),
+locality(inputArea),
 intent(nullptr),
 contents(nullptr),
 portable(nullptr),

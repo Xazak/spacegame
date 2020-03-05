@@ -10,6 +10,7 @@ DESC Describes the GameItem class, which inherits from the Actor class to
 
 #include "actor.hpp"
 #include "main.hpp"
+class GameMap;
 
 class Item : public Actor {
 	// As inheritors of Actor, all Items may implement:
@@ -24,10 +25,12 @@ class Item : public Actor {
 	public:
 		Item();
 		Item(std::string inputName, int inputSigil, int inputColor,
-			int xPos, int yPos, bool obstructFlag = false,
+			int xPos, int yPos, GameMap* inputMap,
+			bool obstructFlag = false,
 			bool occludesFlag = true);
 		Item(std::string inputName, int inputSigil, int inputColor,
-			cpair inputLocation, bool obstructFlag = false,
+			cpair inputLocation, GameMap* inputMap,
+			bool obstructFlag = false,
 			bool occludesFlag = true);
 //		~Item();
 		// needs a name, sigil, color, position, [obstructs], [occludes]
@@ -41,7 +44,7 @@ class Item : public Actor {
 // **** SPECIFIC ITEMS AND TYPES
 // **** Large Items (NEVER portable, USUALLY obstructs)
 struct Door : public Item {
-	Door(int xPos, int yPos);
+	Door(int xPos, int yPos, GameMap* inputMap);
 	int getSigil();
 //	void update();
 	bool isOpen;
@@ -51,7 +54,7 @@ struct Door : public Item {
 
 // **** Small Items (ALWAYS portable, NEVER obstructs)
 struct Wrench : public Item {
-	Wrench(int xPos, int yPos);
+	Wrench(int xPos, int yPos, GameMap* inputMap);
 };
 
 #endif // SPACEGAME_ITEM

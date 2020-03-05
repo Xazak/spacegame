@@ -80,9 +80,9 @@ void GameEngine::execGameLoop() {
 			} else if (inputValue == TK_P) { // do some in-game testing
 				LOGMSG("Dropping a wrench...");
 				// drop a wrench for the player to pick up
-				Wrench *myWrench = new Wrench(7, 7);
+				Wrench *myWrench = new Wrench(7, 7, &meatspace);
 //				myWrench->setLocality(&meatspace);
-				meatspace.addItem(myWrench, 7, 7);
+				meatspace.registerItem(myWrench, 7, 7);
 //				myWrench->setAbsLocation(7, 7);
 //				meatspace.allActors.push_back(myWrench);
 			} else {

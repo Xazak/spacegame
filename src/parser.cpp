@@ -35,7 +35,7 @@ void GameParser::interpret(char inputKey) {
 	Actor* tileContents = nullptr;
 	switch(localContext.type) {
 		case ActionType::IDLE:
-			ERRMSG("Action: IDLE was passed to the parser! keycode: " << currentKey);
+			ERRMSG("Action: IDLE was passed to the parser! keycode: [" << currentKey << "]");
 		break;
 		case ActionType::WAIT:
 			LOGMSG("Action: WAIT unimplemented");
@@ -82,7 +82,7 @@ void GameParser::interpret(char inputKey) {
 			LOGMSG("Action: CONSUME unimplemented");
 		break;
 		case ActionType::OPEN:
-			LOGMSG("Action: OPEN detected");
+//			LOGMSG("Action: OPEN detected");
 			// Scan the neighborhood for any external openable objects
 			// FIXME: Does not handle multiple Openable objects
 			// FIXME: Should not have to duplicate this code for CLOSE...
@@ -93,7 +93,7 @@ void GameParser::interpret(char inputKey) {
 					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
 					// Check all items in tile contents for Openability
 					// If the target can't be opened, don't use it as a target
-					LOGMSG("Checking " << tileContents);
+//					LOGMSG("Checking " << tileContents);
 					if (tileContents != nullptr) {
 						if (tileContents->aperture) {
 							localContext.target = tileContents;
@@ -104,11 +104,11 @@ void GameParser::interpret(char inputKey) {
 			if (localContext.target != nullptr) {
 				input = new OpenAction(localContext);
 				validInput = true;
-				localContext.dump();
+//				localContext.dump();
 			}
 		break;
 		case ActionType::CLOSE:
-			LOGMSG("Action: CLOSE detected");
+//			LOGMSG("Action: CLOSE detected");
 			tileContents = nullptr;
 			for (int xIndex = -1; xIndex <= 1; xIndex++) {
 				for (int yIndex = -1; yIndex <= 1; yIndex++) {
@@ -116,7 +116,7 @@ void GameParser::interpret(char inputKey) {
 					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
 					// Check all items in tile contents for Openability
 					// If the target can't be opened, don't use it as a target
-					LOGMSG("Checking " << tileContents);
+//					LOGMSG("Checking " << tileContents);
 					if (tileContents != nullptr) {
 						if (tileContents->aperture) {
 							localContext.target = tileContents;
@@ -127,7 +127,7 @@ void GameParser::interpret(char inputKey) {
 			if (localContext.target != nullptr) {
 				input = new CloseAction(localContext);
 				validInput = true;
-				localContext.dump();
+//				localContext.dump();
 			}
 		break;
 		case ActionType::TOGGLE:

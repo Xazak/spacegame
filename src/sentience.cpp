@@ -40,15 +40,15 @@ void PlayerSentience::pushAction(Action* inputAction) {
 //	inputAction->context->dump();
 	if (inputAction->isPlausible()) {
 		// Should probably throw some kind of warning message if NOT plausible
-		LOGMSG("Action #" << (uint)inputAction->context->type << " is valid");
+//		LOGMSG("Action #" << (uint)inputAction->context->type << " is valid");
 		inputAction->execute();
 		//reportSuccess(inputAction);
 	} else {
-		LOGMSG("Action #" << (uint)inputAction->context->type << " is INVALID");
-		inputAction->context->dump();
+//		LOGMSG("Action #" << (uint)inputAction->context->type << " is INVALID");
+//		inputAction->context->dump();
 		// FIXME: Throw an error message describing the implausibility
 		//reportFailure(inputAction);
-//		msgOutput->add("An object blocks your path.");
+		msgOutput->add("Your action failed.");
 	}
 }
 void PlayerSentience::doNextAction() {
@@ -56,7 +56,7 @@ void PlayerSentience::doNextAction() {
 	actionReady = false;
 	nextAction->execute();
 }
-/*
+/* xxx DISABLED
 void Sentience::pushAction(Action* nextAction) {
 	// Adds an Action to the actor's action queue to be executed later, during
 	// the engine's update phase

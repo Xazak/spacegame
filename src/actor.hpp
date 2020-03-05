@@ -32,11 +32,11 @@ class Actor {
 		// Shorthand ctors
 		// name, sigil, color, x=0, y=0
 		Actor(std::string inputName, int inputSigil, int inputColor,
-			int xPos = 0, int yPos = 0, bool obstructFlag = false,
-			bool occludesFlag = true);
+			int xPos = 0, int yPos = 0, GameMap* inputArea = nullptr,
+			bool obstructFlag = false, bool occludesFlag = true);
 		Actor(std::string inputName, int inputSigil, int inputColor,
-			cpair inputLocation, bool obstructFlag = false,
-			bool occludesFlag = true);
+			cpair inputLocation, GameMap* inputArea,
+			bool obstructFlag = false, bool occludesFlag = true);
 		// ***
 		virtual ~Actor() {}
 		virtual void update() {}

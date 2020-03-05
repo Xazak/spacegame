@@ -34,6 +34,8 @@ class GameEngine {
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }
 		uint getScreenHeight()	{ return screenHeight; }
+		Actor* getPlayerPtr() { return (&player); }
+		GameMap* getMeatspacePtr() { return (&meatspace); }
 
 	private:
 		bool loadConfiguration(std::string configFile); // Loads external config

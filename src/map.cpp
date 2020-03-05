@@ -187,8 +187,8 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		}
 	}
 	// Add some furniture
-	Door *localDoor = new Door(12, 9);
-	addItem(localDoor, 12, 9);
+	Door *localDoor = new Door(12, 9, this);
+	registerItem(localDoor, 12, 9);
 	// *** END TEST STRUCTURE
 //	LOGMSG("Tilemap created: " << width << "x" << height);
 	/*
@@ -230,15 +230,21 @@ void GameMap::setOccupant(Actor *occupier) {
 void GameMap::unsetOccupant(uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->occupant = nullptr;
 }
-void GameMap::addItem(Actor* newItem, uint xPos, uint yPos) {
+void GameMap::setObstruction(uint xPos, uint yPos, bool inputValue) {
+	this->mapArray[xPos + yPos * width]->obstructs = inputValue;
+}
+void GameMap::setObstruction(cpair inputLocation, bool inputValue) {
+	this->setObstruction(inputLocation.x, inputLocation.y, inputValue);
+}
+void GameMap::registerItem(Actor* newItem, uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->contents = newItem;
 	newItem->setLocality(this);
 	newItem->setAbsLocation(xPos, yPos);
 	this->allActors.push_back(newItem);
-	LOGMSG("Contents of " << xPos << ", " << yPos << " set to " << this->mapArray[xPos + yPos * width]->contents);
+//	LOGMSG("Contents of " << xPos << ", " << yPos << " set to " << this->mapArray[xPos + yPos * width]->contents);
 }
-void GameMap::addItem(Actor* newItem, cpair inputLocation) {
-	this->addItem(newItem, inputLocation.x, inputLocation.y);
+void GameMap::registerItem(Actor* newItem, cpair inputLocation) {
+	this->registerItem(newItem, inputLocation.x, inputLocation.y);
 }
 void GameMap::removeItem(Actor *target) {
 	mapArray[target->location.x + target->location.y * width]->contents = nullptr;

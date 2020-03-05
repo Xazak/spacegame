@@ -25,7 +25,7 @@ void Portable::drop(Actor *subject, Actor *object) {
 	// Drop the object at the subject's feet
 	if (subject->contents) {
 		subject->contents->remove(object);
-		subject->locality->addItem(object, subject->location);
+		subject->locality->registerItem(object, subject->location);
 		// FIXME: Add the object to the global actor list
 //		object->setAbsLocation(subject->getLocation());
 		// FIXME: should the result msg be created here?
