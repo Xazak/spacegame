@@ -7,6 +7,9 @@ DESC Contains definitions of the GameGUI class, which displays the game
 
 #include "BearLibTerminal.h"
 #include "gui.hpp"
+#include "actor.hpp"
+#include "map.hpp"
+#include "engine.hpp"
 #include <iostream>
 #include <string>
 
@@ -142,9 +145,10 @@ GameGUI::~GameGUI() {
 }
 //void GameGUI::initialize(uint maxWidth, uint maxHeight) {
 //void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr) {
-void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr, GameMap* meatspacePtr) {
+void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr) {
 	// Sets up a created GameGUI object to the runtime default configuration
 	// Obtain pointers to the game objects we want to display
+	engine = enginePtr;
 	avatar = playerPtr;
 	worldMap = meatspacePtr;
 //	LOGMSG("Player located at: " << avatar);
@@ -195,6 +199,7 @@ void GameGUI::render() {
 	terminal_bkcolor("black"); // Set the background color
 	terminal_clear(); // Wipe everything off
 	drawFullLayoutTree();
+	if (engine->currMode == GameEngine::EngineState::PAUSED) displayPauseBanner();
 	terminal_refresh(); // Tell BLT to go ahead and update the display
 }
 /****	Box-Drawing Char Unicode Codepoints
@@ -231,7 +236,6 @@ void GameGUI::drawHorizontalLine(unsigned int x, unsigned int y, int length) {
 	// Draws a horizontal line from the specified point
 	// Specifying a negative length will draw the line 'backwards'
 	// If length == 0, it will fall through and do nothing
-	terminal_layer(9);
 	if (length > 0) {
 		for (int offset = 0; offset < length; offset++) {
 			terminal_put((x + offset), y, 0x2500);
@@ -246,7 +250,6 @@ void GameGUI::drawVerticalLine(unsigned int x, unsigned int y, int length) {
 	// Draws a vertical line from the specified point
 	// Specifying a negative length will draw the line 'backwards'
 	// If length == 0, it will fall through and do nothing
-	terminal_layer(9);
 	if (length > 0) {
 		for (int offset = 0; offset < length; offset++) {
 			terminal_put(x, (y + offset), 0x2502);
@@ -273,8 +276,31 @@ void GameGUI::testMessageLog() {
 //	globalMsgLog.add("Or don't, it's not my job to tell you what to do.");
 
 }
+void GameGUI::testMenu() {
+	// draws a test menu on top of the game screen
+	uint xOrigin = 5;
+	uint yOrigin = 5;
+	// METHOD FOR DRAWING A MENU
+	// move to terminal_layer(menu)
+	// draw a black box at x, y to w, h
+	// draw a white box outline at the box edge
+	// OPTIONAL: write the menu message banner
+	// write the menu options
+	// display the menu selector
+}
 void GameGUI::addMessage(string messageText) {
 	globalMsgLog.add(messageText);
+}
+void GameGUI::displayPauseBanner() {
+	// Draws a banner across the screen to indicate that the game is paused
+	terminal_layer(10);
+	terminal_color(0xFFFF0000);
+	uint xOrigin = 0;
+	uint yOrigin = (windowHeight / 3) * 2;
+	string pauseMessage = "/- PAUSED -/";
+	for (uint xOffset = 0; xOffset < windowWidth; (xOffset += pauseMessage.length()) ) {
+		terminal_printf((xOrigin + xOffset), yOrigin, pauseMessage.c_str());
+	}
 }
 // **** MessageLog Methods
 int MessageLog::add(string newMessage) {
@@ -328,6 +354,7 @@ splitRatio(ratioPercent)
 void GameGUI::Splitter::display() {
 	// Draw a line
 //	LOGMSG(" (called) ");
+	terminal_layer(9);
 	if (verticalSplit) {
 //		terminal_color("blue");
 		uint xOffset = ( this->minWidth * this->splitRatio ) / 100;
@@ -473,6 +500,7 @@ void GameGUI::MessageReadout::display() {
 	int cursorXPosition = this->origin.x;
 	int cursorYPosition = this->origin.y;
 	terminal_color("white"); // Default text color, can be overridden inline
+	terminal_layer(9);
 	if (this->logObject->messageList.size() > 0) {
 		vector<string>::reverse_iterator msgLogIter = this->logObject->messageList.rbegin();
 		for ( ; msgLogIter != this->logObject->messageList.rend(); msgLogIter++) {
@@ -489,6 +517,7 @@ void GameGUI::DataDisplay::display() {
 	int cursorXPosition = this->origin.x + 1;
 	int cursorYPosition = this->origin.y + 1;
 	terminal_color("white"); // Default text color, can be overridden inline
+	terminal_layer(9);
 	terminal_print(cursorXPosition, cursorYPosition, targetActor->getName().c_str());
 	
 	cursorYPosition++;

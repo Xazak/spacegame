@@ -53,7 +53,8 @@ bool GameEngine::initialize(std::string configFile) {
 	sentientActors.push_back(&player); // Add to the sentients list
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
 	// Initialize the GUI
-	gui.initialize(screenWidth, screenHeight, &player, &meatspace);
+	GameEngine* tempPtr = this;
+	gui.initialize(screenWidth, screenHeight, tempPtr, &player, &meatspace);
 	ServiceLocator::provide(gui.getMessageLog());
 	return true;
 }
@@ -74,9 +75,12 @@ void GameEngine::execGameLoop() {
 //			LOGMSG("@@@ Keypress: " << inputKey);
 			if (inputValue == TK_Q) { // Press Q to quit
 				break;
+			} else if (inputValue == TK_ESCAPE) { // (test) pause
+				LOGMSG("Testing pause functions...");
+				this->togglePause();
 			} else if (inputValue == TK_M) { // test message log
-//				LOGMSG("Testing message log.");
-				gui.testMessageLog();
+				LOGMSG("Testing menu invocation...");
+				gui.testMenu();
 			} else if (inputValue == TK_P) { // do some in-game testing
 				LOGMSG("Dropping a wrench...");
 				// drop a wrench for the player to pick up
@@ -87,7 +91,7 @@ void GameEngine::execGameLoop() {
 //				meatspace.allActors.push_back(myWrench);
 			} else {
 //				LOGMSG("@@@ Keypress: " << inputKey);
-				parser.interpret(inputKey);
+				if (this->currMode != PAUSED) parser.interpret(inputKey);
 			}
 		}
 		// Set flag HERE for detecting whether the player's input has created a
@@ -103,16 +107,20 @@ void GameEngine::update() {
 	switch(currMode) {
 		case STARTUP:
 			// Things that occur only once, when the game loop is started
+			LOGMSG("Engine is doing STARTUP");
 			this->switchMode(ONGOING);
 			break;
 		case ONGOING:
 			// The 'default' running game state
 			// EZ flags for testing engine state changes
+//			LOGMSG("Engine is ONGOING");
 			if (player.location.isEqual(26, 10)) this->switchMode(VICTORY);
 			if (player.location.isEqual(26, 3)) this->switchMode(DEFEAT);
+			// ask for Actor updates from the list
 			break;
 		case PAUSED:
-			// Halts all in-game action, allows metagame functions
+			// Halts all in-game action, but allows metagame functions
+//			LOGMSG("Engine is PAUSED");
 			break;
 		case VICTORY:
 			// Displays a GOOD END banner and halts the game
@@ -171,6 +179,10 @@ void GameEngine::switchMode(EngineState newMode) {
 			break;
 	}
 	*/
+}
+void GameEngine::togglePause() {
+	if (this->currMode != PAUSED) this->switchMode(PAUSED);
+	else this->switchMode(this->prevMode);
 }
 // *** UTILITIES
 bool GameEngine::loadConfiguration(std::string inputFile) {

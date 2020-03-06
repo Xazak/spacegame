@@ -30,6 +30,7 @@ class GameEngine {
 		void update(); // Requests game module updates
 		void terminate(); // Performs cleanup when the game is closed
 		void switchMode(EngineState newMode); // handles engine state changes
+		void togglePause();
 		
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }

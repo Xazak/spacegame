@@ -7,12 +7,14 @@ DESC Implements the GameGUI class, which handles the system input/output and the
 #ifndef SPACEGAME_GUI
 #define SPACEGAME_GUI
 
-#include "map.hpp"
-#include "actor.hpp"
+#include "main.hpp"
 #include <string>
 #include <vector>
 #include <queue>
 
+class GameEngine;
+class Actor;
+class GameMap;
 /* NOTES ON THE GUI SPECIFICATION
 The GUI has two main layers: a base layer, where all the windows within it are
 assumed to be in the same z-position, and will be tiled together, and a floating
@@ -110,12 +112,14 @@ class GameGUI {
 		GameGUI();
 		~GameGUI();
 		// Initializes a GameGUI to initial state
-		void initialize(uint maxWidth, uint maxHeight, Actor* playerObject, GameMap* mapObject);
+		void initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr);
 		void update(); // Polls the game state for changes in displayed info
 		void render(); // Draws the interface onto the screen
 		void testBLT(); // BearLibTerminal debugging/test function
 		void testMessageLog();
+		void testMenu();
 		void addMessage(std::string messageText);
+		void displayPauseBanner();
 		MessageLog* getMessageLog() { return &globalMsgLog; }
 
 	private:
@@ -162,6 +166,7 @@ class GameGUI {
 		void drawFullLayoutTree();
 		static void drawHorizontalLine(uint x, uint y, int length);
 		static void drawVerticalLine(uint x, uint y, int length);
+		GameEngine* engine;
 		Actor* avatar;
 		GameMap* worldMap;
 		MessageLog globalMsgLog;
