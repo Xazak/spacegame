@@ -107,7 +107,7 @@ void GameEngine::update() {
 	switch(currMode) {
 		case STARTUP:
 			// Things that occur only once, when the game loop is started
-			LOGMSG("Engine is doing STARTUP");
+//			LOGMSG("Engine is doing STARTUP");
 			this->switchMode(ONGOING);
 			break;
 		case ONGOING:
@@ -179,6 +179,12 @@ void GameEngine::switchMode(EngineState newMode) {
 			break;
 	}
 	*/
+}
+void GameEngine::pauseOn() {
+	if (this->currMode != PAUSED) this->switchMode(PAUSED);
+}
+void GameEngine::pauseOff() {
+	if (this->currMode == PAUSED) this->switchMode(prevMode);
 }
 void GameEngine::togglePause() {
 	if (this->currMode != PAUSED) this->switchMode(PAUSED);
