@@ -16,54 +16,27 @@ using namespace std;
 
 // The default ctor
 Actor::Actor() :
-obstructs(true),
-occludes(true),
-location(0, 0),
-locality(nullptr),
-intent(nullptr),
-contents(nullptr),
-portable(nullptr),
-name("n0b0dY"),
-sigil(0x2112),
-color(0xFF345678)
+obstructs(true), occludes(true), location(0, 0), locality(nullptr),
+intent(nullptr), contents(nullptr), portable(nullptr),
+name("n0b0dY"), sigil(0x2112), color(0xFF345678)
 {	}
 // The specific ctor
 Actor::Actor(bool obstructFlag, bool occludesFlag, string inputName, cpair inputPosition, GameMap* inputArea, int inputSigil, int inputColor) :
-obstructs(obstructFlag),
-occludes(occludesFlag),
-location(inputPosition),
-locality(inputArea),
-intent(nullptr),
-contents(nullptr),
-portable(nullptr),
-name(inputName),
-sigil(inputSigil),
-color(inputColor)
+obstructs(obstructFlag), occludes(occludesFlag), location(inputPosition), locality(inputArea),
+intent(nullptr), contents(nullptr), portable(nullptr),
+name(inputName), sigil(inputSigil), color(inputColor)
 {	}
 // A shorthand ctor: name, sigil, color, x = 0, y = 0
 Actor::Actor(string inputName, int inputSigil, int inputColor, int xPos, int yPos, GameMap* inputArea, bool obstructFlag, bool occludesFlag) :
-obstructs(obstructFlag),
-occludes(occludesFlag),
-location(xPos, yPos),
-locality(inputArea),
-intent(nullptr),
-contents(nullptr),
-portable(nullptr),
-name(inputName),
-sigil(inputSigil),
-color(inputColor)
+obstructs(obstructFlag), occludes(occludesFlag), location(xPos, yPos), locality(inputArea),
+intent(nullptr), contents(nullptr), portable(nullptr),
+name(inputName), sigil(inputSigil), color(inputColor)
 {	}
+// A shorthand ctor: name, sigil, color, location
 Actor::Actor(string inputName, int inputSigil, int inputColor, cpair inputLocation, GameMap* inputArea, bool obstructFlag, bool occludesFlag) :
-obstructs(obstructFlag),
-occludes(occludesFlag),
-location(inputLocation),
-locality(inputArea),
-intent(nullptr),
-contents(nullptr),
-portable(nullptr),
-name(inputName),
-sigil(inputSigil),
-color(inputColor)
+obstructs(obstructFlag), occludes(occludesFlag), location(inputLocation), locality(inputArea),
+intent(nullptr), contents(nullptr), portable(nullptr),
+name(inputName), sigil(inputSigil), color(inputColor)
 {	}
 // Need some cpair overrides for these two fxns
 string Actor::getLocString() {
@@ -99,8 +72,8 @@ void Actor::setLocality(GameMap *inputArea) {
 
 // *** PLAYER METHODS
 Player::Player() :
-Actor("Jenaryk", 0x2135, 0xFF996600) {
-	intent = new PlayerSentience();
+	Actor("Jenaryk", 0x263A, 0xFF996600)
+{	intent = new PlayerSentience();
 	contents = new Container(2);
 //	LOGMSG("Player object initialized.");
 }
@@ -109,3 +82,16 @@ void Player::update() {
 //	LOGMSG("Checking for updates on " << this->getName());
 	if (this->intent->hasActions()) this->intent->doNextAction();
 }
+
+Drone::Drone() :
+	Actor("DRONE", 0x03B6, 0xFF666699)
+{	intent = new DroneSentience();
+	contents = new Container(1);
+	LOGMSG("Drone object initialized.");
+}
+void Drone::update() {
+	// Asks the sentience module to do the next action
+	// (Sentience decides what to do next and then does it)
+	this->intent->doNextAction();
+}
+

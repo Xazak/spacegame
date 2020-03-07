@@ -53,6 +53,11 @@ bool GameEngine::initialize(std::string configFile) {
 	meatspace.allActors.push_back(&player); // Add to the visibility list
 	sentientActors.push_back(&player); // Add to the sentients list
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
+	// Establish the LMR
+	lemur.setLocality(&meatspace);
+	lemur.setAbsLocation(4, 8);
+	meatspace.allActors.push_back(&lemur);
+	sentientActors.push_back(&lemur);
 	// Initialize the GUI
 	GameEngine* tempPtr = this;
 	gui.initialize(screenWidth, screenHeight, tempPtr, &player, &meatspace);

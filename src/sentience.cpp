@@ -9,6 +9,7 @@ DESC Describes the Sentience module for Actors, which enables access to the
 #include "context.hpp"
 #include "gui.hpp"
 #include <string>
+#include <stack>
 
 using namespace std;
 
@@ -84,14 +85,22 @@ void PlayerSentience::doNextAction() {
 	actionReady = false;
 	nextAction->execute();
 }
-LMRSentience::LMRSentience() {
+DroneSentience::DroneSentience() {
 	
 }
-void LMRSentience::pushAction(Action* inputAction) {
+void DroneSentience::pushAction(Action* inputAction) {
 	// add the action to the stack for processing
 	// set the flag to notify for more actions
+	actionStack.push(inputAction);
 }
-void LMRSentience::doNextAction() {
+void DroneSentience::doNextAction() {
 	// pull the action on the top of the stack and do it
 	// make sure the action is removed when done
+	if (this->actionStack.size() == 0) { // enqueue an idle if empty
+		Action* tempAction = new IdleAction();
+		this->pushAction(tempAction);
+	}
+	// disabled until i figure out how better to handle idling
+//	this->actionStack.top()->execute();
+	this->actionStack.pop();
 }

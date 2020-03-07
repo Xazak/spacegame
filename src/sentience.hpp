@@ -39,13 +39,14 @@ class PlayerSentience : public Sentience {
 		Action* nextAction;
 		Action* prevAction;
 };
-class LMRSentience : public Sentience {
+class DroneSentience : public Sentience {
 	public:
-		LMRSentience();
+		DroneSentience();
 		void pushAction(Action* nextAction);
 		void doNextAction();
+		bool hasActions() { return actionStack.size(); }
 	private:
-		// probably want some kind of action stack here...
+		std::stack<Action*> actionStack;
 
 };
 #endif //SPACEGAME_SENTIENCE

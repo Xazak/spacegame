@@ -49,6 +49,7 @@ class GameEngine {
 		GameGUI gui;
 		GameMap meatspace;
 		Player player;
+		Drone lemur;
 		std::list<Actor*> sentientActors; // Actors who will be taking actions
 		// Properties
 		uint screenWidth; // Width of terminal in # of monospace chars

@@ -87,12 +87,22 @@ class Player : public Actor {
 	// Defines the Player object
 	public:
 		Player();
-		Player(std::string inputName, int inputSigil, std::string inputColor);
+//		Player(std::string inputName, int inputSigil, std::string inputColor);
 //		~Player();
 		void update();
 
 	private:
 		
+};
+class Drone : public Actor {
+	// Defines the Drone object, which is a prototype for the LMR
+	public:
+		Drone();
+//		Drone(std::string inputName, int inputSigil, std::string inputColor);
+//		~Drone();
+		void update();
+	private:
+		// pointer to AURITA?
 };
 
 #endif //SPACEGAME_ACTOR
