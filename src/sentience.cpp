@@ -8,6 +8,7 @@ DESC Describes the Sentience module for Actors, which enables access to the
 #include "sentience.hpp"
 #include "context.hpp"
 #include "gui.hpp"
+#include "actor.hpp"
 #include <string>
 #include <stack>
 
@@ -85,8 +86,9 @@ void PlayerSentience::doNextAction() {
 	actionReady = false;
 	nextAction->execute();
 }
-DroneSentience::DroneSentience() {
-	
+DroneSentience::DroneSentience(Actor* owner) {
+	localContext.subject = owner;
+	localContext.vicinity = owner->getLocality();
 }
 void DroneSentience::pushAction(Action* inputAction) {
 	// add the action to the stack for processing
@@ -96,11 +98,27 @@ void DroneSentience::pushAction(Action* inputAction) {
 void DroneSentience::doNextAction() {
 	// pull the action on the top of the stack and do it
 	// make sure the action is removed when done
-	if (this->actionStack.size() == 0) { // enqueue an idle if empty
-		Action* tempAction = new IdleAction();
-		this->pushAction(tempAction);
-	}
-	// disabled until i figure out how better to handle idling
-//	this->actionStack.top()->execute();
+	this->consider();
+	this->actionStack.top()->execute();
 	this->actionStack.pop();
+}
+void DroneSentience::consider() {
+	// Examines current goals and picks actions to achieve it
+	Action* newAction = nullptr;
+	if (!localContext.subject->location.isEqual(cpair(4, 8))) {
+		LOGMSG("moving");
+		localContext.echs = 10;
+		localContext.whye = 10;
+		localContext.target = localContext.subject;
+		newAction = new MoveAction(localContext);
+	} else {
+		LOGMSG("idling");
+		newAction = new IdleAction();
+	}
+	this->pushAction(newAction);
+}
+Actor* DroneSentience::findPlayer() {
+	// Returns nullptr if the player is not w/in five tiles
+	int radius = 5;
+	
 }

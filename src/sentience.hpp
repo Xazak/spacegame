@@ -8,9 +8,13 @@ DESC Describes the Sentience module for Actors, which enables access to the
 #ifndef SPACEGAME_SENTIENCE
 #define SPACEGAME_SENTIENCE
 
-#include "action.hpp"
-//#include "context.hpp"
+//#include "action.hpp"
+#include "context.hpp"
 #include <stack>
+
+class Action;
+class Drone;
+class MessageLog;
 
 class Sentience {
 	public:
@@ -41,12 +45,14 @@ class PlayerSentience : public Sentience {
 };
 class DroneSentience : public Sentience {
 	public:
-		DroneSentience();
+		DroneSentience(Actor* owner);
 		void pushAction(Action* nextAction);
 		void doNextAction();
 		bool hasActions() { return actionStack.size(); }
 	private:
 		std::stack<Action*> actionStack;
-
+		ActionContext localContext;
+		void consider();
+		Actor* findPlayer();
 };
 #endif //SPACEGAME_SENTIENCE

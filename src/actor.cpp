@@ -85,7 +85,7 @@ void Player::update() {
 
 Drone::Drone() :
 	Actor("DRONE", 0x03B6, 0xFF666699)
-{	intent = new DroneSentience();
+{	intent = new DroneSentience(this);
 	contents = new Container(1);
 	LOGMSG("Drone object initialized.");
 }
