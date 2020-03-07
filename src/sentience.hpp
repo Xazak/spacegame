@@ -20,13 +20,14 @@ class Sentience {
 		virtual void pushAction(Action* nextAction) = 0;
 //		void pushAction(const ActionContext& input);
 		virtual void doNextAction() = 0;
-		virtual bool hasActions() = 0;
+		virtual bool hasActions() { return actionReady; }
 //		Action* getAction();
 //		Action popAction();
 //		ActionType peekAction();
 	protected:
 		// Note that Action objects contain their own context!
 		MessageLog* msgOutput;
+		bool actionReady;
 };
 
 class PlayerSentience : public Sentience {
@@ -34,10 +35,17 @@ class PlayerSentience : public Sentience {
 		PlayerSentience();
 		void pushAction(Action* nextAction);
 		void doNextAction();
-		bool hasActions() { return actionReady; }
 	private:
 		Action* nextAction;
 		Action* prevAction;
-		bool actionReady;
+};
+class LMRSentience : public Sentience {
+	public:
+		LMRSentience();
+		void pushAction(Action* nextAction);
+		void doNextAction();
+	private:
+		// probably want some kind of action stack here...
+
 };
 #endif //SPACEGAME_SENTIENCE

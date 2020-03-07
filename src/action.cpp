@@ -148,3 +148,20 @@ void CloseAction::execute() {
 	context->target->aperture->close(*context->target);
 }
 
+// *****************
+// **** META ACTIONS
+// ****************
+// **** QUIT Action
+void QuitMetaAction::execute() {
+	if (this) LOGMSG("Not sure how to QUIT from the parser yet...");
+}
+// ****************
+// **** SAVE Action
+void SaveMetaAction::execute() {
+	if (this) LOGMSG("Not sure how to SAVE from the parser yet...");
+}
+// ****************
+// **** RESTART Action
+void RestartMetaAction::execute() {
+	if (this) LOGMSG("Not sure how to RESTART from the parser yet...");
+}

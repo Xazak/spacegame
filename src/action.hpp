@@ -27,7 +27,10 @@ enum class ActionType : uint {
 	EXAMINE,// 13: to examine something in-hand
 	WEAR,	// 14: to don something wearable
 	REMOVE,	// 15: to remove something that is already worn
-	INVENTORY //16: to list the contents of an actor's inventory
+	INVENTORY, //16: to list the contents of an actor's inventory
+	META_QUIT,
+	META_SAVE,
+	META_RESTART
 };
 class Actor; // fwd-decl
 class GameMap; // fwd-decl
@@ -91,6 +94,22 @@ struct CloseAction : public Action {
 	bool isPlausible();
 	void execute();
 	CloseAction* clone() const { return new CloseAction(*this); }
+};
+
+// *** META ACTION CLASSES
+struct QuitMetaAction : public Action {
+	void execute();
+	QuitMetaAction* clone() const { return new QuitMetaAction(*this); }
+};
+struct SaveMetaAction : public Action {
+	// performs save routine and then becomes a Quit
+	void execute();
+	SaveMetaAction* clone() const { return new SaveMetaAction(*this); }
+};
+struct RestartMetaAction : public Action {
+	// discards everything in the current game state and invokes a new game
+	void execute();
+	RestartMetaAction* clone() const { return new RestartMetaAction(*this); }
 };
 
 #endif //SPACEGAME_ACTIONS

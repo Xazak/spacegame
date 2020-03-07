@@ -12,6 +12,34 @@ DESC Describes the Sentience module for Actors, which enables access to the
 
 using namespace std;
 
+/* xxx DISABLED
+void Sentience::pushAction(Action* nextAction) {
+	// Adds an Action to the actor's action queue to be executed later, during
+	// the engine's update phase
+	// Returns FALSE if there was a problem adding the action
+//	actionStack.push(nextAction);
+//	Action newAction(nextAction);
+	actionStack.emplace(nextAction);
+}
+void Sentience::doNextAction() {
+	// Performs the next action on the stack
+	actionStack.top()->execute();
+	actionStack.pop();
+}
+bool Sentience::hasActions() {
+	return (!actionStack.empty());
+}
+void Sentience::pushAction(const ActionContext& input) {
+	switch(input.type) {
+		case ActionType::MOVE:
+		break;
+	}
+}
+Action* Sentience::getAction() {
+	return actionStack.top();
+}
+
+*/
 PlayerSentience::PlayerSentience() {
 //	NOTE: This line below occurs too early to obtain a valid ptr!
 //	FIXME: Consider moving this line to someplace 'later' so as to prevent the
@@ -56,31 +84,14 @@ void PlayerSentience::doNextAction() {
 	actionReady = false;
 	nextAction->execute();
 }
-/* xxx DISABLED
-void Sentience::pushAction(Action* nextAction) {
-	// Adds an Action to the actor's action queue to be executed later, during
-	// the engine's update phase
-	// Returns FALSE if there was a problem adding the action
-//	actionStack.push(nextAction);
-//	Action newAction(nextAction);
-	actionStack.emplace(nextAction);
+LMRSentience::LMRSentience() {
+	
 }
-void Sentience::doNextAction() {
-	// Performs the next action on the stack
-	actionStack.top()->execute();
-	actionStack.pop();
+void LMRSentience::pushAction(Action* inputAction) {
+	// add the action to the stack for processing
+	// set the flag to notify for more actions
 }
-bool Sentience::hasActions() {
-	return (!actionStack.empty());
+void LMRSentience::doNextAction() {
+	// pull the action on the top of the stack and do it
+	// make sure the action is removed when done
 }
-void Sentience::pushAction(const ActionContext& input) {
-	switch(input.type) {
-		case ActionType::MOVE:
-		break;
-	}
-}
-Action* Sentience::getAction() {
-	return actionStack.top();
-}
-
-*/

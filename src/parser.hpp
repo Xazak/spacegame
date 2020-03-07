@@ -27,7 +27,9 @@ struct GameParser {
 		{ 'n', ActionType::MOVE },
 		{ 'o', ActionType::OPEN },
 		{ 'p', ActionType::OPERATE },
+		{ 'q', ActionType::META_QUIT }, // +Shift
 		{ 'r', ActionType::REMOVE },
+		{ 's', ActionType::META_SAVE }, // +Shift
 		{ 't', ActionType::TOGGLE },
 		{ 'u', ActionType::MOVE },
 		{ 'w', ActionType::WEAR },
@@ -36,6 +38,20 @@ struct GameParser {
 		{ 'z', ActionType::WAIT },
 		{ 'P', ActionType::PUSH },
 		{ ';', ActionType::FARLOOK }
+	};
+	std::map<std::string, ActionType> commandLookup = {
+		{ "close",	ActionType::CLOSE },
+		{ "eat",	ActionType::CONSUME },
+		{ "examine", ActionType::EXAMINE },
+		{ "inventory", ActionType::INVENTORY },
+		{ "move",	ActionType::MOVE },
+		{ "open",	ActionType::OPEN },
+		{ "quit",	ActionType::META_QUIT },
+		{ "remove",	ActionType::REMOVE },
+		{ "restart", ActionType::META_RESTART },
+		{ "save",	ActionType::META_SAVE },
+		{ "toggle", ActionType::TOGGLE },
+		{ "wear",	ActionType::WEAR }
 	};
 	void interpret(char input);
 	void interpret(const char * inputBuffer);

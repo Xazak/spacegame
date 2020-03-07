@@ -15,6 +15,7 @@ DESC Defines the GameParser class, which collects and interprets player input
 #include "map.hpp"
 #include <string>
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -175,7 +176,7 @@ void GameParser::interpret(const char * inputBuffer) {
 	// Parses a long command into constituent pieces and calls actions
 	string fullString(inputBuffer);
 	string commandString;
-	LOGMSG("Received long command: " << fullString);
+//	LOGMSG("Received long command: " << fullString);
 	// Break the command down by single spaces into a set of keywords
 	// Examine the first keyword to find a command match
 	// Use the remaining keywords to provide context
@@ -183,11 +184,152 @@ void GameParser::interpret(const char * inputBuffer) {
 	inputStream.clear();
 	inputStream << fullString;
 	getline(inputStream, commandString, ' ');
-	LOGMSG("Parsing command " << commandString);
-	// found a method for parsing strings in a switch-case alike way:
-	// - create enum of string_codes (ie ActionTypes)
-	// - create hash fxn which returns a string_code and takes a const& string:
-	//    - applies series of if (inputString == X ) return Y; statements
-	// - within parser fxn (ie here):
-	//    - switch(hash(inputString)) { case string_code: ... }
+//	LOGMSG("Parsing command " << commandString);
+	// Perform the lookup
+	localContext.reset();
+	localContext.type = commandLookup[commandString];
+	localContext.subject = player; // The player originates all actions
+	localContext.vicinity = player->getLocality(); // Same as player usually
+	// Perform the context interpretation
+	// Break up the rest of the input stream into words
+	vector<string> commandTokens;
+	while (!inputStream.eof()) {
+		string token;
+		getline(inputStream, token, ' ');
+		commandTokens.push_back(token);
+	}
+//	LOGMSG("Quantity of trailing command tokens: " << commandTokens.size());
+	bool validInput = false;
+	Actor* tileContents = nullptr;
+	switch(localContext.type) {
+		case ActionType::IDLE:
+			ERRMSG("Action: IDLE was passed to the parser! (long)");
+		break;
+		case ActionType::WAIT:
+			LOGMSG("Action: WAIT unimplemented (long)");
+		break;
+		case ActionType::MOVE:
+			// REQ: x, y coords of destination Tile
+			LOGMSG("Action::MOVE detected (long)");
+//			LOGMSG("Player located at " << player->location);
+			localContext.target = player;
+			// FIXME: Prompt for additional inputs if not enough given
+			if (commandTokens.size() != 1) {
+				ERRMSG("Incorrect number of arguments: MOVE <direction>");
+				break;
+			}
+			if (commandTokens.front() == "west") localContext.echs -= 1;
+			if (commandTokens.front() == "east") localContext.echs += 1;
+			if (commandTokens.front() == "north") localContext.whye -= 1;
+			if (commandTokens.front() == "south") localContext.whye += 1;
+//			LOGMSG("Player moving from " << player->location << " to " << player->location.x + localContext.echs << ", " << player->location.y + localContext.whye);
+			input = new MoveAction(localContext);
+			validInput = true;
+		break;
+		case ActionType::JUMP:
+			LOGMSG("Action: JUMP unimplemented (long)");
+		break;
+		case ActionType::GET:
+			LOGMSG("Action: GET detected (long)");
+//			localContext.target = localContext.vicinity->getContents(localContext.subject->location);
+//			localContext.dump();
+//			input = new GetAction(localContext);
+//			validInput = true;
+		break;
+		case ActionType::DROP:
+			LOGMSG("Action: DROP detected (long)");
+//			localContext.target = localContext.subject->contents->itemList.front();
+//			input = new DropAction(localContext);
+//			validInput = true;
+		break;
+		case ActionType::CONSUME:
+			LOGMSG("Action: CONSUME unimplemented (long)");
+		break;
+		case ActionType::OPEN:
+			LOGMSG("Action: OPEN detected (long)");
+			// Scan the neighborhood for any external openable objects
+			// FIXME: Does not handle multiple Openable objects
+			// FIXME: Should not have to duplicate this code for CLOSE...
+			tileContents = nullptr;
+			for (int xIndex = -1; xIndex <= 1; xIndex++) {
+				for (int yIndex = -1; yIndex <= 1; yIndex++) {
+					// Obtain access to the contents of the nearby tile
+					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					// Check all items in tile contents for Openability
+					// If the target can't be opened, don't use it as a target
+//					LOGMSG("Checking " << tileContents);
+					if (tileContents != nullptr) {
+						if (tileContents->aperture) {
+							localContext.target = tileContents;
+						}
+					}
+				}
+			}
+			if (localContext.target != nullptr) {
+				input = new OpenAction(localContext);
+				validInput = true;
+//				localContext.dump();
+			}
+		break;
+		case ActionType::CLOSE:
+			LOGMSG("Action: CLOSE detected (long)");
+			tileContents = nullptr;
+			for (int xIndex = -1; xIndex <= 1; xIndex++) {
+				for (int yIndex = -1; yIndex <= 1; yIndex++) {
+					// Obtain access to the contents of the nearby tile
+					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					// Check all items in tile contents for Openability
+					// If the target can't be opened, don't use it as a target
+//					LOGMSG("Checking " << tileContents);
+					if (tileContents != nullptr) {
+						if (tileContents->aperture) {
+							localContext.target = tileContents;
+						}
+					}
+				}
+			}
+			if (localContext.target != nullptr) {
+				input = new CloseAction(localContext);
+				validInput = true;
+//				localContext.dump();
+			}
+		break;
+		case ActionType::TOGGLE:
+			LOGMSG("Action: TOGGLE unimplemented (long)");
+		break;
+		case ActionType::OPERATE:
+			LOGMSG("Action: OPERATE unimplemented (long)");
+		break;
+		case ActionType::PUSH:
+			LOGMSG("Action: PUSH unimplemented (long)");
+		break;
+		case ActionType::FARLOOK:
+			LOGMSG("Action: FARLOOK unimplemented (long)");
+		break;
+		case ActionType::EXAMINE:
+			LOGMSG("Action: EXAMINE unimplemented (long)");
+		break;
+		case ActionType::WEAR:
+			LOGMSG("Action: WEAR unimplemented (long)");
+		break;
+		case ActionType::REMOVE:
+			LOGMSG("Action: REMOVE unimplemented (long)");
+		break;
+		case ActionType::INVENTORY:
+			LOGMSG("Action: INVENTORY unimplemented (long)");
+		break;
+		case ActionType::META_QUIT:
+			LOGMSG("Action: META_QUIT invoked (long)");
+			input = new QuitMetaAction();
+			validInput = true;
+		break;
+		default:
+			ERRMSG("No (long) context handler for ActionType #" << (int)localContext.type);
+		break;
+	}
+	// ALL actions are responsible for setting a valid target!
+	if (validInput) {
+		player->intent->pushAction(input);
+		delete input;
+	}
 }
