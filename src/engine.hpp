@@ -33,6 +33,7 @@ class GameEngine {
 		void pauseOn();
 		void pauseOff();
 		void togglePause();
+		void interpretLongCommand(const char * inputBuffer);
 		
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }
@@ -54,6 +55,7 @@ class GameEngine {
 		uint screenHeight; // Height of terminal in # of monospace chars
 		std::string terminalFontPath; // Contains relative path to the terminal font
 		uint terminalFontSize; // Size of the terminal font
+		bool cliMode;
 };
 
 #endif //SPACEGAME_ENGINE

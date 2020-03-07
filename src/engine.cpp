@@ -18,7 +18,8 @@ GameEngine::GameEngine() :
 	currMode(STARTUP),
 	prevMode(STARTUP),
 	screenWidth(80),
-	screenHeight(50)
+	screenHeight(50),
+	cliMode(false)
 {
 //	LOGMSG("Default ctor called.");
 	// The default constructor
@@ -76,11 +77,12 @@ void GameEngine::execGameLoop() {
 			if (inputValue == TK_Q) { // Press Q to quit
 				break;
 			} else if (inputValue == TK_ESCAPE) { // (test) pause
-				LOGMSG("Testing pause functions...");
+//				LOGMSG("Testing pause functions...");
 				this->togglePause();
-			} else if (inputValue == TK_M) { // test message log
-				LOGMSG("Testing menu invocation...");
-				gui.testMenu();
+			} else if (terminal_check(TK_SHIFT) && inputValue == TK_SEMICOLON) { // raise the CLI
+//				LOGMSG("Entering CLI mode");
+				this->cliMode = true;
+				gui.raiseCLI();
 			} else if (inputValue == TK_P) { // do some in-game testing
 				LOGMSG("Dropping a wrench...");
 				// drop a wrench for the player to pick up
@@ -89,7 +91,7 @@ void GameEngine::execGameLoop() {
 				meatspace.registerItem(myWrench, 7, 7);
 //				myWrench->setAbsLocation(7, 7);
 //				meatspace.allActors.push_back(myWrench);
-			} else {
+			} else if (inputValue >= TK_A && inputValue <= TK_Z) { // don't pass meta keys
 //				LOGMSG("@@@ Keypress: " << inputKey);
 				if (this->currMode != PAUSED) parser.interpret(inputKey);
 			}
@@ -135,6 +137,9 @@ void GameEngine::update() {
 			this->terminate();
 			break;
 	}
+	if (cliMode) {
+		gui.raiseCLI();
+	}
 //	LOGMSG("Updating game state.");
 	for (auto actorIter = sentientActors.begin(); actorIter != sentientActors.end(); actorIter++) {
 //		LOGMSG("Update request: " << (*actorIter)->getName());
@@ -156,7 +161,8 @@ void GameEngine::terminate() {
 void GameEngine::switchMode(EngineState newMode) {
 	prevMode = currMode;
 	currMode = newMode;
-/*	switch (currMode) {
+/*xxx DEBUG: display state switch messages
+	switch (currMode) {
 		case STARTUP:
 			LOGMSG("mode switch: " << currMode << ": STARTUP");
 			break;
@@ -189,6 +195,12 @@ void GameEngine::pauseOff() {
 void GameEngine::togglePause() {
 	if (this->currMode != PAUSED) this->switchMode(PAUSED);
 	else this->switchMode(this->prevMode);
+}
+void GameEngine::interpretLongCommand(const char * inputBuffer) {
+	// Takes a long command from the GUI and sends it for parsing
+	this->cliMode = false;
+	parser.interpret(inputBuffer);
+	gui.hideCLI();
 }
 // *** UTILITIES
 bool GameEngine::loadConfiguration(std::string inputFile) {

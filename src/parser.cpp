@@ -13,6 +13,8 @@ DESC Defines the GameParser class, which collects and interprets player input
 #include "sentience.hpp"
 #include "container.hpp"
 #include "map.hpp"
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -168,4 +170,24 @@ void GameParser::interpret(char inputKey) {
 			delete input;
 		}
 	}
+}
+void GameParser::interpret(const char * inputBuffer) {
+	// Parses a long command into constituent pieces and calls actions
+	string fullString(inputBuffer);
+	string commandString;
+	LOGMSG("Received long command: " << fullString);
+	// Break the command down by single spaces into a set of keywords
+	// Examine the first keyword to find a command match
+	// Use the remaining keywords to provide context
+	stringstream inputStream;
+	inputStream.clear();
+	inputStream << fullString;
+	getline(inputStream, commandString, ' ');
+	LOGMSG("Parsing command " << commandString);
+	// found a method for parsing strings in a switch-case alike way:
+	// - create enum of string_codes (ie ActionTypes)
+	// - create hash fxn which returns a string_code and takes a const& string:
+	//    - applies series of if (inputString == X ) return Y; statements
+	// - within parser fxn (ie here):
+	//    - switch(hash(inputString)) { case string_code: ... }
 }

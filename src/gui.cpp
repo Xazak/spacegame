@@ -132,23 +132,25 @@ NOTE: Only layer 0 has a background color! All other layers have transp. bkgrnd
 Each panel within the GUi will have its dimensions calculated when the game is loaded.
 This class will define some sane minimums in case the defined/calculated values are wrongly-sized.
 */
+GameEngine* GameGUI::engine = nullptr;
+Actor* GameGUI::avatar = nullptr;
+GameMap* GameGUI::worldMap = nullptr;
 GameGUI::GameGUI() :
 statPanelWidthMinimum(36),
 msgPanelWidthMinimum(40),
 msgPanelHeightMinimum(10)
 {	// default constructor
-
 }
 GameGUI::~GameGUI() {
 	// default destructor
-
+	delete cmdPrompt;
 }
 //void GameGUI::initialize(uint maxWidth, uint maxHeight) {
 //void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr) {
 void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr) {
 	// Sets up a created GameGUI object to the runtime default configuration
 	// Obtain pointers to the game objects we want to display
-	engine = enginePtr;
+	GameGUI::engine = enginePtr;
 	avatar = playerPtr;
 	worldMap = meatspacePtr;
 //	LOGMSG("Player located at: " << avatar);
@@ -170,14 +172,24 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	layoutIndex = layoutIndex->left;
 	// put MAP at root->L->U		o: r->L->U, mW-statpanel, mH
 	layoutIndex->left = new Viewport(4, layoutIndex->leftPanelOrigin(), layoutRoot->rightPanelOrigin().x, layoutIndex->rightPanelOrigin().y, worldMap, avatar->location, avatar);
-	// put MSG at root->L->D		o: r->L->D, mW-statpanel, msgHeight
+//	// put MSG at root->L->D		o: r->L->D, mW-statpanel, msgHeight
 	layoutIndex->right = new MessageReadout(5, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), &globalMsgLog);
+	int msgBoxYOrigin = layoutIndex->right->origin.y;
+	/* XXX DISABLED: inline CLI
+	// split root->L->D into MSG and CLI
+	layoutIndex->right = new Splitter(7, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), false, 20);
+	layoutIndex = layoutIndex->right;
+	// put CLI at root->L->D->U
+	layoutIndex->left = new CommandPrompt(8, layoutIndex->leftPanelOrigin(), layoutRoot->rightPanelOrigin().x);
+	// put MSG at root->L->D->D
+	layoutIndex->right = new MessageReadout(5, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), &globalMsgLog);
+	*/
 	// split root->R into U/D		33/67, statpanel, maxHeight
 	layoutIndex = layoutRoot;
 	layoutIndex->right = new Splitter(2, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, maxHeight, false, 33);
 	layoutIndex = layoutIndex->right;
 	// put VIT at root->R->U		o: r->R->U, statpanel, maxHeight * 33%
-	layoutIndex->left = new DataDisplay(5, layoutIndex->leftPanelOrigin(), statPanelWidthMinimum, statPanelHeightMinimum, avatar);
+	layoutIndex->left = new DataDisplay(6, layoutIndex->leftPanelOrigin(), statPanelWidthMinimum, statPanelHeightMinimum, avatar);
 	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
 	layoutIndex->right = new Splitter(3, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, (maxHeight * 67 / 100), false, 50);
 	layoutIndex = layoutIndex->right;
@@ -185,6 +197,7 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 //	layoutIndex->left = new DataDisplay();
 	// put MTR at root->R->D->D		o: r->R->D->D, statpanel, maxHeight * 33%
 //	layoutIndex->right = new DataDisplay();
+	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin - 3), layoutRoot->rightPanelOrigin().x);
 }
 void GameGUI::update() {
 	// polls game state to see if any of the GUI elements need to change
@@ -230,6 +243,7 @@ void GameGUI::drawFullLayoutTree() {
 		if (layoutIter->left != nullptr) drawOrder.push(layoutIter->left);
 		if (layoutIter->right != nullptr) drawOrder.push(layoutIter->right);
 	}
+	if (cmdPrompt->visible) cmdPrompt->display();
 }
 // **** WINDOW-DRAWING METHODS
 void GameGUI::drawHorizontalLine(unsigned int x, unsigned int y, int length) {
@@ -278,8 +292,8 @@ void GameGUI::testMessageLog() {
 }
 void GameGUI::testMenu() {
 	// draws a test menu on top of the game screen
-	uint xOrigin = 5;
-	uint yOrigin = 5;
+//	uint xOrigin = 5;
+//	uint yOrigin = 5;
 	// METHOD FOR DRAWING A MENU
 	// move to terminal_layer(menu)
 	// draw a black box at x, y to w, h
@@ -301,6 +315,15 @@ void GameGUI::displayPauseBanner() {
 	for (uint xOffset = 0; xOffset < windowWidth; (xOffset += pauseMessage.length()) ) {
 		terminal_printf((xOrigin + xOffset), yOrigin, pauseMessage.c_str());
 	}
+}
+void GameGUI::raiseCLI() {
+	this->cmdPrompt->visible = true;
+}
+void GameGUI::hideCLI() {
+	this->cmdPrompt->visible = false;
+}
+void GameGUI::toggleCLI() {
+	this->cmdPrompt->visible = !this->cmdPrompt->visible;
 }
 // **** MessageLog Methods
 int MessageLog::add(string newMessage) {
@@ -526,4 +549,34 @@ void GameGUI::DataDisplay::display() {
 	terminal_print(cursorXPosition, cursorYPosition, ", ");
 	cursorXPosition += 2;
 	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
+}
+GameGUI::CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
+	GUIPanel(inputID, inputOrigin, inputWidth, 3),
+	promptPrefix("> "),
+	visible(false),
+	inputBuffer(nullptr)
+{	}
+GameGUI::CommandPrompt::~CommandPrompt() {	}
+void GameGUI::CommandPrompt::display() {
+	int cursorXPosition = this->origin.x;
+	int cursorYPosition = this->origin.y;
+	terminal_layer(10);
+	terminal_color("white"); // Default text color, can be overridden inline
+	// need to black out the space underneath...
+	drawHorizontalLine(cursorXPosition, cursorYPosition, this->minWidth - 1);
+	drawHorizontalLine(cursorXPosition, cursorYPosition + this->minHeight - 1, this->minWidth - 1);
+	drawVerticalLine(cursorXPosition, cursorYPosition, this->minHeight);
+	drawVerticalLine(cursorXPosition + this->minWidth - 1, cursorYPosition, this->minHeight);
+	cursorXPosition = this->origin.x + 1;
+	cursorYPosition = this->origin.y + 1;
+	terminal_print(cursorXPosition, cursorYPosition, promptPrefix.c_str());
+	cursorXPosition += promptPrefix.length();
+	int bufferWidth = this->minWidth - cursorXPosition - 1;
+	inputBuffer = new char[bufferWidth];
+	inputBuffer[0] = 0; // reterminate the buffer to prevent junk insertion
+//	LOGMSG("CLI buffer contents: " << inputBuffer);
+	terminal_read_str(cursorXPosition, cursorYPosition, inputBuffer, bufferWidth);
+	// Send the input string for interpretation by the game
+	engine->interpretLongCommand(inputBuffer);
+	delete inputBuffer;
 }

@@ -105,9 +105,11 @@ struct MessageLog { // semantic wrapper around the message log object
 };
 class GameGUI {
 	// FIXME: Do these need to be here? Can specific access be set up?
-	friend struct Splitter;
-	friend struct Viewport;
-	friend struct MessageReadout;
+//	friend struct Splitter;
+//	friend struct Viewport;
+//	friend struct MessageReadout;
+//	friend struct DataDisplay;
+//	friend struct CommandPrompt;
 	public:
 		GameGUI();
 		~GameGUI();
@@ -121,8 +123,11 @@ class GameGUI {
 		void addMessage(std::string messageText);
 		void displayPauseBanner();
 		MessageLog* getMessageLog() { return &globalMsgLog; }
+		void raiseCLI();
+		void hideCLI();
+		void toggleCLI();
 
-	private:
+	protected:
 		struct Splitter : public GUIPanel {
 		//struct Splitter {
 			// want to specify a percentage OR a character width
@@ -158,17 +163,20 @@ class GameGUI {
 			Actor* targetActor;
 			void display();
 		};
-		/*
 		struct CommandPrompt : public GUIPanel {
-			// might elect to make this a floating panel so as to autohide it
-		};
-		*/
+			CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth);
+			~CommandPrompt();
+			void display();
+			std::string promptPrefix;
+			bool visible;
+			char * inputBuffer;
+		} *cmdPrompt;
 		void drawFullLayoutTree();
 		static void drawHorizontalLine(uint x, uint y, int length);
 		static void drawVerticalLine(uint x, uint y, int length);
-		GameEngine* engine;
-		Actor* avatar;
-		GameMap* worldMap;
+		static GameEngine* engine;
+		static Actor* avatar;
+		static GameMap* worldMap;
 		MessageLog globalMsgLog;
 		uint windowWidth;
 		uint windowHeight;

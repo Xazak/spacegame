@@ -38,6 +38,7 @@ struct GameParser {
 		{ ';', ActionType::FARLOOK }
 	};
 	void interpret(char input);
+	void interpret(const char * inputBuffer);
 	char currentKey;
 	char previousKey;
 	// mouse inputs?
