@@ -36,7 +36,7 @@ Action::~Action() {
 // **** IDLE Action
 void IdleAction::execute() {
 	// Do nothing
-	LOGMSG("Idling.");
+//	LOGMSG("Idling.");
 }
 // ****************
 // **** MOVE Action

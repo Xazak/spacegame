@@ -11,6 +11,7 @@ DESC Contains implementation of game engine
 #include <iostream>		// Provides access to stdin/stdout (cout, cerr, etc)
 #include <sstream>		// Object for conversion from std::string to input stream
 #include <fstream>		// Simple file input/output
+#include <chrono>		// steady_clock, maybe others? system time?
 
 using namespace std;
 
@@ -69,10 +70,23 @@ void GameEngine::execGameLoop() {
 	// some setup methods
 	// BLT display explicitly requires an initial call to _refresh() prior to
 	// displaying anything onscreen
+	using namespace chrono;
+//	LOGMSG("Calling...");
 	terminal_refresh();
+	steady_clock::time_point prevTime = steady_clock::now();
+	steady_clock::time_point currTime = prevTime;
+	duration<double> timeSpan = duration_cast<duration<double>>(currTime - prevTime);
+	duration<double> lagTime = timeSpan;
+	duration<double> updateTimeStep = duration<double>(MS_PER_UPDATE);
+
 	// TK_CLOSE == true when the terminal window is closed
 	// _peek does not block if false (unlike _read)
 	while (terminal_peek() != TK_CLOSE) {
+		currTime = steady_clock::now();
+		timeSpan = currTime - prevTime;
+		prevTime = currTime;
+		lagTime += timeSpan;
+		// Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
 			// Need to trap meta and debug calls before passing to the parser
@@ -103,8 +117,14 @@ void GameEngine::execGameLoop() {
 		}
 		// Set flag HERE for detecting whether the player's input has created a
 		// VICTORY or DEFEAT engine state
-		update(); // Perform game update routines based on engine state
+
+//		while (timeSpan >= duration_cast<duration<double>>(MS_PER_UPDATE)) {
+		while (timeSpan >= updateTimeStep) {
+			update(); // Perform game update routines based on engine state
+			timeSpan -= updateTimeStep;
+		}
 //		gui.update(); // Make sure the GUI catches any state changes
+//		gui.render(lagTime / updateTimeStep); // Update the game screen
 		gui.render(); // Update the game screen
 	};
 }

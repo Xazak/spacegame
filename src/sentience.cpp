@@ -112,7 +112,7 @@ void DroneSentience::consider() {
 		localContext.target = localContext.subject;
 		newAction = new MoveAction(localContext);
 	} else {
-		LOGMSG("idling");
+//		LOGMSG("idling");
 		newAction = new IdleAction();
 	}
 	this->pushAction(newAction);
