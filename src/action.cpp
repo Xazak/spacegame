@@ -17,26 +17,34 @@ using namespace std;
 
 // **** ACTION Prototype
 Action::Action() :
-context(nullptr)
+	context(nullptr),
+	subject(nullptr),
+	duration(0.0)
 {	
 //	LOGMSG("Action() ctor");
 }
 Action::Action(const Action& inputAction) :
-	context(inputAction.context)
-	{//	LOGMSG("Action(Action) ctor");
+	context(inputAction.context),
+	subject(inputAction.subject),
+	duration(inputAction.duration)
+{//	LOGMSG("Action(Action) ctor");
 //		this->context->dump();
-	}
+}
 Action::Action(const ActionContext& inputContext) {
 	context = new ActionContext(inputContext);
+	// FIXME: Missing subject and duration assignments!
 }
 Action::~Action() {
 	delete context;
 }
 // ****************
 // **** IDLE Action
+IdleAction::IdleAction() {
+	this->duration = 3;
+}
 void IdleAction::execute() {
 	// Do nothing
-//	LOGMSG("Idling.");
+	LOGMSG("Idling.");
 }
 // ****************
 // **** MOVE Action

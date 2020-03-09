@@ -46,11 +46,12 @@ struct Action {
 	virtual Action* clone() const = 0;
 	ActionContext* context;
 	Actor* subject; // Points to the entity who is 'doing' the action
+	double duration; // Time to complete the action in milliseconds
 
 };
 // *** ACTION CLASSES
 struct IdleAction : public Action {
-//	IdleAction();
+	IdleAction();
 	void execute();
 	IdleAction* clone() const { return new IdleAction(*this); }
 };

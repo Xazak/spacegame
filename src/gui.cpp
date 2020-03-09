@@ -143,7 +143,7 @@ msgPanelHeightMinimum(10)
 }
 GameGUI::~GameGUI() {
 	// default destructor
-	delete cmdPrompt;
+//	delete cmdPrompt;
 }
 //void GameGUI::initialize(uint maxWidth, uint maxHeight) {
 //void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr) {
@@ -204,7 +204,7 @@ void GameGUI::update() {
 	// performs scene composition
 
 }
-void GameGUI::render() {
+void GameGUI::render(double timeDelta) {
 	// draws the interface onto the screen
 	// -- can use terminal_crop to set scene/layer sizes?
 	// -- need some helper funcs to wrap around BLT's print funcs

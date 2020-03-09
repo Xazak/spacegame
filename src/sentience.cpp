@@ -14,6 +14,7 @@ DESC Describes the Sentience module for Actors, which enables access to the
 
 using namespace std;
 
+// **** CORE SENTIENCE METHODS
 /* xxx DISABLED
 void Sentience::pushAction(Action* nextAction) {
 	// Adds an Action to the actor's action queue to be executed later, during
@@ -42,12 +43,26 @@ Action* Sentience::getAction() {
 }
 
 */
+Sentience::Sentience() :
+	remainingTime(0),
+	actionReady(false)
+{	}
+bool Sentience::isFocused() {
+	return (remainingTime > 0.0 ? true : false);
+}
+
+// **** PLAYER SENTIENCE
 PlayerSentience::PlayerSentience() {
 //	NOTE: This line below occurs too early to obtain a valid ptr!
 //	FIXME: Consider moving this line to someplace 'later' so as to prevent the
 //	pushAction() from constantly reacquiring the service pointer?
 //	this->msgOutput = ServiceLocator::getMsgLog();
 //	LOGMSG("Player sentience initialized");
+}
+void PlayerSentience::doNextAction() {
+//	LOGMSG("Performing action of type " << (uint)nextAction->context->type);
+	actionReady = false;
+	nextAction->execute();
 }
 void PlayerSentience::pushAction(Action* inputAction) {
 	if (this->msgOutput == nullptr) this->msgOutput = ServiceLocator::getMsgLog();
@@ -81,26 +96,16 @@ void PlayerSentience::pushAction(Action* inputAction) {
 		msgOutput->add("Your action failed.");
 	}
 }
-void PlayerSentience::doNextAction() {
-//	LOGMSG("Performing action of type " << (uint)nextAction->context->type);
-	actionReady = false;
-	nextAction->execute();
-}
+// **** DRONE SENTIENCE
 DroneSentience::DroneSentience(Actor* owner) {
 	localContext.subject = owner;
 	localContext.vicinity = owner->getLocality();
 }
-void DroneSentience::pushAction(Action* inputAction) {
-	// add the action to the stack for processing
-	// set the flag to notify for more actions
-	actionStack.push(inputAction);
-}
 void DroneSentience::doNextAction() {
 	// pull the action on the top of the stack and do it
 	// make sure the action is removed when done
-	this->consider();
-	this->actionStack.top()->execute();
-	this->actionStack.pop();
+	if (!this->hasActions()) this->consider(); // Consider whether we should change the action
+	else this->continueWorking();
 }
 void DroneSentience::consider() {
 	// Examines current goals and picks actions to achieve it
@@ -117,8 +122,18 @@ void DroneSentience::consider() {
 	}
 	this->pushAction(newAction);
 }
+void DroneSentience::pushAction(Action* inputAction) {
+	// add the action to the stack for processing
+	// set the flag to notify for more actions
+	actionStack.push(inputAction);
+	remainingTime = actionStack.top()->duration;
+}
+void DroneSentience::continueWorking() {
+	remainingTime -= MS_PER_UPDATE;
+	if (remainingTime < 0.0) this->actionStack.top()->execute();
+	this->actionStack.pop();
+}
 Actor* DroneSentience::findPlayer() {
-	// Returns nullptr if the player is not w/in five tiles
-	int radius = 5;
-	
+	// Returns nullptr if it can't find the player
+	return nullptr;
 }

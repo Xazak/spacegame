@@ -92,6 +92,12 @@ Drone::Drone() :
 void Drone::update() {
 	// Asks the sentience module to do the next action
 	// (Sentience decides what to do next and then does it)
-	this->intent->doNextAction();
+	if (this->intent->isFocused()) {
+		// continue the in-progress action
+		LOGMSG(this->getName() << " continuing its action");
+		this->intent->continueWorking();
+	} else {
+		LOGMSG(this->getName() << " choosing new action");
+		this->intent->doNextAction();
+	}
 }
-

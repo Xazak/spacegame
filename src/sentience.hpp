@@ -18,7 +18,7 @@ class MessageLog;
 
 class Sentience {
 	public:
-//		Sentience();
+		Sentience();
 		//~Sentience();
 //		void pushAction(const ActionContext& context);
 		virtual void pushAction(Action* nextAction) = 0;
@@ -28,17 +28,21 @@ class Sentience {
 //		Action* getAction();
 //		Action popAction();
 //		ActionType peekAction();
+		bool isFocused();
+		virtual void continueWorking() {}
+
 	protected:
 		// Note that Action objects contain their own context!
 		MessageLog* msgOutput;
+		double remainingTime; // time left until the action is complete
 		bool actionReady;
 };
 
 class PlayerSentience : public Sentience {
 	public:
 		PlayerSentience();
-		void pushAction(Action* nextAction);
 		void doNextAction();
+		void pushAction(Action* nextAction);
 	private:
 		Action* nextAction;
 		Action* prevAction;
@@ -46,9 +50,10 @@ class PlayerSentience : public Sentience {
 class DroneSentience : public Sentience {
 	public:
 		DroneSentience(Actor* owner);
-		void pushAction(Action* nextAction);
 		void doNextAction();
+		void pushAction(Action* nextAction);
 		bool hasActions() { return actionStack.size(); }
+		void continueWorking();
 	private:
 		std::stack<Action*> actionStack;
 		ActionContext localContext;

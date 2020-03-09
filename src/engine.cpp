@@ -82,10 +82,10 @@ void GameEngine::execGameLoop() {
 	// TK_CLOSE == true when the terminal window is closed
 	// _peek does not block if false (unlike _read)
 	while (terminal_peek() != TK_CLOSE) {
-		currTime = steady_clock::now();
-		timeSpan = currTime - prevTime;
-		prevTime = currTime;
-		lagTime += timeSpan;
+		currTime = steady_clock::now(); // get snapshot of current timepoint
+		timeSpan = currTime - prevTime; // get the diff since last snapshot
+		prevTime = currTime;			// update the snapshots forward
+		lagTime += timeSpan;			// add the diff to the accumulator
 		// Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
@@ -119,13 +119,15 @@ void GameEngine::execGameLoop() {
 		// VICTORY or DEFEAT engine state
 
 //		while (timeSpan >= duration_cast<duration<double>>(MS_PER_UPDATE)) {
-		while (timeSpan >= updateTimeStep) {
+		while (lagTime >= updateTimeStep) {
 			update(); // Perform game update routines based on engine state
-			timeSpan -= updateTimeStep;
+			lagTime -= updateTimeStep;
 		}
-//		gui.update(); // Make sure the GUI catches any state changes
-//		gui.render(lagTime / updateTimeStep); // Update the game screen
-		gui.render(); // Update the game screen
+		// Push an update to the screen: the input value is the fractional
+		// amount of time that we have progressed into the 'next' frame
+		// The value is normalized by updateTimeStep before it is passed
+//		LOGMSG("Requesting GUI render with lagTime == " << lagTime.count());
+		gui.render(lagTime / updateTimeStep);
 	};
 }
 void GameEngine::update() {

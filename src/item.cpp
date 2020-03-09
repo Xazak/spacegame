@@ -24,7 +24,7 @@ Actor(inputName, inputSigil, inputColor, inputLocation, inputMap, obstructFlag, 
 // **** SPECIFIC ITEMS
 // **** Large Items
 Door::Door(int xPos, int yPos, GameMap* inputMap) :
-	Item("door", 0x03A6, 0xFF666699, xPos, yPos, inputMap, true, true),
+	Item("door", 0x03A6, 0xFF999999, xPos, yPos, inputMap, true, true),
 	isOpen(false),
 	closedSigil(0x03A6),
 	openSigil(0x00D4)

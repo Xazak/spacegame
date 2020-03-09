@@ -116,7 +116,7 @@ class GameGUI {
 		// Initializes a GameGUI to initial state
 		void initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr);
 		void update(); // Polls the game state for changes in displayed info
-		void render(); // Draws the interface onto the screen
+		void render(double timeDelta); // Draws the interface onto the screen
 		void testBLT(); // BearLibTerminal debugging/test function
 		void testMessageLog();
 		void testMenu();
