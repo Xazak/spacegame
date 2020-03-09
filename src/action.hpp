@@ -37,8 +37,9 @@ class GameMap; // fwd-decl
 struct ActionContext; // fwd-decl
 struct Action {
 	Action();
-	Action(const ActionContext& inputContext);
 	Action(const Action& inputAction);
+	Action(const ActionContext& inputContext, const Actor* inputSubject, double inputDuration = 0.0);
+	Action(const ActionContext& inputContext, double inputDuration);
 //	Action& operator*();
 	virtual ~Action();
 	virtual bool isPlausible() { return true; } // Allow any action by default
@@ -47,7 +48,6 @@ struct Action {
 	ActionContext* context;
 	Actor* subject; // Points to the entity who is 'doing' the action
 	double duration; // Time to complete the action in milliseconds
-
 };
 // *** ACTION CLASSES
 struct IdleAction : public Action {
@@ -61,6 +61,7 @@ struct MoveAction : public Action {
 	MoveAction(Actor *inputTarget, GameMap *inputArea, int targetX, int targetY);
 	bool isPlausible();
 	void execute();
+	void normalizeMoveIncrement();
 	MoveAction* clone() const { return new MoveAction(*this); }
 	cpair moveIncrement;
 };

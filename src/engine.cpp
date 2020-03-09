@@ -56,7 +56,7 @@ bool GameEngine::initialize(std::string configFile) {
 	parser.setPlayer(&player); // Initialize the parser-to-player linkage
 	// Establish the LMR
 	lemur.setLocality(&meatspace);
-	lemur.setAbsLocation(4, 8);
+	lemur.setAbsLocation(7, 7);
 	meatspace.allActors.push_back(&lemur);
 	sentientActors.push_back(&lemur);
 	// Initialize the GUI

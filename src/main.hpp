@@ -13,7 +13,7 @@ DESC Contains the definitions of various useful data structures
 // *** DEFINITIONS AND ALIASES
 typedef unsigned int uint;
 
-#define MS_PER_UPDATE 1.0
+#define MS_PER_UPDATE 0.25
 
 struct CoordinatePair {
 	int x;

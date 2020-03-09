@@ -101,6 +101,9 @@ DroneSentience::DroneSentience(Actor* owner) {
 	localContext.subject = owner;
 	localContext.vicinity = owner->getLocality();
 }
+bool DroneSentience::hasActions() {
+	return (actionStack.empty() ? false : true);
+}
 void DroneSentience::doNextAction() {
 	// pull the action on the top of the stack and do it
 	// make sure the action is removed when done
@@ -110,14 +113,22 @@ void DroneSentience::doNextAction() {
 void DroneSentience::consider() {
 	// Examines current goals and picks actions to achieve it
 	Action* newAction = nullptr;
-	if (!localContext.subject->location.isEqual(cpair(4, 8))) {
-		LOGMSG("moving");
-		localContext.echs = 10;
-		localContext.whye = 10;
-		localContext.target = localContext.subject;
+	localContext.target = localContext.subject;
+	localContext.vicinity = localContext.target->getLocality();
+	if (localContext.subject->location.isEqual(cpair(7, 7))) {
+		LOGMSG("going to #2");
+		localContext.echs = 7;
+		localContext.whye = 8;
+		localContext.type = ActionType::MOVE;
+		newAction = new MoveAction(localContext);
+	} else if (localContext.subject->location.isEqual(cpair(7, 8))) {
+		LOGMSG("going to #1");
+		localContext.echs = 7;
+		localContext.whye = 7;
+		localContext.type = ActionType::MOVE;
 		newAction = new MoveAction(localContext);
 	} else {
-//		LOGMSG("idling");
+		LOGMSG("idling");
 		newAction = new IdleAction();
 	}
 	this->pushAction(newAction);
@@ -125,13 +136,21 @@ void DroneSentience::consider() {
 void DroneSentience::pushAction(Action* inputAction) {
 	// add the action to the stack for processing
 	// set the flag to notify for more actions
-	actionStack.push(inputAction);
-	remainingTime = actionStack.top()->duration;
+	// NOTE: pretty sure this is where intrinsic speed should be calc'ed in...
+	if (inputAction->isPlausible()) {
+		actionStack.push(inputAction);
+		remainingTime = actionStack.top()->duration;
+		LOGMSG("New action duration: " << remainingTime);
+	} else {
+		ERRMSG("FIXME: bad action context checking");
+	}
 }
 void DroneSentience::continueWorking() {
 	remainingTime -= MS_PER_UPDATE;
-	if (remainingTime < 0.0) this->actionStack.top()->execute();
-	this->actionStack.pop();
+	if (remainingTime < 0.0) {
+		this->actionStack.top()->execute();
+		this->actionStack.pop();
+	}
 }
 Actor* DroneSentience::findPlayer() {
 	// Returns nullptr if it can't find the player

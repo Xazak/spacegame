@@ -30,10 +30,14 @@ Action::Action(const Action& inputAction) :
 {//	LOGMSG("Action(Action) ctor");
 //		this->context->dump();
 }
-Action::Action(const ActionContext& inputContext) {
-	context = new ActionContext(inputContext);
+Action::Action(const ActionContext& inputContext, const Actor* inputSubject, double inputDuration) :
+	duration(inputDuration)
+{	context = new ActionContext(inputContext);
 	// FIXME: Missing subject and duration assignments!
 }
+Action::Action(const ActionContext& inputContext, double inputDuration) :
+	duration(inputDuration)
+{	}
 Action::~Action() {
 	delete context;
 }
@@ -49,7 +53,7 @@ void IdleAction::execute() {
 // ****************
 // **** MOVE Action
 MoveAction::MoveAction(const ActionContext& inputContext) :
-	Action(inputContext)
+	Action(inputContext, inputContext.subject, 0.25)
 {	}
 MoveAction::MoveAction(Actor* inputTarget, GameMap* inputArea, int targetX, int targetY) {
 	context = new ActionContext(ActionType::MOVE, inputArea, inputTarget, inputTarget, targetX, targetY);
@@ -59,40 +63,37 @@ bool MoveAction::isPlausible() {
 	// Actor doesn't have a movement speed yet, assume 1 tile at a time
 	// context->target->location : ORIGIN
 	// targetN : DESTINATION
-	moveIncrement.set(this->context->echs, this->context->whye);
-	if (moveIncrement.x > 1) moveIncrement.x = 1;
-	else if (moveIncrement.x < -1) moveIncrement.x = -1;
-	if (moveIncrement.y > 1) moveIncrement.y = 1;
-	else if (moveIncrement.y < -1) moveIncrement.y = -1;
-//	if ((this->context->target->location.x - target.x) > 1) {
-//		target.x = 1;
-//	} else if ((this->context->target->location.x
-	/*
-	if (this->context->echs >= 1) {
-		targetX += 1;
-	} else if (this->context->echs <= -1 ) {
-		targetX += -1;
-	}
-	if (this->context->whye >= 1) {
-		targetY += 1;
-	} else if (this->context->whye <= -1 ) {
-		targetY += -1;
-	}
-	*/
+//	moveIncrement.set(this->context->echs, this->context->whye);
+	int xIncrement = 0;
+	int yIncrement = 0;
+	if (context->target->location.x < this->context->echs) xIncrement = 1;
+	if (context->target->location.x > this->context->echs) xIncrement = -1;
+	if (context->target->location.y < this->context->whye) yIncrement = 1;
+	if (context->target->location.y > this->context->whye) yIncrement = -1;
+	moveIncrement.set(xIncrement, yIncrement);
 //	this->context->dump();
-	cpair moveTarget(this->context->target->location);
+	cpair moveTarget(context->target->location);
 	moveTarget = moveTarget + moveIncrement;
-//	if (this->context->vicinity->isBlocked(moveIncrement + this->context->target->location)) {
 	if (this->context->vicinity->isBlocked(moveTarget)) {
 		this->context->success = false;
 	}
-//	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
+	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
 	return this->context->success;
 }
 void MoveAction::execute() {
 	// Perform the movement action
+	normalizeMoveIncrement();
 	context->target->setRelLocation(context->echs, context->whye);
-//	LOGMSG(context->target->getName() << " now at " << context->target->location);
+	LOGMSG(context->target->getName() << " moved to " << context->target->location << " by " << context->echs << ", " << context->whye);
+}
+void MoveAction::normalizeMoveIncrement() {
+//	LOGMSG("Normalizing MOVE action");
+	if (context->target->location.x < this->context->echs) context->echs = 1;
+	else if (context->target->location.x > this->context->echs) context->echs = -1;
+	else context->echs = 0;
+	if (context->target->location.y < this->context->whye) context->whye = 1;
+	else if (context->target->location.y > this->context->whye) context->whye = -1;
+	else context->whye = 0;
 }
 /* DISABLED: void Move: undo()
 void MoveAction::undo() {
@@ -103,7 +104,7 @@ void MoveAction::undo() {
 // ****************
 // ****  GET Action
 GetAction::GetAction(const ActionContext& inputContext) :
-	Action(inputContext)
+	Action(inputContext, inputContext.subject, 0.0)
 {	}
 bool GetAction::isPlausible() {
 	// tests against the action context
@@ -120,7 +121,7 @@ void GetAction::execute() {
 // ****************
 // **** DROP Action
 DropAction::DropAction(const ActionContext& inputContext) :
-	Action(inputContext)
+	Action(inputContext, inputContext.subject, 0.0)
 {	}
 bool DropAction::isPlausible() {
 	return (context->subject->contents->getSize());
@@ -131,7 +132,7 @@ void DropAction::execute() {
 // ****************
 // **** OPEN Action
 OpenAction::OpenAction(const ActionContext& inputContext) :
-	Action(inputContext)
+	Action(inputContext, inputContext.subject, 0.0)
 {	}
 bool OpenAction::isPlausible() {
 	// Does the target exist...?
@@ -145,7 +146,7 @@ void OpenAction::execute() {
 // *****************
 // **** CLOSE Action
 CloseAction::CloseAction(const ActionContext& inputContext) :
-	Action(inputContext)
+	Action(inputContext, inputContext.subject, 0.0)
 {	}
 bool CloseAction::isPlausible() {
 	// Does the target exist...?

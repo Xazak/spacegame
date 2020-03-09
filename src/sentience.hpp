@@ -52,7 +52,7 @@ class DroneSentience : public Sentience {
 		DroneSentience(Actor* owner);
 		void doNextAction();
 		void pushAction(Action* nextAction);
-		bool hasActions() { return actionStack.size(); }
+		bool hasActions();
 		void continueWorking();
 	private:
 		std::stack<Action*> actionStack;
