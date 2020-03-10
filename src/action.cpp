@@ -140,6 +140,7 @@ bool OpenAction::isPlausible() {
 	// Does the target exist...?
 	//  AND does the target have an aperture to be opened?
 	//  AND is that aperture currently closed?
+	if (context->target->location == context->subject->location) return false;
 	return (context->target && context->target->aperture && !context->target->aperture->isOpen());
 }
 void OpenAction::execute() {
@@ -153,6 +154,8 @@ CloseAction::CloseAction(const ActionContext& inputContext) :
 bool CloseAction::isPlausible() {
 	// Does the target exist...?
 	//  AND does the target have an aperture to be closed?
+	// FIXME: check for same location AND obstruction (door vs barrel)...
+	if (context->target->location == context->subject->location) return false;
 	return (context->target && context->target->aperture && context->target->aperture->isOpen());
 }
 void CloseAction::execute() {

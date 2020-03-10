@@ -48,16 +48,20 @@ class GameMap {
 		Actor* getOccupant(cpair inputLocation);
 		Actor* getContents(uint xPos, uint yPos);
 		Actor* getContents(cpair inputLocation);
+		Actor* getFurnitureAt(uint xPos, uint yPos);
+		Actor* getFurnitureAt(cpair inputLocation);
 		void setOccupant(Actor *occupier); // occupancy is a reflexive relation
 		void unsetOccupant(uint xPos, uint yPos);
 		void unsetOccupant(cpair inputLocation);
 		void setObstruction(uint xPos, uint yPos, bool inputValue);
 		void setObstruction(cpair inputLocation, bool inputValue);
+		void registerFurniture(Actor* newItem, uint xPos, uint yPos);
 		void registerItem(Actor* newItem, uint xPos, uint yPos);
 		void registerItem(Actor* newItem, cpair inputLocation);
 		void removeItem(Actor *target);
 
-		std::list<Actor*> allActors; // List of pointers to ALL actors in this
+		std::list<Actor*> allActors; // List of pointers to ALL actors herein
+		std::list<Actor*> furnishings; // List of all furniture objects
 
 	private:
 		Tile** mapArray;

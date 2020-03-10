@@ -8,6 +8,7 @@ DESC Contains the definitions and methods of the Map and Tile classes.
 #include "map.hpp"
 #include "main.hpp"
 #include "item.hpp"
+#include "container.hpp"
 
 using namespace std;
 
@@ -188,7 +189,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 	}
 	// Add some furniture
 	Door *localDoor = new Door(12, 9, this);
-	registerItem(localDoor, 12, 9);
+	registerFurniture(localDoor, 12, 9);
 	// *** END TEST STRUCTURE
 //	LOGMSG("Tilemap created: " << width << "x" << height);
 	/*
@@ -219,10 +220,17 @@ Actor* GameMap::getOccupant(cpair inputLocation) {
 	return getOccupant(inputLocation.x, inputLocation.y);
 }
 Actor* GameMap::getContents(uint xPos, uint yPos) {
-	return this->mapArray[xPos + yPos * width]->contents;
+	if (this->mapArray[xPos + yPos * width]->contents == nullptr) return nullptr;
+	return this->mapArray[xPos + yPos * width]->contents->itemList.front();
 }
 Actor* GameMap::getContents(cpair inputLocation) {
 	return getContents(inputLocation.x, inputLocation.y);
+}
+Actor* GameMap::getFurnitureAt(uint xPos, uint yPos) {
+	return this->mapArray[xPos + yPos * width]->furniture;
+}
+Actor* GameMap::getFurnitureAt(cpair inputLocation) {
+	return getFurnitureAt(inputLocation.x, inputLocation.y);
 }
 void GameMap::setOccupant(Actor *occupier) {
 	this->mapArray[occupier->getLocation().x + occupier->getLocation().y * width]->occupant = occupier;
@@ -239,18 +247,28 @@ void GameMap::setObstruction(uint xPos, uint yPos, bool inputValue) {
 void GameMap::setObstruction(cpair inputLocation, bool inputValue) {
 	this->setObstruction(inputLocation.x, inputLocation.y, inputValue);
 }
-void GameMap::registerItem(Actor* newItem, uint xPos, uint yPos) {
-	this->mapArray[xPos + yPos * width]->contents = newItem;
+void GameMap::registerFurniture(Actor* newItem, uint xPos, uint yPos) {
+	this->mapArray[xPos + yPos * width]->furniture = newItem;
 	newItem->setLocality(this);
 	newItem->setAbsLocation(xPos, yPos);
+	setObstruction(xPos, yPos, newItem->obstructs);
+	this->furnishings.push_back(newItem);
+//	LOGMSG(newItem->getName() << " (" << newItem << ") added to furniture of Tile at " << xPos << ", " << yPos);
+}
+void GameMap::registerItem(Actor* newItem, uint xPos, uint yPos) {
+	this->mapArray[xPos + yPos * width]->receiveItem(newItem);
+	newItem->setLocality(this);
+	newItem->setAbsLocation(xPos, yPos);
+	// FIXME: Change/move the line below, so that the GUI method checks a tile
+	// for any contents and if so, draws the topmost item as the pile
 	this->allActors.push_back(newItem);
-//	LOGMSG("Contents of " << xPos << ", " << yPos << " set to " << this->mapArray[xPos + yPos * width]->contents);
+//	LOGMSG(newItem->getName() << " (" << newItem << ") added to contents of Tile at " << xPos << ", " << yPos);
 }
 void GameMap::registerItem(Actor* newItem, cpair inputLocation) {
 	this->registerItem(newItem, inputLocation.x, inputLocation.y);
 }
 void GameMap::removeItem(Actor *target) {
-	mapArray[target->location.x + target->location.y * width]->contents = nullptr;
+	mapArray[target->location.x + target->location.y * width]->releaseItem(target);
 	target->setLocality(nullptr);
 	allActors.remove(target);
 }

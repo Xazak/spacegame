@@ -11,11 +11,11 @@ DESC Describes the Container class: when attached to a valid Actor, allows the
 
 using namespace std;
 
-Container::Container() : capacity(0) {	}
+Container::Container() : capacity(0) {	/*LOGMSG("Created new unlim. container");*/ }
 Container::Container(uint inputSize) : capacity(inputSize) {	}
 Container::~Container() {
 	// FIXME: Be sure to delete everything in this->itemList!
-
+//	LOGMSG(" called ");
 }
 bool Container::add(Actor *object) {
 	if (this->isFull()) return false;

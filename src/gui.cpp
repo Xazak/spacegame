@@ -501,14 +501,23 @@ void GameGUI::Viewport::display() {
 			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));
 		}
 	}
-	// Paint the actors (including Items and sentients) onto the map
+	// Paint the local furniture
 	terminal_layer(3);
+	for (list<Actor*>::iterator furnishIter = mapSource->furnishings.begin(); furnishIter != mapSource->furnishings.end(); furnishIter++) {
+		terminal_color((*furnishIter)->getColor());
+		terminal_put(cursorXOrigin + (*furnishIter)->getLocation().x, cursorYOrigin + (*furnishIter)->getLocation().y, (*furnishIter)->getSigil());
+	}
+	// Paint the actors (including Items and sentients, but not the player) onto the map
 	for (list<Actor*>::iterator actorIter = mapSource->allActors.begin(); actorIter != mapSource->allActors.end(); actorIter++) {
 //		int color = (*actorIter)->getColor();
 		if ((*actorIter) == playerObj) continue; // draw the player last
 		terminal_color((*actorIter)->getColor());
+		if ((*actorIter)->intent) terminal_layer(5);
+		else terminal_layer(4);
 		terminal_put(cursorXOrigin + (*actorIter)->getLocation().x, cursorYOrigin + (*actorIter)->getLocation().y, (*actorIter)->getSigil());
 	}
+	// Paint the player on the map
+	terminal_layer(6);
 	terminal_color(playerObj->getColor());
 	terminal_put(cursorXOrigin + playerObj->location.x, cursorYOrigin + playerObj->location.y, playerObj->getSigil());
 }

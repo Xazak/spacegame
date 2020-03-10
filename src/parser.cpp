@@ -95,7 +95,8 @@ void GameParser::interpret(char inputKey) {
 			for (int xIndex = -1; xIndex <= 1; xIndex++) {
 				for (int yIndex = -1; yIndex <= 1; yIndex++) {
 					// Obtain access to the contents of the nearby tile
-					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+//					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					tileContents = localContext.vicinity->getFurnitureAt((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
 					// Check all items in tile contents for Openability
 					// If the target can't be opened, don't use it as a target
 //					LOGMSG("Checking " << tileContents);
@@ -118,7 +119,8 @@ void GameParser::interpret(char inputKey) {
 			for (int xIndex = -1; xIndex <= 1; xIndex++) {
 				for (int yIndex = -1; yIndex <= 1; yIndex++) {
 					// Obtain access to the contents of the nearby tile
-					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+//					tileContents = localContext.vicinity->getContents((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
+					tileContents = localContext.vicinity->getFurnitureAt((localContext.subject->location.x + xIndex), (localContext.subject->location.y + yIndex));
 					// Check all items in tile contents for Openability
 					// If the target can't be opened, don't use it as a target
 //					LOGMSG("Checking " << tileContents);

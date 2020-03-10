@@ -5,6 +5,7 @@ DESC Contains the implementation of the Tile class.
 */
 
 #include "tile.hpp"
+#include "container.hpp"
 #include <string>
 
 using namespace std;
@@ -19,6 +20,7 @@ explored(true),
 obstructs(false),
 opaque(false),
 occupant(nullptr),
+furniture(nullptr),
 contents(nullptr)
 {	}
 // CTOR SPECIFIC
@@ -32,8 +34,30 @@ explored(isExplored),
 obstructs(blocksMovement),
 opaque(blocksVision),
 occupant(nullptr),
+furniture(nullptr),
 contents(nullptr)
 {	}
+Tile::~Tile() {
+	if (this->contents) delete contents;
+	this->contents = nullptr;
+}
+void Tile::receiveItem(Actor* item) {
+	if (this->contents == nullptr) {
+		this->contents = new Container();
+	}
+	this->contents->add(item);
+//	this->contents->dump(); // DEBUG
+//	LOGMSG("Added " << item->getName() << " to floor->contents");
+}
+void Tile::releaseItem(Actor* item) {
+	this->contents->remove(item);
+	if (this->contents->isEmpty()) {
+		delete contents;
+		contents = nullptr;
+//		LOGMSG("Deleted container from floor");
+	}
+//	LOGMSG("Removed " << item->getName() << " from floor->contents");
+}
 
 // **** SPECIFIC TILE TYPES
 // Five basic types, ranging in mass:

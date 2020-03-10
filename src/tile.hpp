@@ -22,9 +22,13 @@ struct Tile {
 	bool		obstructs;
 	bool		opaque;
 	Actor*		occupant;
-	Actor*		contents; // only one item allowed per tile for now
+	Actor*		furniture; // only one furniture item allowed per tile
+	Container*	contents;
 	Tile();
 	Tile(int inputSigil, int inputColor, int inputBKColor, std::string inputName, bool isExplored, bool blocksMovement, bool blocksVision);
+	~Tile();
+	void receiveItem(Actor* item);
+	void releaseItem(Actor* item);
 };
 
 struct Vacuum : public Tile {

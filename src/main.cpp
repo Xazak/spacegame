@@ -61,6 +61,9 @@ CoordinatePair CoordinatePair::operator+(const CoordinatePair& rhs) {
 //	LOGMSG(*this << " + " << rhs << " + " << lhs);
 	return lhs;
 }
+bool CoordinatePair::operator==(const cpair& rhs) {
+	return ((this->x == rhs.x && this->y == rhs.y) ? true : false);
+}
 bool CoordinatePair::isEqual(const int& inputX, const int& inputY) {
 	return (x == inputX && y == inputY);
 }
