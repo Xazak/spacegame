@@ -50,18 +50,20 @@ void GameParser::interpret(char inputKey) {
 			localContext.target = player;
 			if (currentKey == 'y' || currentKey == 'h' || currentKey == 'b') {
 				localContext.echs = -1 + player->getLocation().x;
-			}
-			if (currentKey == 'u' || currentKey == 'l' || currentKey == 'n') {
-				localContext.echs = 1 + player->getLocation().x;
+			} else if (currentKey == 'u' || currentKey == 'l' || currentKey == 'n') {
+				localContext.echs =  1 + player->getLocation().x;
+			} else {
+				localContext.echs = player->getLocation().x;
 			}
 			if (currentKey == 'y' || currentKey == 'k' || currentKey == 'u') {
 				localContext.whye = -1 + player->getLocation().y;
-			}
-			if (currentKey == 'b' || currentKey == 'j' || currentKey == 'n') {
-				localContext.whye = 1 + player->getLocation().y;
+			} else if (currentKey == 'b' || currentKey == 'j' || currentKey == 'n') {
+				localContext.whye =  1 + player->getLocation().y;
+			} else {
+				localContext.whye = player->getLocation().y;
 			}
 //			LOGMSG("Creating MOVE action");
-//			LOGMSG("Player moving from " << player->location << " to " << player->location.x + localContext.echs << ", " << player->location.y + localContext.whye);
+//			LOGMSG("Player moving from " << player->location << " to " << localContext.echs << ", " << localContext.whye);
 			input = new MoveAction(localContext);
 			validInput = true;
 		break;

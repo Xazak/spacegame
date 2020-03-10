@@ -50,6 +50,7 @@ class GameMap {
 		Actor* getContents(cpair inputLocation);
 		void setOccupant(Actor *occupier); // occupancy is a reflexive relation
 		void unsetOccupant(uint xPos, uint yPos);
+		void unsetOccupant(cpair inputLocation);
 		void setObstruction(uint xPos, uint yPos, bool inputValue);
 		void setObstruction(cpair inputLocation, bool inputValue);
 		void registerItem(Actor* newItem, uint xPos, uint yPos);

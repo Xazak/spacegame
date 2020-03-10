@@ -77,14 +77,16 @@ bool MoveAction::isPlausible() {
 	if (this->context->vicinity->isBlocked(moveTarget)) {
 		this->context->success = false;
 	}
-	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
+//	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
 	return this->context->success;
 }
 void MoveAction::execute() {
 	// Perform the movement action
+	context->vicinity->unsetOccupant(context->target->location);
 	normalizeMoveIncrement();
 	context->target->setRelLocation(context->echs, context->whye);
-	LOGMSG(context->target->getName() << " moved to " << context->target->location << " by " << context->echs << ", " << context->whye);
+	context->vicinity->setOccupant(context->target);
+//	LOGMSG(context->target->getName() << " moved to " << context->target->location << " by " << context->echs << ", " << context->whye);
 }
 void MoveAction::normalizeMoveIncrement() {
 //	LOGMSG("Normalizing MOVE action");

@@ -230,6 +230,9 @@ void GameMap::setOccupant(Actor *occupier) {
 void GameMap::unsetOccupant(uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->occupant = nullptr;
 }
+void GameMap::unsetOccupant(cpair inputLocation) {
+	unsetOccupant(inputLocation.x, inputLocation.y);
+}
 void GameMap::setObstruction(uint xPos, uint yPos, bool inputValue) {
 	this->mapArray[xPos + yPos * width]->obstructs = inputValue;
 }

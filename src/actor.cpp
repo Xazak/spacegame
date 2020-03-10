@@ -87,17 +87,17 @@ Drone::Drone() :
 	Actor("DRONE", 0x03B6, 0xFF666699)
 {	intent = new DroneSentience(this);
 	contents = new Container(1);
-	LOGMSG("Drone object initialized.");
+//	LOGMSG("Drone object initialized.");
 }
 void Drone::update() {
 	// Asks the sentience module to do the next action
 	// (Sentience decides what to do next and then does it)
 	if (this->intent->isFocused()) {
 		// continue the in-progress action
-		LOGMSG(this->getName() << " continuing its action");
+//		LOGMSG(this->getName() << " continuing its action");
 		this->intent->continueWorking();
 	} else {
-		LOGMSG(this->getName() << " choosing new action");
+//		LOGMSG(this->getName() << " choosing new action");
 		this->intent->doNextAction();
 	}
 }

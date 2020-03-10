@@ -116,21 +116,22 @@ void DroneSentience::consider() {
 	localContext.target = localContext.subject;
 	localContext.vicinity = localContext.target->getLocality();
 	if (localContext.subject->location.isEqual(cpair(7, 7))) {
-		LOGMSG("going to #2");
+//		LOGMSG("going to #2");
 		localContext.echs = 7;
 		localContext.whye = 8;
 		localContext.type = ActionType::MOVE;
 		newAction = new MoveAction(localContext);
 	} else if (localContext.subject->location.isEqual(cpair(7, 8))) {
-		LOGMSG("going to #1");
+//		LOGMSG("going to #1");
 		localContext.echs = 7;
 		localContext.whye = 7;
 		localContext.type = ActionType::MOVE;
 		newAction = new MoveAction(localContext);
 	} else {
-		LOGMSG("idling");
+//		LOGMSG("idling");
 		newAction = new IdleAction();
 	}
+//	newAction = new IdleAction();
 	this->pushAction(newAction);
 }
 void DroneSentience::pushAction(Action* inputAction) {
@@ -140,7 +141,7 @@ void DroneSentience::pushAction(Action* inputAction) {
 	if (inputAction->isPlausible()) {
 		actionStack.push(inputAction);
 		remainingTime = actionStack.top()->duration;
-		LOGMSG("New action duration: " << remainingTime);
+//		LOGMSG("New action duration: " << remainingTime);
 	} else {
 		ERRMSG("FIXME: bad action context checking");
 	}
