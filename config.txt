@@ -1,4 +1,4 @@
-screenWidth=120
-screenHeight=40
+screenWidth=150
+screenHeight=42
 font=./fonts/TerminusTTF-4.47.0.ttf
 fontSize=16

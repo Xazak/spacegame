@@ -7,15 +7,15 @@ DESC Contains definitions of the GameGUI class, which displays the game
 
 #include "BearLibTerminal.h"
 #include "gui.hpp"
+#include "panel.hpp"
+#include "engine.hpp"
 #include "actor.hpp"
 #include "map.hpp"
-#include "engine.hpp"
 #include <iostream>
 #include <string>
 
 using namespace std;
 
-// **** GameGUI Methods
 /* *** A short guide to BearLibTerminal API - Jan 19 2020 (Zach)
 CALLED BY GameEngine: (ie do not call them here!)
 BLT CONFIGURATION
@@ -132,21 +132,22 @@ NOTE: Only layer 0 has a background color! All other layers have transp. bkgrnd
 Each panel within the GUi will have its dimensions calculated when the game is loaded.
 This class will define some sane minimums in case the defined/calculated values are wrongly-sized.
 */
+// **** STATICS
 GameEngine* GameGUI::engine = nullptr;
 Actor* GameGUI::avatar = nullptr;
 GameMap* GameGUI::worldMap = nullptr;
+// **** GAMEGUI
 GameGUI::GameGUI() :
-statPanelWidthMinimum(36),
-msgPanelWidthMinimum(40),
-msgPanelHeightMinimum(10)
+statPanelWidth(36),
+statPanelHeight(13), // includes +1 for the splitter edge (? FIXME ?)
+msgPanelWidth(0), // same as the map display
+msgPanelHeight(10)
 {	// default constructor
 }
 GameGUI::~GameGUI() {
 	// default destructor
 //	delete cmdPrompt;
 }
-//void GameGUI::initialize(uint maxWidth, uint maxHeight) {
-//void GameGUI::initialize(uint maxWidth, uint maxHeight, Actor* playerPtr) {
 void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr) {
 	// Sets up a created GameGUI object to the runtime default configuration
 	// Obtain pointers to the game objects we want to display
@@ -158,46 +159,43 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	// Assign the maximum parameters
 	windowWidth = maxWidth;
 	windowHeight = maxHeight;
-	statPanelHeightMinimum = (windowHeight * 33) / 100;
+	msgPanelWidth = maxWidth - statPanelWidth;
 	globalMsgLog.add("Press Q or Alt+F4 to exit.");
+	// SPLITTERS have IDs from 0 - 9
+	// ALL OTHER PANELS have IDs from 10+
 	// drawing method
 	//						split:	LU/RD ratio%, field width, field height
 	//							+	id#, type, origin
 	//						panel:	origin point, panel width, panel height
 	// split root into L/R:			75/25, maxWidth, maxHeight
-	layoutRoot = new Splitter(0, 0, 0, maxWidth, maxHeight, true, 75);
+	layoutRoot = new Splitter(1, 0, 0, msgPanelWidth, windowHeight, true);
 	GUIPanel* layoutIndex = layoutRoot;
 	// split root->L into U/D		75/25, (mW - statpanel), maxHeight)
-	layoutIndex->left = new Splitter(1, layoutIndex->leftPanelOrigin(), layoutIndex->rightPanelOrigin().x, maxHeight, false, 75);
-	layoutIndex = layoutIndex->left;
+	layoutIndex->up = new Splitter(2, layoutIndex->leftPanelOrigin(), msgPanelWidth, (windowHeight - msgPanelHeight), false);
+	layoutIndex = layoutIndex->up;
 	// put MAP at root->L->U		o: r->L->U, mW-statpanel, mH
-	layoutIndex->left = new Viewport(4, layoutIndex->leftPanelOrigin(), layoutRoot->rightPanelOrigin().x, layoutIndex->rightPanelOrigin().y, worldMap, avatar->location, avatar);
-//	// put MSG at root->L->D		o: r->L->D, mW-statpanel, msgHeight
-	layoutIndex->right = new MessageReadout(5, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), &globalMsgLog);
-	int msgBoxYOrigin = layoutIndex->right->origin.y;
-	/* XXX DISABLED: inline CLI
-	// split root->L->D into MSG and CLI
-	layoutIndex->right = new Splitter(7, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), false, 20);
-	layoutIndex = layoutIndex->right;
-	// put CLI at root->L->D->U
-	layoutIndex->left = new CommandPrompt(8, layoutIndex->leftPanelOrigin(), layoutRoot->rightPanelOrigin().x);
-	// put MSG at root->L->D->D
-	layoutIndex->right = new MessageReadout(5, layoutIndex->rightPanelOrigin(), layoutRoot->rightPanelOrigin().x, (maxHeight - layoutIndex->rightPanelOrigin().y), &globalMsgLog);
-	*/
+	layoutIndex->up = new Viewport(11, layoutIndex->upPanelOrigin(), msgPanelWidth, (windowHeight - msgPanelHeight), worldMap, avatar->location, avatar);
+	// put MSG at root->L->D		o: r->L->D, mW-statpanel, msgHeight
+	layoutIndex->down = new MessageReadout(12, layoutIndex->downPanelOrigin(), msgPanelWidth, msgPanelHeight, &globalMsgLog);
+	// grab the position where we'll spawn the CLI at
+	int msgBoxYOrigin = layoutIndex->down->origin.y;
 	// split root->R into U/D		33/67, statpanel, maxHeight
 	layoutIndex = layoutRoot;
-	layoutIndex->right = new Splitter(2, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, maxHeight, false, 33);
-	layoutIndex = layoutIndex->right;
+	layoutIndex->right = new Splitter(3, layoutIndex->rightPanelOrigin(), statPanelWidth, statPanelHeight, false);
 	// put VIT at root->R->U		o: r->R->U, statpanel, maxHeight * 33%
-	layoutIndex->left = new DataDisplay(6, layoutIndex->leftPanelOrigin(), statPanelWidthMinimum, statPanelHeightMinimum, avatar);
-	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
-	layoutIndex->right = new Splitter(3, layoutIndex->rightPanelOrigin(), statPanelWidthMinimum, (maxHeight * 67 / 100), false, 50);
 	layoutIndex = layoutIndex->right;
+	layoutIndex->up = new DataDisplay(13, layoutIndex->upPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
+	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
+	layoutIndex->down = new Splitter(4, layoutIndex->downPanelOrigin(), statPanelWidth, statPanelHeight, false);
+//	layoutIndex = layoutIndex->down;
 	// put AUX at root->R->D->U		o: r->R->D->U, statpanel, maxHeight * 33%
-//	layoutIndex->left = new DataDisplay();
+//	layoutIndex->up = new DataDisplay();
 	// put MTR at root->R->D->D		o: r->R->D->D, statpanel, maxHeight * 33%
-//	layoutIndex->right = new DataDisplay();
-	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin - 3), layoutRoot->rightPanelOrigin().x);
+//	layoutIndex->down = new DataDisplay();
+	// The command prompt is drawn specially over the top the UI, is therefore
+	// not part of the base layout tree
+	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin - 3), msgPanelWidth);
+//	this->dump(); // DEBUG
 }
 void GameGUI::update() {
 	// polls game state to see if any of the GUI elements need to change
@@ -235,15 +233,30 @@ void GameGUI::drawFullLayoutTree() {
 	GUIPanel* layoutIter = layoutRoot;
 	queue<GUIPanel*> drawOrder;
 	drawOrder.push(layoutIter);
+//	LOGMSG("Redrawing layout tree...");
 	while (!drawOrder.empty()) {
 		terminal_color("light grey");
 		layoutIter = drawOrder.front();
 		drawOrder.pop();
 		layoutIter->display();
+//		LOGMSG("Drawing panel #" << layoutIter->id);
 		if (layoutIter->left != nullptr) drawOrder.push(layoutIter->left);
+		if (layoutIter->up != nullptr) drawOrder.push(layoutIter->up);
 		if (layoutIter->right != nullptr) drawOrder.push(layoutIter->right);
+		if (layoutIter->down != nullptr) drawOrder.push(layoutIter->down);
 	}
 	if (cmdPrompt->visible) cmdPrompt->display();
+	// NEW METHOD
+	// - splitters (and other GUI chromes) draw on a 'template' array
+	// - the GUI takes the template array and uses it to render the GUI frame
+	// - the non-splitter modules are asked to display their contents
+	/*	0	(enter drawing loop)
+		1	if the panel-to-be-drawn is a splitter, draw it
+		2	if the panel is NOT a splitter, skip it
+		3	when all of the splitters are out of the queue/have been drawn...
+		4	... use the splitter->template array to draw the GUI frame
+		5	reiterate the queue and draw all of the non-splitter panels
+	*/
 }
 // **** WINDOW-DRAWING METHODS
 void GameGUI::drawHorizontalLine(unsigned int x, unsigned int y, int length) {
@@ -259,6 +272,7 @@ void GameGUI::drawHorizontalLine(unsigned int x, unsigned int y, int length) {
 			terminal_put((x + offset), y, 0x2500);
 		}
 	}
+//	LOGMSG("Drawing Hline @ " << x << ", " << y << " of length " << length);
 }
 void GameGUI::drawVerticalLine(unsigned int x, unsigned int y, int length) {
 	// Draws a vertical line from the specified point
@@ -273,6 +287,26 @@ void GameGUI::drawVerticalLine(unsigned int x, unsigned int y, int length) {
 			terminal_put(x, (y + offset), 0x2502);
 		}
 	}
+//	LOGMSG("Drawing Vline @ " << x << ", " << y << " of length " << length);
+}
+void GameGUI::dump() {
+	GUIPanel* layoutIter = layoutRoot;
+	queue<GUIPanel*> writeOrder;
+	writeOrder.push(layoutIter);
+	LOGMSG("Dumping layout tree details:");
+	while (!writeOrder.empty()) {
+		layoutIter = writeOrder.front();
+		writeOrder.pop();
+		clog << "    #";
+		if (layoutIter->id < 10) clog << "0";
+		clog << layoutIter->id << " at " << layoutIter->origin << "  	d: ";
+		clog << layoutIter->width << "x" << layoutIter->height << endl;
+		if (layoutIter->left != nullptr) writeOrder.push(layoutIter->left);
+		if (layoutIter->up != nullptr) writeOrder.push(layoutIter->up);
+		if (layoutIter->right != nullptr) writeOrder.push(layoutIter->right);
+		if (layoutIter->down != nullptr) writeOrder.push(layoutIter->down);
+	}
+	clog << "    (Skipping command prompt)" << endl;
 }
 void GameGUI::testBLT() {
 	// Debugging function to assist with checking BearLibTerminal functions
@@ -324,271 +358,4 @@ void GameGUI::hideCLI() {
 }
 void GameGUI::toggleCLI() {
 	this->cmdPrompt->visible = !this->cmdPrompt->visible;
-}
-// **** MessageLog Methods
-int MessageLog::add(string newMessage) {
-	// Adds the input string to the message log list
-	messageList.push_back(newMessage);
-	return messageList.size();
-}
-// **** GUIPanel Methods
-// **** GUIPanel Prototypes
-GUIPanel::GUIPanel(uint newID, uint xOrigin, uint yOrigin,
-	uint inputMinWidth, uint inputMinHeight,
-	uint inputMaxWidth, uint inputMaxHeight,
-	GUIPanel *inputLeft, GUIPanel *inputRight) :
-id(newID),
-origin(xOrigin, yOrigin),
-minWidth(inputMinWidth),
-minHeight(inputMinHeight),
-maxWidth(inputMaxWidth),
-maxHeight(inputMaxHeight),
-left(inputLeft),
-right(inputRight)
-{	}
-GUIPanel::GUIPanel(uint newID, cpair newOrigin,
-	uint inputMinWidth, uint inputMinHeight,
-	uint inputMaxWidth, uint inputMaxHeight,
-	GUIPanel *inputLeft, GUIPanel *inputRight) :
-id(newID),
-origin(newOrigin),
-minWidth(inputMinWidth),
-minHeight(inputMinHeight),
-maxWidth(inputMaxWidth),
-maxHeight(inputMaxHeight),
-left(inputLeft),
-right(inputRight)
-{	}
-// **** SPLITTER
-GameGUI::Splitter::Splitter(uint inputID, uint xOrigin, uint yOrigin, uint inputWidth, uint inputHeight, bool inputType, uint ratioPercent) :
-GUIPanel(inputID, xOrigin, yOrigin, inputWidth, inputHeight),
-verticalSplit(inputType),
-splitRatio(ratioPercent)
-{	
-	//LOGMSG("Created #" << inputID << ": " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
-}
-GameGUI::Splitter::Splitter(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, bool inputType, uint ratioPercent) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-verticalSplit(inputType),
-splitRatio(ratioPercent)
-{	
-	//LOGMSG("Created #" << inputID << ": " << inputOrigin.x << ", " << inputOrigin.y << " d:" << inputWidth << "x" << inputHeight << " @ " << ratioPercent << "%");
-}
-void GameGUI::Splitter::display() {
-	// Draw a line
-//	LOGMSG(" (called) ");
-	terminal_layer(9);
-	if (verticalSplit) {
-//		terminal_color("blue");
-		uint xOffset = ( this->minWidth * this->splitRatio ) / 100;
-		drawVerticalLine(this->origin.x + xOffset, this->origin.y, this->minWidth);
-	} else {
-//		terminal_color("red");
-		uint yOffset = ( this->minHeight * this->splitRatio ) / 100;
-		drawHorizontalLine(this->origin.x, this->origin.y + yOffset, this->minWidth);
-	}
-}
-cpair GameGUI::Splitter::leftPanelOrigin() {
-//	LOGMSG("value: " << this->origin.x << ", " << this->origin.y);
-	return this->origin;
-}
-cpair GameGUI::Splitter::rightPanelOrigin() {
-	cpair offsetOrigin = this->origin;
-	if (this->verticalSplit) {
-		uint xOffset = ( this->minWidth * this->splitRatio ) / 100;
-		offsetOrigin.x += xOffset + 1;
-	} else {
-		uint yOffset = ( this->minHeight * this->splitRatio ) / 100;
-		offsetOrigin.y += yOffset + 1;
-	}
-//	LOGMSG("value: " << offsetOrigin.x << ", " << offsetOrigin.y);
-	return offsetOrigin;
-}
-cpair GameGUI::Splitter::upPanelOrigin() {
-	return this->leftPanelOrigin();
-}
-cpair GameGUI::Splitter::downPanelOrigin() {
-	return this->rightPanelOrigin();
-}
-// **** VIEWPORT
-GameGUI::Viewport::Viewport(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, GameMap* inputSource, cpair mapCenterpoint, Actor* playerPtr) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-mapSource(inputSource),
-focusPoint(mapCenterpoint),
-playerObj(playerPtr)
-{	}
-/*  COMMENTS: void GameGUI::displayMap() {
-	// Display the currently-explored map
-	// Get the size of the map
-	uint mapWidth = worldMap->getWidth();
-	uint mapHeight = worldMap->getHeight();
-//	uint mapSize = worldMap->getSize();
-//	LOGMSG(mapWidth << " " << mapHeight << " " << mapSize);
-//	uint mapWidth = 30;
-//	uint mapHeight = 30;
-	// Figure out the viewport offsets and the initial cursor position
-	uint mapViewHorizontalOffset = 0;
-	uint mapViewVerticalOffset = 0;
-	if (mapWidth < mapViewportWidth) {
-		mapViewHorizontalOffset = (mapDisplay.width - mapWidth) / 2;
-	}
-	if (mapHeight < mapViewportHeight) {
-		mapViewVerticalOffset = (mapDisplay.height - mapHeight) / 2;
-	}
-	uint cursorXOrigin = mapViewHorizontalOffset + mapDisplay.xOrigin;
-	uint cursorYOrigin = mapViewVerticalOffset + mapDisplay.yOrigin;
-//	LOGMSG("Cursor origin coords: " << cursorXOrigin << ", " << cursorYOrigin);
-	terminal_layer(0); // Move to the background layer
-	terminal_color("black"); // Set the default background color
-	// Display the map (test pattern)
-	for (uint xIndex = 0; xIndex < mapWidth; xIndex++) {
-		for (uint yIndex = 0; yIndex < mapHeight; yIndex++) {
-			// Set the tile background
-			terminal_layer(0);
-			// Use test colors and glyphs for now until iterator is finished
-			uint tileColor = 0x22FF00FF;
-			terminal_bkcolor(tileColor);
-			terminal_color(tileColor);
-			terminal_put(cursorXOrigin + xIndex, cursorYOrigin + yIndex, ' ');
-//			LOGMSG(cursorXOrigin + xIndex << ", " << cursorYOrigin + yIndex);
-			// Draw the terrain symbols
-			terminal_layer(2);
-			tileColor += 0x55000000;
-			terminal_color(tileColor);
-			terminal_put(cursorXOrigin + xIndex, cursorYOrigin + yIndex, '.');
-		}
-	}
-	// Display the game map
-	// give me an iterator to the map's tile array
-	// iterating across all tiles in the map:
-		// get the tile's background color
-		// set the background color (helper func for speeding up call)
-		// get the tile's foreground color
-		// draw the tile's glyph
-		// if at the end of a map row, move down and start a new row
-	// Display the game entities within the map
-	terminal_layer(4);
-	terminal_color("light blue");
-	// The player's avatar
-	terminal_put(cursorXOrigin + avatar->location.x, cursorYOrigin + avatar->location.y, '@');
-}
-*/
-void GameGUI::Viewport::display() {
-	// Display the currently-explored map
-	// Get the size of the map
-	uint mapWidth = mapSource->getWidth();
-	uint mapHeight = mapSource->getHeight();
-	int mapViewHorizontalOffset = (this->minWidth - mapWidth) / 2;
-	int mapViewVerticalOffset = (this->minHeight - mapHeight) / 2;
-	int cursorXOrigin = mapViewHorizontalOffset + this->origin.x;
-	int cursorYOrigin = mapViewVerticalOffset + this->origin.y;
-	int currentXPos = 0;
-	int currentYPos = 0;
-//	LOGMSG("cursor loc: " << cursorXPosition << ", " << cursorYPosition);
-	// Paint the background terrain
-	for (uint echs = 0; echs < mapWidth; echs++) {
-		for (uint whye = 0; whye < mapHeight; whye++) {
-			// Calculate the new cursor position
-			currentXPos = cursorXOrigin + echs;
-			currentYPos = cursorYOrigin + whye;
-			// Paint the background
-			terminal_bkcolor(mapSource->getTileBkcolor(echs, whye));
-			terminal_layer(0);
-			terminal_put(currentXPos, currentYPos, 0x0020);
-			// Paint the terrain layer
-			terminal_layer(2);
-			terminal_color(mapSource->getTileColor(echs, whye));
-			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));
-		}
-	}
-	// Paint the local furniture
-	terminal_layer(3);
-	for (list<Actor*>::iterator furnishIter = mapSource->furnishings.begin(); furnishIter != mapSource->furnishings.end(); furnishIter++) {
-		terminal_color((*furnishIter)->getColor());
-		terminal_put(cursorXOrigin + (*furnishIter)->getLocation().x, cursorYOrigin + (*furnishIter)->getLocation().y, (*furnishIter)->getSigil());
-	}
-	// Paint the actors (including Items and sentients, but not the player) onto the map
-	for (list<Actor*>::iterator actorIter = mapSource->allActors.begin(); actorIter != mapSource->allActors.end(); actorIter++) {
-//		int color = (*actorIter)->getColor();
-		if ((*actorIter) == playerObj) continue; // draw the player last
-		terminal_color((*actorIter)->getColor());
-		if ((*actorIter)->intent) terminal_layer(5);
-		else terminal_layer(4);
-		terminal_put(cursorXOrigin + (*actorIter)->getLocation().x, cursorYOrigin + (*actorIter)->getLocation().y, (*actorIter)->getSigil());
-	}
-	// Paint the player on the map
-	terminal_layer(6);
-	terminal_color(playerObj->getColor());
-	terminal_put(cursorXOrigin + playerObj->location.x, cursorYOrigin + playerObj->location.y, playerObj->getSigil());
-}
-// **** MESSAGE READOUT
-GameGUI::MessageReadout::MessageReadout(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, MessageLog *inputSource) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-logObject(inputSource)
-{	}
-void GameGUI::MessageReadout::display() {
-	// Open a message log and display its contents within the window
-	// Obtain the starting position and set some defaults
-	int cursorXPosition = this->origin.x;
-	int cursorYPosition = this->origin.y;
-	terminal_color("white"); // Default text color, can be overridden inline
-	terminal_layer(9);
-	if (this->logObject->messageList.size() > 0) {
-		vector<string>::reverse_iterator msgLogIter = this->logObject->messageList.rbegin();
-		for ( ; msgLogIter != this->logObject->messageList.rend(); msgLogIter++) {
-			terminal_print(cursorXPosition, cursorYPosition++, (*msgLogIter).c_str());
-		}
-	}
-}
-// **** DATA DISPLAY
-GameGUI::DataDisplay::DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor) :
-	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-	targetActor(inputActor)
-{	}
-void GameGUI::DataDisplay::display() {
-	int cursorXPosition = this->origin.x + 1;
-	int cursorYPosition = this->origin.y + 1;
-	terminal_color("white"); // Default text color, can be overridden inline
-	terminal_layer(9);
-	terminal_print(cursorXPosition, cursorYPosition, targetActor->getName().c_str());
-	
-	cursorYPosition++;
-	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().x).c_str());
-	cursorXPosition += 2;
-	terminal_print(cursorXPosition, cursorYPosition, ", ");
-	cursorXPosition += 2;
-	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
-	cursorXPosition = this->origin.x + 1;
-	cursorYPosition++;
-	terminal_print(cursorXPosition, cursorYPosition, engine->worldClock.getCurrentTimeString().c_str());
-}
-GameGUI::CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
-	GUIPanel(inputID, inputOrigin, inputWidth, 3),
-	promptPrefix("> "),
-	visible(false),
-	inputBuffer(nullptr)
-{	}
-GameGUI::CommandPrompt::~CommandPrompt() {	}
-void GameGUI::CommandPrompt::display() {
-	int cursorXPosition = this->origin.x;
-	int cursorYPosition = this->origin.y;
-	terminal_layer(10);
-	terminal_color("white"); // Default text color, can be overridden inline
-	// need to black out the space underneath...
-	drawHorizontalLine(cursorXPosition, cursorYPosition, this->minWidth - 1);
-	drawHorizontalLine(cursorXPosition, cursorYPosition + this->minHeight - 1, this->minWidth - 1);
-	drawVerticalLine(cursorXPosition, cursorYPosition, this->minHeight);
-	drawVerticalLine(cursorXPosition + this->minWidth - 1, cursorYPosition, this->minHeight);
-	cursorXPosition = this->origin.x + 1;
-	cursorYPosition = this->origin.y + 1;
-	terminal_print(cursorXPosition, cursorYPosition, promptPrefix.c_str());
-	cursorXPosition += promptPrefix.length();
-	int bufferWidth = this->minWidth - cursorXPosition - 1;
-	inputBuffer = new char[bufferWidth];
-	inputBuffer[0] = 0; // reterminate the buffer to prevent junk insertion
-//	LOGMSG("CLI buffer contents: " << inputBuffer);
-	terminal_read_str(cursorXPosition, cursorYPosition, inputBuffer, bufferWidth);
-	// Send the input string for interpretation by the game
-	engine->interpretLongCommand(inputBuffer);
-	delete inputBuffer;
 }
