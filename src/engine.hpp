@@ -9,9 +9,11 @@ DESC Contains definitions of the GameEngine class
 #include "parser.hpp"
 #include "map.hpp"
 #include "actor.hpp"
+#include "chrono.hpp"
 #include "gui.hpp"
 #include <string>
 #include <list>
+#include <chrono>
 //#include <random>
 
 class GameEngine {
@@ -40,6 +42,8 @@ class GameEngine {
 		uint getScreenHeight()	{ return screenHeight; }
 		Actor* getPlayerPtr() { return (&player); }
 		GameMap* getMeatspacePtr() { return (&meatspace); }
+
+		Chrono worldClock;
 
 	private:
 		bool loadConfiguration(std::string configFile); // Loads external config

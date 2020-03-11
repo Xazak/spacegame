@@ -558,6 +558,9 @@ void GameGUI::DataDisplay::display() {
 	terminal_print(cursorXPosition, cursorYPosition, ", ");
 	cursorXPosition += 2;
 	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
+	cursorXPosition = this->origin.x + 1;
+	cursorYPosition++;
+	terminal_print(cursorXPosition, cursorYPosition, engine->worldClock.getCurrentTimeString().c_str());
 }
 GameGUI::CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
 	GUIPanel(inputID, inputOrigin, inputWidth, 3),

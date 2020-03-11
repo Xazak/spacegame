@@ -14,6 +14,7 @@ DESC Contains the definitions of various useful data structures
 typedef unsigned int uint;
 
 #define MS_PER_UPDATE 0.25
+#define INGAME_EPOCH 1481782
 
 struct CoordinatePair {
 	int x;

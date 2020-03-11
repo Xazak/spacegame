@@ -8,6 +8,7 @@ DESC Contains implementation of game engine
 #include "engine.hpp"
 #include "item.hpp"
 #include "main.hpp"
+#include "chrono.hpp"	// In-game time functions
 #include <iostream>		// Provides access to stdin/stdout (cout, cerr, etc)
 #include <sstream>		// Object for conversion from std::string to input stream
 #include <fstream>		// Simple file input/output
@@ -16,9 +17,9 @@ DESC Contains implementation of game engine
 using namespace std;
 
 GameEngine::GameEngine() :
-	currMode(STARTUP),
+	currMode(STARTUP),	// public
 	prevMode(STARTUP),
-	screenWidth(80),
+	screenWidth(80),	// private
 	screenHeight(50),
 	cliMode(false)
 {
@@ -86,6 +87,31 @@ void GameEngine::execGameLoop() {
 		timeSpan = currTime - prevTime; // get the diff since last snapshot
 		prevTime = currTime;			// update the snapshots forward
 		lagTime += timeSpan;			// add the diff to the accumulator
+		double rawTime = (double)timeSpan.count();
+		if (currMode == ONGOING) worldClock.update(rawTime);
+		/*
+		int rawTime = worldTime.count();
+		int currDays = rawTime / 60 / 60 / 24;
+		rawTime -= (currDays * 24 * 60 * 60);
+		int currHours = rawTime / 60 / 60;
+		rawTime -= (currHours * 60 * 60);
+		int currMins = rawTime / 60;
+		rawTime -= (currMins * 60);
+		int currSecs = rawTime;
+
+		string timeString = "";
+		timeString += to_string(currDays);
+		timeString += "d, ";
+		timeString += to_string(currHours);
+		timeString += ":";
+		timeString += to_string(currMins);
+		timeString += ".";
+		timeString += to_string(currSecs);
+//		timeString += ".";
+//		timeString += (int)worldTime;
+
+		LOGMSG("Current time: " << timeString);
+		*/
 		// Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
