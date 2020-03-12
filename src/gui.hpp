@@ -61,6 +61,7 @@ FLOATING
 	dialog
 		Displays a prompt with a set of dialog controls (Y/N, meter, etc)
 */
+
 class GameGUI {
 	public:
 		GameGUI();
@@ -88,8 +89,12 @@ class GameGUI {
 		
 		// METHODS
 		void drawFullLayoutTree();
-		static void drawHorizontalLine(uint x, uint y, int length);
-		static void drawVerticalLine(uint x, uint y, int length);
+		static void drawHorizontalLine(uint x, uint y, uint length);
+		static void drawVerticalLine(uint x, uint y, uint length);
+		void drawGUIFrame();
+		void drawPlanqIcon();
+		static uint getFrameBufferValue(uint x, uint y);
+		static void setFrameBufferValue(uint x, uint y, uint value);
 		void dump();
 
 		// MEMBERS
@@ -101,14 +106,18 @@ class GameGUI {
 		// GUI DIMENSIONS
 		// Note that the map display panel consumes any remaining room once the
 		// dimensions of the statPanel and msgPanel are deducted from the max
-		uint windowWidth;
-		uint windowHeight;
+		static uint windowWidth;
+		static uint windowHeight;
 		uint statPanelWidth;
 		uint statPanelHeight;
 		uint msgPanelWidth;
 		uint msgPanelHeight;
 		// Internal geometry specifications, (re-)calculated at init()
-		// Stored as a BST, comes with iterators and such
+		// Stored as a BST, comes with iterators and such (?)
 		GUIPanel *layoutRoot;
+		// Used as a mask for generating the correct GUI frame by taking into
+		// account the touching edges of the drawn lines
+		// FIXME: add options for other line types
+		static char *frameBuffer;
 };
 #endif //SPACEGAME_GUI

@@ -24,14 +24,24 @@ GUIPanel::GUIPanel(uint newID, uint xOrigin, uint yOrigin,
 	id(newID), origin(xOrigin, yOrigin), width(inputWidth), height(inputHeight),
 	left(inputLeft), right(inputRight), up(inputLeft), down(inputRight)
 {	
-//	LOGMSG("Created #" << newID << ": " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight);
+//	LOGMSG("A- Created #" << newID << "(" << this << "): " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight);
+//	LOGMSG("Pointers: (" << this << ")" );
+//	clog << "    left: " << this->left << endl;
+//	clog << "      up: " << this->up << endl;
+//	clog << "   right: " << this->right << endl;
+//	clog << "    down: " << this->down << endl;
 }
 GUIPanel::GUIPanel(uint newID, cpair newOrigin, uint inputWidth, uint inputHeight,
 	GUIPanel *inputLeft, GUIPanel *inputRight) :
 	id(newID), origin(newOrigin), width(inputWidth), height(inputHeight),
 	left(inputLeft), right(inputRight), up(inputLeft), down(inputRight)
 {	
-//	LOGMSG("Created #" << newID << ": " << origin << " d:" << inputWidth << "x" << inputHeight);
+//	LOGMSG("B- Created #" << newID << "(" << this << "): " << origin << " d:" << inputWidth << "x" << inputHeight);
+//	LOGMSG("Pointers: (" << this << ")" );
+//	clog << "    left: " << this->left << endl;
+//	clog << "      up: " << this->up << endl;
+//	clog << "   right: " << this->right << endl;
+//	clog << "    down: " << this->down << endl;
 }
 // *************
 // **** SPLITTER
@@ -198,14 +208,15 @@ MessageReadout::MessageReadout(uint inputID, cpair inputOrigin, uint inputWidth,
 void MessageReadout::display() {
 	// Open a message log and display its contents within the window
 	// Obtain the starting position and set some defaults
-	int cursorXPosition = this->origin.x;
-	int cursorYPosition = this->origin.y;
+	// FIXME: Does not handle text wrapping!
+	int cursorXPosition = this->origin.x + 1;
+	int cursorYPosition = this->origin.y + height - 3;
 	terminal_color("white"); // Default text color, can be overridden inline
 	terminal_layer(9);
 	if (this->logObject->messageList.size() > 0) {
 		vector<string>::reverse_iterator msgLogIter = this->logObject->messageList.rbegin();
 		for ( ; msgLogIter != this->logObject->messageList.rend(); msgLogIter++) {
-			terminal_print(cursorXPosition, cursorYPosition++, (*msgLogIter).c_str());
+			terminal_print(cursorXPosition, cursorYPosition--, (*msgLogIter).c_str());
 		}
 	}
 }
@@ -243,17 +254,23 @@ CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
 CommandPrompt::~CommandPrompt()
 {	}
 void CommandPrompt::display() {
-	int cursorXPosition = this->origin.x;
-	int cursorYPosition = this->origin.y;
-	terminal_layer(10);
-	terminal_color("white"); // Default text color, can be overridden inline
-	// need to black out the space underneath...
-	GameGUI::drawHorizontalLine(cursorXPosition, cursorYPosition, this->width - 1);
-	GameGUI::drawHorizontalLine(cursorXPosition, cursorYPosition + this->height - 1, this->width - 1);
-	GameGUI::drawVerticalLine(cursorXPosition, cursorYPosition, this->height);
-	GameGUI::drawVerticalLine(cursorXPosition + this->width - 1, cursorYPosition, this->height);
+	int cursorXPosition = this->origin.x + 1;
+	int cursorYPosition = this->origin.y + 1;
+//	GameGUI::drawHorizontalLine(cursorXPosition, cursorYPosition, this->width - 1);
+//	GameGUI::drawHorizontalLine(cursorXPosition, cursorYPosition + this->height - 1, this->width - 1);
+//	GameGUI::drawVerticalLine(cursorXPosition, cursorYPosition, this->height);
+//	GameGUI::drawVerticalLine(cursorXPosition + this->width - 1, cursorYPosition, this->height);
+	// Set the background
+	terminal_color("black");
+	terminal_bkcolor(0xFF333333);
+	terminal_layer(0);
+	terminal_clear_area(cursorXPosition, cursorYPosition, width - 1, height);
+
+	// Draw the prompt components
 	cursorXPosition = this->origin.x + 1;
 	cursorYPosition = this->origin.y + 1;
+	terminal_layer(10);
+	terminal_color("white"); // Default text color, can be overridden inline
 	terminal_print(cursorXPosition, cursorYPosition, promptPrefix.c_str());
 	cursorXPosition += promptPrefix.length();
 	int bufferWidth = this->width - cursorXPosition - 1;

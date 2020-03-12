@@ -11,6 +11,7 @@ DESC Contains definitions of the GameGUI class, which displays the game
 #include "engine.hpp"
 #include "actor.hpp"
 #include "map.hpp"
+#include "main.hpp"
 #include <iostream>
 #include <string>
 
@@ -132,10 +133,51 @@ NOTE: Only layer 0 has a background color! All other layers have transp. bkgrnd
 Each panel within the GUi will have its dimensions calculated when the game is loaded.
 This class will define some sane minimums in case the defined/calculated values are wrongly-sized.
 */
+
+enum myBoxDrawChars {
+    topLeft = 0x250C,
+    topRight = 0x2510,
+    bottomLeft = 0x2514,
+    bottomRight = 0x2518,
+    hLine = 0x2500,
+    vLine = 0x2502,
+    leftT = 0x251C,
+    rightT = 0x2524,
+    upperT = 0x252C,
+    lowerT = 0x2534,
+    cross = 0x253C,
+    space = 0x0020,
+};
+wchar_t myBoxDrawArray[] = {
+    // 00-11
+    space,
+    space,
+    space,
+    bottomLeft,
+    // 100-111
+    space,
+    vLine,
+    topLeft,
+    leftT,
+    // 1000-1011
+    space,
+    bottomRight,
+    hLine,
+    lowerT,
+    // 1100-1111
+    topRight,
+    rightT,
+    upperT,
+    cross,
+};
 // **** STATICS
 GameEngine* GameGUI::engine = nullptr;
 Actor* GameGUI::avatar = nullptr;
 GameMap* GameGUI::worldMap = nullptr;
+uint GameGUI::windowWidth = 0;
+uint GameGUI::windowHeight = 0;
+char* GameGUI::frameBuffer = nullptr;
+
 // **** GAMEGUI
 GameGUI::GameGUI() :
 statPanelWidth(36),
@@ -147,6 +189,7 @@ msgPanelHeight(10)
 GameGUI::~GameGUI() {
 	// default destructor
 //	delete cmdPrompt;
+	delete [] frameBuffer;
 }
 void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, Actor* playerPtr, GameMap* meatspacePtr) {
 	// Sets up a created GameGUI object to the runtime default configuration
@@ -160,6 +203,10 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	windowWidth = maxWidth;
 	windowHeight = maxHeight;
 	msgPanelWidth = maxWidth - statPanelWidth;
+	GameGUI::frameBuffer = new char[(windowWidth + 1) * (windowHeight + 1)];
+	for (uint foo = 0; foo < (windowWidth * windowHeight); foo++) {
+		GameGUI::frameBuffer[foo] = 0;
+	}
 	globalMsgLog.add("Press Q or Alt+F4 to exit.");
 	// SPLITTERS have IDs from 0 - 9
 	// ALL OTHER PANELS have IDs from 10+
@@ -171,8 +218,8 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	layoutRoot = new Splitter(1, 0, 0, msgPanelWidth, windowHeight, true);
 	GUIPanel* layoutIndex = layoutRoot;
 	// split root->L into U/D		75/25, (mW - statpanel), maxHeight)
-	layoutIndex->up = new Splitter(2, layoutIndex->leftPanelOrigin(), msgPanelWidth, (windowHeight - msgPanelHeight), false);
-	layoutIndex = layoutIndex->up;
+	layoutIndex->left = new Splitter(2, layoutIndex->leftPanelOrigin(), msgPanelWidth, (windowHeight - msgPanelHeight), false);
+	layoutIndex = layoutIndex->left;
 	// put MAP at root->L->U		o: r->L->U, mW-statpanel, mH
 	layoutIndex->up = new Viewport(11, layoutIndex->upPanelOrigin(), msgPanelWidth, (windowHeight - msgPanelHeight), worldMap, avatar->location, avatar);
 	// put MSG at root->L->D		o: r->L->D, mW-statpanel, msgHeight
@@ -187,6 +234,7 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	layoutIndex->up = new DataDisplay(13, layoutIndex->upPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
 	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
 	layoutIndex->down = new Splitter(4, layoutIndex->downPanelOrigin(), statPanelWidth, statPanelHeight, false);
+//	LOGMSG(layoutIndex << " has up: " << layoutIndex->up << " and down: " << layoutIndex->down);
 //	layoutIndex = layoutIndex->down;
 	// put AUX at root->R->D->U		o: r->R->D->U, statpanel, maxHeight * 33%
 //	layoutIndex->up = new DataDisplay();
@@ -194,7 +242,8 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 //	layoutIndex->down = new DataDisplay();
 	// The command prompt is drawn specially over the top the UI, is therefore
 	// not part of the base layout tree
-	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin - 3), msgPanelWidth);
+	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin + msgPanelHeight - 3), msgPanelWidth);
+//	LOGMSG("+ Requesting dump +");
 //	this->dump(); // DEBUG
 }
 void GameGUI::update() {
@@ -230,21 +279,41 @@ void GameGUI::drawFullLayoutTree() {
 	// Traverses the UI layout tree and calls display() on all nodes
 	// The tree is traversed in reversed breadth-order: this produces all leaf
 	// nodes and then all splitters, in that order.
+//	LOGMSG("+ Requesting dump +");
+//	dump();
 	GUIPanel* layoutIter = layoutRoot;
 	queue<GUIPanel*> drawOrder;
 	drawOrder.push(layoutIter);
 //	LOGMSG("Redrawing layout tree...");
+	terminal_color("light grey");
 	while (!drawOrder.empty()) {
-		terminal_color("light grey");
 		layoutIter = drawOrder.front();
 		drawOrder.pop();
+//		LOGMSG("layoutIter: " << layoutIter);
 		layoutIter->display();
-//		LOGMSG("Drawing panel #" << layoutIter->id);
+//		LOGMSG("panel #" << layoutIter->id << " (" << layoutIter << ") :" );
+//		clog << "    left: " << layoutIter->left << endl;
+//		clog << "      up: " << layoutIter->up << endl;
+//		clog << "   right: " << layoutIter->right << endl;
+//		clog << "    down: " << layoutIter->down << endl;
 		if (layoutIter->left != nullptr) drawOrder.push(layoutIter->left);
 		if (layoutIter->up != nullptr) drawOrder.push(layoutIter->up);
 		if (layoutIter->right != nullptr) drawOrder.push(layoutIter->right);
 		if (layoutIter->down != nullptr) drawOrder.push(layoutIter->down);
 	}
+	// Add some edges to the UI frame
+	// Top horizontal edge
+	drawHorizontalLine(0, 0, windowWidth);
+	// Left vertical edge
+	drawVerticalLine(0, 0, windowHeight);
+	// Right vertical edge
+	drawVerticalLine(windowWidth - 1, 0, windowHeight);
+	// Bottom edge under right-side data display
+	drawHorizontalLine((windowWidth - statPanelWidth), windowHeight - 1, windowWidth);
+	// Draw the PLANQ indicator icon
+	drawPlanqIcon();
+	// Draw the chrome and the CLI if needed
+	drawGUIFrame();
 	if (cmdPrompt->visible) cmdPrompt->display();
 	// NEW METHOD
 	// - splitters (and other GUI chromes) draw on a 'template' array
@@ -259,35 +328,63 @@ void GameGUI::drawFullLayoutTree() {
 	*/
 }
 // **** WINDOW-DRAWING METHODS
-void GameGUI::drawHorizontalLine(unsigned int x, unsigned int y, int length) {
+void GameGUI::drawHorizontalLine(uint x, uint y, uint length) {
 	// Draws a horizontal line from the specified point
 	// Specifying a negative length will draw the line 'backwards'
 	// If length == 0, it will fall through and do nothing
-	if (length > 0) {
-		for (int offset = 0; offset < length; offset++) {
-			terminal_put((x + offset), y, 0x2500);
-		}
-	} else if (length < 0) {
-		for (int offset = 0; offset < length; offset--) {
-			terminal_put((x + offset), y, 0x2500);
-		}
+	for (uint offset = 0; offset <= length; offset++) {
+		setFrameBufferValue((x + offset), y, 1);
 	}
 //	LOGMSG("Drawing Hline @ " << x << ", " << y << " of length " << length);
 }
-void GameGUI::drawVerticalLine(unsigned int x, unsigned int y, int length) {
+void GameGUI::drawVerticalLine(uint x, uint y, uint length) {
 	// Draws a vertical line from the specified point
 	// Specifying a negative length will draw the line 'backwards'
 	// If length == 0, it will fall through and do nothing
-	if (length > 0) {
-		for (int offset = 0; offset < length; offset++) {
-			terminal_put(x, (y + offset), 0x2502);
-		}
-	} else if (length < 0) {
-		for (int offset = 0; offset < length; offset--) {
-			terminal_put(x, (y + offset), 0x2502);
-		}
+	for (uint offset = 0; offset <= length; offset++) {
+		setFrameBufferValue(x, (y + offset), 1);
 	}
 //	LOGMSG("Drawing Vline @ " << x << ", " << y << " of length " << length);
+}
+void GameGUI::drawGUIFrame() {
+	// REQUIRES that the frameBuffer array is already populated!
+	terminal_color(0xFF336600);
+	terminal_layer(10);
+	int c = 0;
+	uint xIndex = 0;
+	uint yIndex = 0;
+	for (xIndex = 0; xIndex < windowWidth; xIndex++) {
+		for (yIndex = 0; yIndex < windowHeight; yIndex++) {
+			if (frameBuffer[xIndex + yIndex * windowWidth]) {
+//				c = (get(x - 1, y) << 3) | (get(x, y + 1) << 2) | (get(x + 1, y) << 1) | get(x, y - 1);
+				c = (getFrameBufferValue(xIndex - 1, yIndex) << 3) |
+					(getFrameBufferValue(xIndex, yIndex + 1) << 2) |
+					(getFrameBufferValue(xIndex + 1, yIndex) << 1) |
+					getFrameBufferValue(xIndex, yIndex - 1);
+				terminal_put(xIndex, yIndex, myBoxDrawArray[c]);
+			}
+		}
+	}
+}
+void GameGUI::drawPlanqIcon() {
+	// Draw the PLANQ icon
+	// Bottom corner to left of CLI
+	terminal_layer(0);
+	terminal_color("black");
+	terminal_bkcolor(0xFF333333);
+	terminal_put(0, windowHeight - 1, ' ');
+	terminal_layer(11);
+//	terminal_color("red");
+	terminal_put(0, windowHeight - 1, 0x00B6);
+
+}
+uint GameGUI::getFrameBufferValue(uint x, uint y) {
+	if (x < 0 || y < 0 || x >= windowWidth || y >= windowHeight) return 0;
+	return frameBuffer[x + y * windowWidth];
+}
+void GameGUI::setFrameBufferValue(uint x, uint y, uint value) {
+	if (x < 0 || y < 0 || x >= windowWidth || y >= windowHeight) return;
+	frameBuffer[x + y * windowWidth] = value;
 }
 void GameGUI::dump() {
 	GUIPanel* layoutIter = layoutRoot;
@@ -299,7 +396,7 @@ void GameGUI::dump() {
 		writeOrder.pop();
 		clog << "    #";
 		if (layoutIter->id < 10) clog << "0";
-		clog << layoutIter->id << " at " << layoutIter->origin << "  	d: ";
+		clog << layoutIter->id << "(" << layoutIter << ") at " << layoutIter->origin << "  	d: ";
 		clog << layoutIter->width << "x" << layoutIter->height << endl;
 		if (layoutIter->left != nullptr) writeOrder.push(layoutIter->left);
 		if (layoutIter->up != nullptr) writeOrder.push(layoutIter->up);
