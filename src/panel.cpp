@@ -16,43 +16,32 @@ DESC Implements the GUIPanel class, which describes the set of components that a
 
 using namespace std;
 
-// **** GUIPanel Prototypes
+// *************
+// **** GUIPanel
 GUIPanel::GUIPanel(uint newID, uint xOrigin, uint yOrigin,
 	uint inputWidth, uint inputHeight,
 	GUIPanel *inputLeft, GUIPanel *inputRight) :
-id(newID),
-origin(xOrigin, yOrigin),
-width(inputWidth),
-height(inputHeight),
-left(inputLeft),
-right(inputRight),
-up(inputLeft),
-down(inputRight)
+	id(newID), origin(xOrigin, yOrigin), width(inputWidth), height(inputHeight),
+	left(inputLeft), right(inputRight), up(inputLeft), down(inputRight)
 {	
 //	LOGMSG("Created #" << newID << ": " << xOrigin << ", " << yOrigin << " d:" << inputWidth << "x" << inputHeight);
 }
-GUIPanel::GUIPanel(uint newID, cpair newOrigin,
-	uint inputWidth, uint inputHeight,
+GUIPanel::GUIPanel(uint newID, cpair newOrigin, uint inputWidth, uint inputHeight,
 	GUIPanel *inputLeft, GUIPanel *inputRight) :
-id(newID),
-origin(newOrigin),
-width(inputWidth),
-height(inputHeight),
-left(inputLeft),
-right(inputRight),
-up(inputLeft),
-down(inputRight)
+	id(newID), origin(newOrigin), width(inputWidth), height(inputHeight),
+	left(inputLeft), right(inputRight), up(inputLeft), down(inputRight)
 {	
 //	LOGMSG("Created #" << newID << ": " << origin << " d:" << inputWidth << "x" << inputHeight);
 }
+// *************
 // **** SPLITTER
 Splitter::Splitter(uint inputID, uint xOrigin, uint yOrigin, uint inputWidth, uint inputHeight, bool inputType) :
-GUIPanel(inputID, xOrigin, yOrigin, inputWidth, inputHeight),
-verticalSplit(inputType)
+	GUIPanel(inputID, xOrigin, yOrigin, inputWidth, inputHeight),
+	verticalSplit(inputType)
 {	}
 Splitter::Splitter(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, bool inputType) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-verticalSplit(inputType)
+	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
+	verticalSplit(inputType)
 {	}
 void Splitter::display() {
 	// Draw a line
@@ -88,12 +77,13 @@ cpair Splitter::upPanelOrigin() {
 cpair Splitter::downPanelOrigin() {
 	return this->rightPanelOrigin();
 }
+// *************
 // **** VIEWPORT
 Viewport::Viewport(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, GameMap* inputSource, cpair mapCenterpoint, Actor* playerPtr) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-mapSource(inputSource),
-focusPoint(mapCenterpoint),
-playerObj(playerPtr)
+	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
+	mapSource(inputSource),
+	focusPoint(mapCenterpoint),
+	playerObj(playerPtr)
 {	}
 /*  COMMENTS: void GameGUI::displayMap() {
 	// Display the currently-explored map
@@ -199,10 +189,11 @@ void Viewport::display() {
 	terminal_color(playerObj->getColor());
 	terminal_put(cursorXOrigin + playerObj->location.x, cursorYOrigin + playerObj->location.y, playerObj->getSigil());
 }
+// ********************
 // **** MESSAGE READOUT
 MessageReadout::MessageReadout(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, MessageLog *inputSource) :
-GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-logObject(inputSource)
+	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
+	logObject(inputSource)
 {	}
 void MessageReadout::display() {
 	// Open a message log and display its contents within the window
@@ -218,6 +209,7 @@ void MessageReadout::display() {
 		}
 	}
 }
+// *****************
 // **** DATA DISPLAY
 DataDisplay::DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor) :
 	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
@@ -240,13 +232,16 @@ void DataDisplay::display() {
 	cursorYPosition++;
 	terminal_print(cursorXPosition, cursorYPosition, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
 }
+// *******************
+// **** COMMAND PROMPT
 CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
 	GUIPanel(inputID, inputOrigin, inputWidth, 3),
 	promptPrefix("> "),
 	visible(false),
 	inputBuffer(nullptr)
 {	}
-CommandPrompt::~CommandPrompt() {	}
+CommandPrompt::~CommandPrompt()
+{	}
 void CommandPrompt::display() {
 	int cursorXPosition = this->origin.x;
 	int cursorYPosition = this->origin.y;
@@ -270,7 +265,8 @@ void CommandPrompt::display() {
 	GameGUI::engine->interpretLongCommand(inputBuffer);
 	delete inputBuffer;
 }
-// **** MessageLog Methods
+// ***************
+// **** MESSAGELOG
 int MessageLog::add(string newMessage) {
 	// Adds the input string to the message log list
 	messageList.push_back(newMessage);

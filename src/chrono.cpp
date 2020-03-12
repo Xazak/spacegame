@@ -32,12 +32,16 @@ void Chrono::update(double timeDelta) {
 }
 string Chrono::getCurrentTimeString() {
 	string timeString = "";
+	timeString += "3173-06-";
 	timeString += to_string(days);
-	timeString += "d, ";
+	timeString += " / ";
+	if (hours < 10) timeString+= "0";
 	timeString += to_string(hours);
 	timeString += ":";
+	if (minutes < 10) timeString+= "0";
 	timeString += to_string(minutes);
 	timeString += ".";
+	if (seconds < 10) timeString+= "0";
 	timeString += to_string(seconds);
 //	LOGMSG("Current time: " << timeString);
 	return timeString;
