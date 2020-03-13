@@ -323,7 +323,7 @@ void GameParser::interpret(const char * inputBuffer) {
 			LOGMSG("Action: INVENTORY unimplemented (long)");
 		break;
 		case ActionType::META_QUIT:
-			LOGMSG("Action: META_QUIT invoked (long)");
+//			LOGMSG("Action: META_QUIT invoked (long)");
 			input = new QuitMetaAction();
 			validInput = true;
 		break;

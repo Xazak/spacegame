@@ -5,6 +5,7 @@ DESC Describes the Action class, which represents the set of possible 'verbs'
 	 available to the Actors who possess a working Sentience module.
 */
 
+#include "BearLibTerminal.h"
 #include "action.hpp"
 #include "portable.hpp"
 #include "container.hpp"
@@ -167,7 +168,7 @@ void CloseAction::execute() {
 // ****************
 // **** QUIT Action
 void QuitMetaAction::execute() {
-	if (this) LOGMSG("Not sure how to QUIT from the parser yet...");
+	terminal_close();
 }
 // ****************
 // **** SAVE Action
