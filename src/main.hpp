@@ -36,7 +36,6 @@ struct CoordinatePair {
 	//uint distanceToRel(int x, int y);
 	//uint distanceTo(const CoordinatePair& targetLocation);
 	//uint distanceTo(const Actor& targetActor);
-
 };
 typedef CoordinatePair cpair; // shorthand alias
 
@@ -53,13 +52,13 @@ typedef CoordinatePair cpair; // shorthand alias
 // The do-while statement ensures that x is interpreted correctly.
 #ifdef DEBUG_TOOLS
 #include <iostream>
-#define LOGMSG(x) do { std::clog << "*** " << x << "\n    >> " << __FILE__ << ":" << __LINE__ << ":" << __func__ << "()" << std::endl; } while (0)
+#define LOGMSG(x) do { std::clog << "\033[1;34m***\033[0;m " << x << "\n   >> \033[4;37m" << __FILE__ << "\033[24;37m:" << __LINE__ << ":" << __func__ << "()\033[0;m" << std::endl; } while (0)
 #else
 #define LOGMSG(x)
 #endif
 
 #ifdef DEBUG_TOOLS
-#define ERRMSG(x) do { std::cerr << "!*! " << x << "\n    >> " << __FILE__ << ":" << __LINE__ << ":" << __func__ << "()" << std::endl; } while (0)
+#define ERRMSG(x) do { std::cerr << "\033[;31m!*!\033[0;m " << x << "\n    >> \033[4;37m" << __FILE__ << "\033[24;37m:" << __LINE__ << ":" << __func__ << "()\033[0;m" << std::endl; } while (0)
 #else
 #define ERRMSG(x)
 #endif
