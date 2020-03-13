@@ -75,6 +75,7 @@ Player::Player() :
 	Actor("Jenaryk", 0x263A, 0xFF996600)
 {	intent = new PlayerSentience();
 	contents = new Container(2);
+	obstructs = true;
 //	LOGMSG("Player object initialized.");
 }
 void Player::update() {
@@ -87,6 +88,7 @@ Drone::Drone() :
 	Actor("DRONE", 0x03B6, 0xFF666699)
 {	intent = new DroneSentience(this);
 	contents = new Container(1);
+	obstructs = true;
 //	LOGMSG("Drone object initialized.");
 }
 void Drone::update() {

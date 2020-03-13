@@ -77,6 +77,8 @@ bool MoveAction::isPlausible() {
 	moveTarget = moveTarget + moveIncrement;
 	if (this->context->vicinity->isBlocked(moveTarget)) {
 		this->context->success = false;
+	} else {
+		this->context->success = true;
 	}
 //	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
 	return this->context->success;

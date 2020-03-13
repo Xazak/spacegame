@@ -37,8 +37,10 @@ string GameMap::getTileName(uint xPos, uint yPos) {
 bool GameMap::isBlocked(uint xPos, uint yPos) {
 //	LOGMSG("Checking for blockage at " << xPos << ", " << yPos);
 	if (xPos >= width || yPos >= height) {
+//		LOGMSG("Target is out of bounds");
 		return false;
 	} else {
+//		LOGMSG("Using map tile obstruction value: " << mapArray[xPos + yPos * width]->obstructs);
 		return mapArray[xPos + yPos * width]->obstructs;
 	}
 }
@@ -234,14 +236,17 @@ Actor* GameMap::getFurnitureAt(cpair inputLocation) {
 }
 void GameMap::setOccupant(Actor *occupier) {
 	this->mapArray[occupier->getLocation().x + occupier->getLocation().y * width]->occupant = occupier;
+	if (occupier->obstructs) this->setObstruction(occupier->getLocation(), occupier->obstructs);
 }
 void GameMap::unsetOccupant(uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->occupant = nullptr;
+	this->setObstruction(xPos, yPos, false);
 }
 void GameMap::unsetOccupant(cpair inputLocation) {
-	unsetOccupant(inputLocation.x, inputLocation.y);
+	this->unsetOccupant(inputLocation.x, inputLocation.y);
 }
 void GameMap::setObstruction(uint xPos, uint yPos, bool inputValue) {
+//	LOGMSG("Setting obstruction at " << xPos << ", " << yPos << " to " << inputValue);
 	this->mapArray[xPos + yPos * width]->obstructs = inputValue;
 }
 void GameMap::setObstruction(cpair inputLocation, bool inputValue) {

@@ -139,18 +139,23 @@ void DroneSentience::pushAction(Action* inputAction) {
 	// set the flag to notify for more actions
 	// NOTE: pretty sure this is where intrinsic speed should be calc'ed in...
 	if (inputAction->isPlausible()) {
-		actionStack.push(inputAction);
-		remainingTime = actionStack.top()->duration;
+		actionStack.push(inputAction); // Add the action to the execution stack
+		remainingTime = actionStack.top()->duration; // Get the axn's duration
 //		LOGMSG("New action duration: " << remainingTime);
 	} else {
-		ERRMSG("FIXME: bad action context checking");
+		ERRMSG("Cannot add implausible action to stack");
 	}
 }
 void DroneSentience::continueWorking() {
+//	LOGMSG("Continuing work");
 	remainingTime -= MS_PER_UPDATE;
-	if (remainingTime < 0.0) {
+	if (remainingTime < 0.0 && this->actionStack.top()->isPlausible()) {
+//	if (remainingTime < 0.0) {
+//		LOGMSG("Action is ready and viable");
 		this->actionStack.top()->execute();
 		this->actionStack.pop();
+	} else {
+		ERRMSG("Drone action was rendered implausible, holding");
 	}
 }
 Actor* DroneSentience::findPlayer() {
