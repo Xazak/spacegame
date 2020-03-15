@@ -237,6 +237,7 @@ Actor* GameMap::getFurnitureAt(cpair inputLocation) {
 void GameMap::setOccupant(Actor *occupier) {
 	this->mapArray[occupier->getLocation().x + occupier->getLocation().y * width]->occupant = occupier;
 	if (occupier->obstructs) this->setObstruction(occupier->getLocation(), occupier->obstructs);
+//	LOGMSG("Occupier set at " << occupier->getLocation() << " to " << occupier->getName() << ":" << this);
 }
 void GameMap::unsetOccupant(uint xPos, uint yPos) {
 	this->mapArray[xPos + yPos * width]->occupant = nullptr;

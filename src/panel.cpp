@@ -182,7 +182,9 @@ void Viewport::display() {
 	// Paint the local furniture
 	terminal_layer(3);
 	for (list<Actor*>::iterator furnishIter = mapSource->furnishings.begin(); furnishIter != mapSource->furnishings.end(); furnishIter++) {
-		terminal_color((*furnishIter)->getColor());
+		int displayColor = (*furnishIter)->getColor();
+//		if (mapSource->getOccupant((*furnishIter)->location)) displayColor -= 0x66000000;
+		terminal_color(displayColor);
 		terminal_put(cursorXOrigin + (*furnishIter)->getLocation().x, cursorYOrigin + (*furnishIter)->getLocation().y, (*furnishIter)->getSigil());
 	}
 	// Paint the actors (including Items and sentients, but not the player) onto the map

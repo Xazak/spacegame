@@ -56,7 +56,10 @@ class Actor {
 		void		setRelLocation(cpair inputPosition);
 		void		setLocality(GameMap *inputArea);
 		void		setSigil(int newSigil) { this->sigil = newSigil; }
-		//setSigil
+		void		moveByAbs(int inputX, int inputY);
+		void		moveByAbs(cpair inputPosition);
+		void		moveByRel(int xOffset, int yOffset);
+		void		moveByRel(cpair inputOffset);
 		//setColor
 	//  PROPERTIES - Guaranteed
 		bool		obstructs;

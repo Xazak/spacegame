@@ -48,10 +48,8 @@ string Actor::getLocString() {
 }
 void Actor::setAbsLocation(int newXPos, int newYPos) {
 	// Sets the actor's location to the exact specified coordinates
-	this->locality->unsetOccupant(this->location.x, this->location.y);
 	this->location.x = newXPos;
 	this->location.y = newYPos;
-	this->locality->setOccupant(this);
 }
 void Actor::setAbsLocation(cpair inputPosition) {
 	this->setAbsLocation(inputPosition.x, inputPosition.y);
@@ -68,6 +66,26 @@ void Actor::setLocality(GameMap *inputArea) {
 	// FIXME: does NOT remove actors from localities!
 	this->locality = inputArea;
 //	LOGMSG(this->getName() << "(" << this << ") locality set to " << locality);
+}
+void Actor::moveByAbs(int inputX, int inputY) {
+	// move and set occupancy
+	this->locality->unsetOccupant(this->location.x, this->location.y);
+	this->location.x = inputX;
+	this->location.y = inputY;
+	this->locality->setOccupant(this);
+}
+void Actor::moveByAbs(cpair inputPosition) {
+	this->moveByAbs(inputPosition.x, inputPosition.y);
+}
+void Actor::moveByRel(int xOffset, int yOffset) {
+	// move and set occupancy
+	this->locality->unsetOccupant(this->location.x, this->location.y);
+	this->location.x += xOffset;
+	this->location.y += yOffset;
+	this->locality->setOccupant(this);
+}
+void Actor::moveByRel(cpair inputOffset) {
+	this->moveByRel(inputOffset.x, inputOffset.y);
 }
 
 // *** PLAYER METHODS
