@@ -216,7 +216,11 @@ void MessageReadout::display() {
 	if (this->logObject->messageList.size() > 0) {
 		vector<string>::reverse_iterator msgLogIter = this->logObject->messageList.rbegin();
 		for ( ; msgLogIter != this->logObject->messageList.rend(); msgLogIter++) {
-			terminal_print(cursorXPosition, cursorYPosition--, (*msgLogIter).c_str());
+//			terminal_print(cursorXPosition, cursorYPosition--, (*msgLogIter).c_str());
+			dimensions_t stringDims = terminal_measure_ext(this->width, this->height, (*msgLogIter).c_str());
+			if (cursorYPosition >= this->origin.y) {
+				terminal_print_ext(cursorXPosition, cursorYPosition--, stringDims.width, stringDims.height, TK_ALIGN_DEFAULT, (*msgLogIter).c_str());
+			}
 		}
 	}
 }
