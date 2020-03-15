@@ -72,7 +72,6 @@ bool MoveAction::isPlausible() {
 	if (context->target->location.y < this->context->whye) yIncrement = 1;
 	if (context->target->location.y > this->context->whye) yIncrement = -1;
 	moveIncrement.set(xIncrement, yIncrement);
-//	this->context->dump();
 	cpair moveTarget(context->target->location);
 	moveTarget = moveTarget + moveIncrement;
 	if (this->context->vicinity->isBlocked(moveTarget)) {
@@ -80,7 +79,8 @@ bool MoveAction::isPlausible() {
 	} else {
 		this->context->success = true;
 	}
-//	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
+	LOGMSG("? Is moving into " << moveTarget << " allowed? " << this->context->success);
+	this->context->dump(); // DEBUG
 	return this->context->success;
 }
 void MoveAction::execute() {

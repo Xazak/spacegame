@@ -148,14 +148,14 @@ void DroneSentience::pushAction(Action* inputAction) {
 }
 void DroneSentience::continueWorking() {
 //	LOGMSG("Continuing work");
-	remainingTime -= MS_PER_UPDATE;
-	if (remainingTime < 0.0 && this->actionStack.top()->isPlausible()) {
-//	if (remainingTime < 0.0) {
-//		LOGMSG("Action is ready and viable");
+	if (remainingTime <= 0.0 && this->actionStack.top()->isPlausible()) {
+//		if (remainingTime <= 0.0) LOGMSG("Action is ready and viable");
 		this->actionStack.top()->execute();
 		this->actionStack.pop();
 	} else {
-		ERRMSG("Drone action was rendered implausible, holding");
+//		if (remainingTime > 0.0) LOGMSG("Continuing work on action");
+//		else ERRMSG("Drone action was rendered implausible, holding");
+		remainingTime -= MS_PER_UPDATE;
 	}
 }
 Actor* DroneSentience::findPlayer() {

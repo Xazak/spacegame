@@ -52,7 +52,7 @@ typedef CoordinatePair cpair; // shorthand alias
 // The do-while statement ensures that x is interpreted correctly.
 #ifdef DEBUG_TOOLS
 #include <iostream>
-#define LOGMSG(x) do { std::clog << "\033[1;34m***\033[0;m " << x << "\n   >> \033[4;37m" << __FILE__ << "\033[24;37m:" << __LINE__ << ":" << __func__ << "()\033[0;m" << std::endl; } while (0)
+#define LOGMSG(x) do { std::clog << "\033[1;34m***\033[0;m " << x << "\n    >> \033[4;37m" << __FILE__ << "\033[24;37m:" << __LINE__ << ":" << __func__ << "()\033[0;m" << std::endl; } while (0)
 #else
 #define LOGMSG(x)
 #endif
