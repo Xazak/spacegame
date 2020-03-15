@@ -248,6 +248,8 @@ void DataDisplay::display() {
 	cursorXPosition = this->origin.x + 1;
 	cursorYPosition++;
 	terminal_print(cursorXPosition, cursorYPosition, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+//	cursorYPosition++;
+//	terminal_print(cursorXPosition, cursorYPosition, "0123456789012345678901234567890123456789");
 }
 // *******************
 // **** COMMAND PROMPT

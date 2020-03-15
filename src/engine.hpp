@@ -11,6 +11,7 @@ DESC Contains definitions of the GameEngine class
 #include "actor.hpp"
 #include "chrono.hpp"
 #include "gui.hpp"
+#include "event.hpp"
 #include <string>
 #include <list>
 #include <chrono>
@@ -24,14 +25,16 @@ class GameEngine {
 			PAUSED,		//2
 			VICTORY,	//3
 			DEFEAT		//4
-		} currMode, prevMode;
+		};
+		static EngineState currMode;
+		static EngineState prevMode;
 		GameEngine();
 //		~GameEngine();
 		bool initialize(std::string configFile); // Loads state from config
 		void execGameLoop(); // Performs the game itself and handles BLT
 		void update(); // Requests game module updates
 		void terminate(); // Performs cleanup when the game is closed
-		void switchMode(EngineState newMode); // handles engine state changes
+		static void switchMode(EngineState newMode); // handles engine state changes
 		void pauseOn();
 		void pauseOff();
 		void togglePause();
@@ -42,6 +45,7 @@ class GameEngine {
 		uint getScreenHeight()	{ return screenHeight; }
 		Actor* getPlayerPtr() { return (&player); }
 		GameMap* getMeatspacePtr() { return (&meatspace); }
+		GameGUI* getGUIPtr() { return (&gui); }
 
 		Chrono worldClock;
 
@@ -55,6 +59,8 @@ class GameEngine {
 		Player player;
 		Drone lemur;
 		std::list<Actor*> sentientActors; // Actors who will be taking actions
+		std::list<GameEvent*> eventList; // event registry
+		GameEvent *gravityWell;
 		// Properties
 		uint screenWidth; // Width of terminal in # of monospace chars
 		uint screenHeight; // Height of terminal in # of monospace chars

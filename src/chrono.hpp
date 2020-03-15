@@ -20,13 +20,16 @@ class Chrono {
 		uint getHours() { return hours; }
 		uint getMinutes() { return minutes; }
 		uint getSeconds() { return seconds; }
+		uint getLastDelta() { return delta; }
 
 	private:
 		double rawTimeValue;
+		uint delta;
 		uint days;
 		uint hours;
 		uint minutes;
 		uint seconds;
+		uint milliseconds;
 };
 
 #endif // SPACEGAME_CHRONOMETER

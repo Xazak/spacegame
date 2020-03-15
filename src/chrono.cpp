@@ -13,12 +13,16 @@ using namespace std;
 
 Chrono::Chrono() :
 	rawTimeValue(0),
+	delta(0),
 	days(0),
 	hours(0),
 	minutes(0),
-	seconds(0)
+	seconds(0),
+	milliseconds(0)
 {	update(INGAME_EPOCH); }
 void Chrono::update(double timeDelta) {
+	delta = timeDelta * 10000;
+//	LOGMSG("input: " << timeDelta << " / Delta: " << delta);
 	rawTimeValue += timeDelta;
 	uint approxTime = (uint)rawTimeValue;
 	days = approxTime / 60 / 60 / 24;

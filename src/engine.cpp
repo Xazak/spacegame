@@ -16,9 +16,12 @@ DESC Contains implementation of game engine
 
 using namespace std;
 
+GameEngine::EngineState GameEngine::currMode = EngineState::STARTUP;
+GameEngine::EngineState GameEngine::prevMode = GameEngine::currMode;
+
 GameEngine::GameEngine() :
-	currMode(STARTUP),	// public
-	prevMode(STARTUP),
+//	currMode(STARTUP),	// public
+//	prevMode(STARTUP),
 	screenWidth(80),	// private
 	screenHeight(50),
 	cliMode(false)
@@ -48,6 +51,7 @@ bool GameEngine::initialize(std::string configFile) {
 	// Perform any remaining setup and module creation
 	// parser, gui, meatspace, player objects are already created!
 	meatspace.generateMap(30, 14);
+
 	// FIXME: Need to wrap some of this up in a player init method...
 	// Establish the player in meatspace
 	player.setLocality(&meatspace); // Set the player's map pointer
@@ -60,6 +64,12 @@ bool GameEngine::initialize(std::string configFile) {
 	lemur.setAbsLocation(7, 7);
 	meatspace.allActors.push_back(&lemur);
 	sentientActors.push_back(&lemur);
+	// Initialize the starting Event list
+	GameEvent::registerEngine(this);
+//	GameEvent *gravityWell = new CountdownTimer(30000);
+	gravityWell = new CountdownTimer(100);
+	eventList.push_back(gravityWell);
+
 	// Initialize the GUI
 	GameEngine* tempPtr = this;
 	gui.initialize(screenWidth, screenHeight, tempPtr, &player, &meatspace);
@@ -89,29 +99,6 @@ void GameEngine::execGameLoop() {
 		lagTime += timeSpan;			// add the diff to the accumulator
 		double rawTime = (double)timeSpan.count();
 		if (currMode == ONGOING) worldClock.update(rawTime);
-		/*
-		int rawTime = worldTime.count();
-		int currDays = rawTime / 60 / 60 / 24;
-		rawTime -= (currDays * 24 * 60 * 60);
-		int currHours = rawTime / 60 / 60;
-		rawTime -= (currHours * 60 * 60);
-		int currMins = rawTime / 60;
-		rawTime -= (currMins * 60);
-		int currSecs = rawTime;
-
-		string timeString = "";
-		timeString += to_string(currDays);
-		timeString += "d, ";
-		timeString += to_string(currHours);
-		timeString += ":";
-		timeString += to_string(currMins);
-		timeString += ".";
-		timeString += to_string(currSecs);
-//		timeString += ".";
-//		timeString += (int)worldTime;
-
-		LOGMSG("Current time: " << timeString);
-		*/
 		// Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
@@ -154,7 +141,16 @@ void GameEngine::execGameLoop() {
 		// The value is normalized by updateTimeStep before it is passed
 //		LOGMSG("Requesting GUI render with lagTime == " << lagTime.count());
 		gui.render(lagTime / updateTimeStep);
+		if (currMode == DEFEAT) break;
 	};
+	// if we made it here, the game stopped but the window is still open
+	ERRMSG("Game loop broken due to engine state");
+	if (currMode == DEFEAT) {
+		// print a defeat banner
+	}
+	while (terminal_read() != TK_Q) {
+		gui.render(lagTime / updateTimeStep);
+	}
 }
 void GameEngine::update() {
 	// Polls various game modules to see if they would like to make some kind
@@ -172,6 +168,19 @@ void GameEngine::update() {
 			if (player.location.isEqual(26, 10)) this->switchMode(VICTORY);
 			if (player.location.isEqual(26, 3)) this->switchMode(DEFEAT);
 			// ask for Actor updates from the list
+			for (auto actorIter = sentientActors.begin(); actorIter != sentientActors.end(); actorIter++) {
+//				LOGMSG("Update request: " << (*actorIter)->getName());
+				if (*actorIter == &player) {
+					// do some player-specific stuff?
+					// the parser already invokes the inputted command, rather than
+					// having it invoked here
+				} else {
+					(*actorIter)->update();
+				}
+			}
+			for (auto eventIter = eventList.begin(); eventIter != eventList.end(); eventIter++) {
+				if ((*eventIter)->isActive()) (*eventIter)->update();
+			}
 			break;
 		case PAUSED:
 			// Halts all in-game action, but allows metagame functions
@@ -194,21 +203,12 @@ void GameEngine::update() {
 		gui.raiseCLI();
 	}
 //	LOGMSG("Updating game state.");
-	for (auto actorIter = sentientActors.begin(); actorIter != sentientActors.end(); actorIter++) {
-//		LOGMSG("Update request: " << (*actorIter)->getName());
-		if (*actorIter == &player) {
-			// do some player-specific stuff?
-			// the parser already invokes the inputted command, rather than
-			// having it invoked here
-		} else {
-			(*actorIter)->update();
-		}
-	}
 //	LOGMSG("Player position: " << player.location);
 }
 void GameEngine::terminate() {
 	// Performs closing-of-the-game methods before the engine itself shuts down
 	// If we wanted to save the game automatically, we could do so here
+	delete gravityWell;
 	terminal_close(); // Halt the BearLibTerminal instance
 }
 void GameEngine::switchMode(EngineState newMode) {
