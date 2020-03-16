@@ -13,9 +13,17 @@ DESC Implements the GUIPanel class, which describes the set of components that a
 #include "actor.hpp"
 #include "engine.hpp"
 #include "map.hpp"
+#include "event.hpp"
 
 using namespace std;
 
+// ***************
+// **** MESSAGELOG
+int MessageLog::add(string newMessage) {
+	// Adds the input string to the message log list
+	messageList.push_back(newMessage);
+	return messageList.size();
+}// *************
 // *************
 // **** GUIPanel
 GUIPanel::GUIPanel(uint newID, uint xOrigin, uint yOrigin,
@@ -226,31 +234,6 @@ void MessageReadout::display() {
 		}
 	}
 }
-// *****************
-// **** DATA DISPLAY
-DataDisplay::DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor) :
-	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
-	targetActor(inputActor)
-{	}
-void DataDisplay::display() {
-	int cursorXPosition = this->origin.x + 1;
-	int cursorYPosition = this->origin.y + 1;
-	terminal_color("white"); // Default text color, can be overridden inline
-	terminal_layer(9);
-	terminal_print(cursorXPosition, cursorYPosition, targetActor->getName().c_str());
-	
-	cursorYPosition++;
-	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().x).c_str());
-	cursorXPosition += 2;
-	terminal_print(cursorXPosition, cursorYPosition, ", ");
-	cursorXPosition += 2;
-	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
-	cursorXPosition = this->origin.x + 1;
-	cursorYPosition++;
-	terminal_print(cursorXPosition, cursorYPosition, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
-//	cursorYPosition++;
-//	terminal_print(cursorXPosition, cursorYPosition, "0123456789012345678901234567890123456789");
-}
 // *******************
 // **** COMMAND PROMPT
 CommandPrompt::CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth) :
@@ -290,10 +273,126 @@ void CommandPrompt::display() {
 	GameGUI::engine->interpretLongCommand(inputBuffer);
 	delete inputBuffer;
 }
+// *****************
+// **** DATA DISPLAY
+DataDisplay::DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor) :
+	GUIPanel(inputID, inputOrigin, inputWidth, inputHeight),
+	targetActor(inputActor)
+{	}
+DataDisplay::~DataDisplay() {
+	// delete everything in the displayList
+	while (displayList.size() > 0) {
+		displayList.pop_back();
+	}
+}
+void DataDisplay::addVitals(Actor* playerPtr) {
+	// Sets up the panel as a display for the player's vital statistics
+	Vitals *playerVitals = new Vitals();
+	playerVitals->target = playerPtr;
+	playerVitals->width = this->width;
+	displayList.push_back(playerVitals);
+}
+void DataDisplay::display() {
+	uint cursorXPosition = this->origin.x + 1;
+	uint cursorYPosition = this->origin.y + 1;
+	terminal_color("white"); // Default text color, can be overridden inline
+	terminal_layer(9);
+	/* xxx DISABLED -- old method
+	// name
+	terminal_print(cursorXPosition, cursorYPosition, targetActor->getName().c_str());
+	cursorYPosition++;
+	// location coordinates
+	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().x).c_str());
+	cursorXPosition += 2;
+	terminal_print(cursorXPosition, cursorYPosition, ", ");
+	cursorXPosition += 2;
+	terminal_print(cursorXPosition, cursorYPosition, to_string(targetActor->getLocation().y).c_str());
+	cursorXPosition = this->origin.x + 1;
+	cursorYPosition++;
+	// current time
+	terminal_print(cursorXPosition, cursorYPosition, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+	cursorYPosition++;
+	// A position ruler of 40 cols for debugging/planning
+//	terminal_print(cursorXPosition, cursorYPosition, "0123456789012345678901234567890123456789");
+	*/
+	if (!displayList.empty()) {
+		list<DataObject*>::iterator dataIter = displayList.begin();
+		while (cursorYPosition <= (this->origin.y + height)) {
+			if ((cursorYPosition + (*dataIter)->height) > (this->origin.y + height)) {
+				ERRMSG("Not enough space in DataDisplay #" << this->id << " for remaining panels");
+				break;
+			}
+			cursorYPosition += (*dataIter)->display(cursorXPosition, cursorYPosition);
+			dataIter++;
+			if (dataIter == displayList.end()) break;
+		};
+	}
+}
 // ***************
-// **** MESSAGELOG
-int MessageLog::add(string newMessage) {
-	// Adds the input string to the message log list
-	messageList.push_back(newMessage);
-	return messageList.size();
+// **** DataObject
+DataDisplay::DataObject::DataObject() :
+	titleString(""),
+	height(1)
+{	}
+DataDisplay::DataObject::DataObject(uint inputHeight) :
+	titleString(""),
+	height(inputHeight)
+{	}
+DataDisplay::DataObject::DataObject(string inputTitle, uint inputHeight) :
+	titleString(inputTitle),
+	height(inputHeight)
+{	}
+void DataDisplay::DataObject::displayTitle(uint xPos, uint yPos) {
+	// Only show a titlebar line if there's enough room
+	if (this->height > 1) {
+		string titleBar = "-=[0x2261]";
+		titleBar += titleString;
+		titleBar += "[0x2261]=-";
+		uint titleWidth = terminal_measure(titleBar.c_str()).width;
+		titleWidth += 3;
+//		LOGMSG("displaying a titlebar, length: " << titleWidth);
+		while (titleWidth < width) {
+			titleBar += "-";
+			titleWidth++;
+		};
+		terminal_print(xPos, yPos, titleBar.c_str());
+	}
+}
+// ***********
+// **** Vitals
+Vitals::Vitals() :
+	DataObject("VITALS", 9)
+{	}
+uint Vitals::display(uint xPos, uint yPos) {
+	// Displays some simple information about player vitals
+//	LOGMSG("displaying vitals");
+	displayTitle(xPos, yPos);
+	uint xOffset = 0;
+	uint yOffset = 1;
+	// name
+	terminal_print(xPos, yPos + yOffset, target->getName().c_str());
+	yOffset++;
+	// location coordinates
+	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().x).c_str());
+	xOffset += 2;
+	terminal_print(xPos + xOffset, yPos + yOffset, ", ");
+	xOffset += 2;
+	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().y).c_str());
+	xOffset = 0;
+	yOffset++;
+	// current time
+	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+	yOffset++;
+	height = yOffset; // update this object's height to the actual value
+	return yOffset;
+}
+// **********
+// **** Timer
+Clock::Clock(GameEvent *eventPtr) {
+	// Displays the time remaining on the given event's countdown
+	targetEvent = eventPtr;
+}
+uint Clock::display(uint xPos, uint yPos) {
+	LOGMSG("displaying remaining time");
+	return this->height;
 }

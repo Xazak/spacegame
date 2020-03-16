@@ -84,8 +84,9 @@ class GameGUI {
 		friend struct Splitter;
 		friend struct Viewport;
 		friend struct MessageReadout;
-		friend struct DataDisplay;
 		friend struct CommandPrompt;
+		friend struct DataDisplay;
+		friend struct Vitals;
 		
 		// METHODS
 		void drawFullLayoutTree();
@@ -115,6 +116,9 @@ class GameGUI {
 		// Internal geometry specifications, (re-)calculated at init()
 		// Stored as a BST, comes with iterators and such (?)
 		GUIPanel *layoutRoot;
+		DataDisplay *vitals;
+		DataDisplay *auxiliary;
+		DataDisplay *monitor;
 		// Used as a mask for generating the correct GUI frame by taking into
 		// account the touching edges of the drawn lines
 		// FIXME: add options for other line types

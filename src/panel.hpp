@@ -12,11 +12,27 @@ DESC Implements the GUIPanel class, which describes the set of components that a
 #include "main.hpp"
 #include <vector>
 #include <string>
+#include <list>
 
 class GameGUI;
 class GameEngine;
 class Actor;
 class GameMap;
+class GameEvent;
+struct MessageLog { // Message log object
+	// An advanced Message object might look like:
+	// message text
+	// message timestamp (using internal game time)
+	// message origin
+	// message recipient
+	// delivery status
+	// Pointers for data retrieval
+	std::vector<std::string> messageList;
+	int add(std::string newMessage); // Returns # of messages in log
+	uint size() { return messageList.size(); }
+	// probably need some kind of log culling function(s)
+	// NOTE: the message log is structured as a STACK, ie LIFO
+};
 struct GUIPanel {
 	GUIPanel(uint newID, uint xOrigin = 0, uint yOrigin = 0,
 		uint inputWidth = 3, uint inputHeight = 3,
@@ -71,13 +87,6 @@ struct MessageReadout : public GUIPanel {
 	MessageLog* logObject;
 	void display();
 };
-struct DataDisplay : public GUIPanel {
-	// misc/catch-all category for data visualizations such as stat
-	// bars, meters, buttons/switches, etc
-	DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor);
-	Actor* targetActor;
-	void display();
-};
 struct CommandPrompt : public GUIPanel {
 	CommandPrompt(uint inputID, cpair inputOrigin, uint inputWidth);
 	~CommandPrompt();
@@ -86,19 +95,39 @@ struct CommandPrompt : public GUIPanel {
 	bool visible;
 	char * inputBuffer;
 };
-struct MessageLog { // semantic wrapper around the message log object
-	// An advanced Message object might look like:
-	// message text
-	// message timestamp (using internal game time)
-	// message origin
-	// message recipient
-	// delivery status
-	// Pointers for data retrieval
-	std::vector<std::string> messageList;
-	int add(std::string newMessage); // Returns # of messages in log
-	uint size() { return messageList.size(); }
-	// probably need some kind of log culling function(s)
-	// NOTE: the message log is structured as a STACK, ie LIFO
+struct DataDisplay : public GUIPanel {
+	// misc/catch-all category for data visualizations such as stat
+	// bars, meters, buttons/switches, etc
+	DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor);
+	~DataDisplay();
+	void addVitals(Actor* playerPtr);
+	void addTimer(GameEvent* eventPtr);
+	Actor* targetActor;
+	void display();
+	struct DataObject;
+	std::list<DataObject*> displayList;
 };
+struct DataDisplay::DataObject {
+	// defines a single data readout method within a DataDisplay
+	DataObject();
+	DataObject(uint inputHeight);
+	DataObject(std::string inputTitle, uint inputHeight = 1);
+	std::string titleString; // Leave blank to produce an unbroken ruled line
+	uint width; // is set by the parent panel
+	uint height; // = 1 by default
+	virtual uint display(uint xPos, uint yPos) = 0;
+	void displayTitle(uint xPos, uint yPos);
+};
+struct Vitals : public DataDisplay::DataObject {
+	Vitals();
+	uint display(uint xPos, uint yPos);
+	Actor *target;
+};
+struct Clock : public DataDisplay::DataObject {
+	Clock(GameEvent* eventPtr);
+	uint display(uint xPos, uint yPos);
+	GameEvent* targetEvent;
+};
+
 
 #endif // SPACEGAME_GUI_PANEL

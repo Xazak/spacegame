@@ -232,12 +232,16 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	// put VIT at root->R->U		o: r->R->U, statpanel, maxHeight * 33%
 	layoutIndex = layoutIndex->right;
 	layoutIndex->up = new DataDisplay(13, layoutIndex->upPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
+	vitals = dynamic_cast<DataDisplay *>(layoutIndex->up);
+	vitals->addVitals(avatar);
 	// split root->R->D into U/D	50/50, statpanel, maxHeight * 33%
 	layoutIndex->down = new Splitter(4, layoutIndex->downPanelOrigin(), statPanelWidth, statPanelHeight, false);
 //	LOGMSG(layoutIndex << " has up: " << layoutIndex->up << " and down: " << layoutIndex->down);
-//	layoutIndex = layoutIndex->down;
+	layoutIndex = layoutIndex->down;
 	// put AUX at root->R->D->U		o: r->R->D->U, statpanel, maxHeight * 33%
-//	layoutIndex->up = new DataDisplay();
+	layoutIndex->up = new DataDisplay(14, layoutIndex->upPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
+	auxiliary = dynamic_cast<DataDisplay *>(layoutIndex->up);
+	//auxiliary->addAuxMonitor();
 	// put MTR at root->R->D->D		o: r->R->D->D, statpanel, maxHeight * 33%
 //	layoutIndex->down = new DataDisplay();
 	// The command prompt is drawn specially over the top the UI, is therefore
