@@ -13,8 +13,8 @@ DESC Contains the definitions of various useful data structures
 // *** DEFINITIONS AND ALIASES
 typedef unsigned int uint;
 
-#define MS_PER_UPDATE 0.25
-#define INGAME_EPOCH 1481782
+#define SECONDS_PER_UPDATE .250
+#define INGAME_EPOCH 1481782.000
 
 struct CoordinatePair {
 	int x;

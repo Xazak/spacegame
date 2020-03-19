@@ -87,6 +87,7 @@ class GameGUI {
 		friend struct CommandPrompt;
 		friend struct DataDisplay;
 		friend struct Vitals;
+		friend struct Clock;
 		
 		// METHODS
 		void drawFullLayoutTree();

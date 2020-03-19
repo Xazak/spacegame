@@ -241,7 +241,7 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	// put AUX at root->R->D->U		o: r->R->D->U, statpanel, maxHeight * 33%
 	layoutIndex->up = new DataDisplay(14, layoutIndex->upPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
 	auxiliary = dynamic_cast<DataDisplay *>(layoutIndex->up);
-	//auxiliary->addAuxMonitor();
+	auxiliary->addTimer(engine->getGravityWell());
 	// put MTR at root->R->D->D		o: r->R->D->D, statpanel, maxHeight * 33%
 //	layoutIndex->down = new DataDisplay();
 	// The command prompt is drawn specially over the top the UI, is therefore

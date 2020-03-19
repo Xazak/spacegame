@@ -292,6 +292,12 @@ void DataDisplay::addVitals(Actor* playerPtr) {
 	playerVitals->width = this->width;
 	displayList.push_back(playerVitals);
 }
+void DataDisplay::addTimer(CountdownTimer *timerPtr) {
+	Clock *newClock = new Clock(timerPtr);
+	newClock->width = this->width;
+	displayList.push_back(newClock);
+}
+//addTimer
 void DataDisplay::display() {
 	uint cursorXPosition = this->origin.x + 1;
 	uint cursorYPosition = this->origin.y + 1;
@@ -380,19 +386,29 @@ uint Vitals::display(uint xPos, uint yPos) {
 	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().y).c_str());
 	xOffset = 0;
 	yOffset++;
-	// current time
-	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
-	yOffset++;
 	height = yOffset; // update this object's height to the actual value
 	return yOffset;
 }
 // **********
 // **** Timer
-Clock::Clock(GameEvent *eventPtr) {
+Clock::Clock(CountdownTimer *timerPtr) :
+	localClock(timerPtr)
+{
 	// Displays the time remaining on the given event's countdown
-	targetEvent = eventPtr;
 }
 uint Clock::display(uint xPos, uint yPos) {
-	LOGMSG("displaying remaining time");
+//	LOGMSG("displaying a clock");
+	uint xOffset = 0;
+	uint yOffset = 1;
+	// current time
+	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+	yOffset++;
+	// remaining event time
+//	targetEvent->getRemainingTime();
+	//Clock::displayTimeReadout(timeValue);
+	// FIXME: this is a debug output
+	string outputString;
+	outputString += localClock->getRemainingTimeString();
+	terminal_print(xPos + xOffset, yPos + yOffset, outputString.c_str());
 	return this->height;
 }

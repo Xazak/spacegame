@@ -18,7 +18,7 @@ class GameGUI;
 class GameEngine;
 class Actor;
 class GameMap;
-class GameEvent;
+class CountdownTimer;
 struct MessageLog { // Message log object
 	// An advanced Message object might look like:
 	// message text
@@ -101,7 +101,7 @@ struct DataDisplay : public GUIPanel {
 	DataDisplay(uint inputID, cpair inputOrigin, uint inputWidth, uint inputHeight, Actor* inputActor);
 	~DataDisplay();
 	void addVitals(Actor* playerPtr);
-	void addTimer(GameEvent* eventPtr);
+	void addTimer(CountdownTimer* timerPtr);
 	Actor* targetActor;
 	void display();
 	struct DataObject;
@@ -124,9 +124,9 @@ struct Vitals : public DataDisplay::DataObject {
 	Actor *target;
 };
 struct Clock : public DataDisplay::DataObject {
-	Clock(GameEvent* eventPtr);
+	Clock(CountdownTimer *timerPtr);
 	uint display(uint xPos, uint yPos);
-	GameEvent* targetEvent;
+	CountdownTimer* localClock;
 };
 
 

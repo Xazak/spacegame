@@ -9,6 +9,7 @@ DESC Implements the GameEvent class, which handles things like countdown timers
 #define SPACEGAME_EVENT
 
 #include "main.hpp"
+#include <string>
 
 class GameEngine;
 class GameEvent {
@@ -37,9 +38,11 @@ class CountdownTimer : public GameEvent {
 		void update(); // add or remove time from the timer
 		void execute();
 		int getRemainingTime() { return remainder; }
+		void advanceTime(double increment);
+		std::string getRemainingTimeString();
 
 	private:
-		int remainder; // in milliseconds
+		double remainder; // in milliseconds
 };
 
 

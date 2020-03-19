@@ -155,7 +155,7 @@ void DroneSentience::continueWorking() {
 	} else {
 //		if (remainingTime > 0.0) LOGMSG("Continuing work on action");
 //		else ERRMSG("Drone action was rendered implausible, holding");
-		remainingTime -= MS_PER_UPDATE;
+		remainingTime -= SECONDS_PER_UPDATE;
 	}
 }
 Actor* DroneSentience::findPlayer() {

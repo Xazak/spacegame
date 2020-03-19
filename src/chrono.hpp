@@ -21,6 +21,7 @@ class Chrono {
 		uint getMinutes() { return minutes; }
 		uint getSeconds() { return seconds; }
 		uint getLastDelta() { return delta; }
+		static std::string timeToString(double timeValue);
 
 	private:
 		double rawTimeValue;

@@ -7,6 +7,10 @@ DESC Implements the GameEvent class, which handles things like countdown timers
 
 #include "event.hpp"
 #include "engine.hpp"
+#include <string>
+#include <chrono>
+
+using namespace std;
 
 GameEngine* GameEvent::engine = nullptr;
 
@@ -23,12 +27,9 @@ CountdownTimer::CountdownTimer(uint remainingTime) :
 {	//LOGMSG("Timer created: " << remainder);
 }
 void CountdownTimer::update() {
+	// Timers are advanced alongside the world clock
 	if (remainder <= 0) {
 		this->execute();
-	} else {
-		int timeOffset = engine->worldClock.getLastDelta();
-		remainder -= (timeOffset % 10);
-//		LOGMSG("Time remaining: " << remainder << " / delta: " << timeOffset);
 	}
 }
 void CountdownTimer::execute() {
@@ -38,4 +39,12 @@ void CountdownTimer::execute() {
 	GameEngine::switchMode(GameEngine::EngineState::DEFEAT);
 	// This is a global event, therefore never really inactive..
 	this->resolvedState = true;
+}
+void CountdownTimer::advanceTime(double increment) {
+	remainder -= increment;
+	if (remainder <= 0) remainder = 0;
+}
+string CountdownTimer::getRemainingTimeString() {
+	// Formats the remainder as a string before returning it
+	return Chrono::timeToString(remainder);
 }

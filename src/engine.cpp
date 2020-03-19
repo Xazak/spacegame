@@ -22,6 +22,7 @@ GameEngine::EngineState GameEngine::prevMode = GameEngine::currMode;
 GameEngine::GameEngine() :
 //	currMode(STARTUP),	// public
 //	prevMode(STARTUP),
+	lagTime(0.0),
 	screenWidth(80),	// private
 	screenHeight(50),
 	cliMode(false)
@@ -67,8 +68,9 @@ bool GameEngine::initialize(std::string configFile) {
 	// Initialize the starting Event list
 	GameEvent::registerEngine(this);
 //	GameEvent *gravityWell = new CountdownTimer(30000);
-	gravityWell = new CountdownTimer(100);
+	gravityWell = new CountdownTimer(10);
 	eventList.push_back(gravityWell);
+	timerList.push_back(gravityWell);
 
 	// Initialize the GUI
 	GameEngine* tempPtr = this;
@@ -84,11 +86,13 @@ void GameEngine::execGameLoop() {
 	using namespace chrono;
 //	LOGMSG("Calling...");
 	terminal_refresh();
+	update(); // Call once to resolve STARTUP methods
 	steady_clock::time_point prevTime = steady_clock::now();
 	steady_clock::time_point currTime = prevTime;
 	duration<double> timeSpan = duration_cast<duration<double>>(currTime - prevTime);
-	duration<double> lagTime = timeSpan;
-	duration<double> updateTimeStep = duration<double>(MS_PER_UPDATE);
+//	duration<double> lagTime = timeSpan;
+	lagTime = timeSpan;
+	duration<double> updateTimeStep = duration<double>(SECONDS_PER_UPDATE);
 
 	// TK_CLOSE == true when the terminal window is closed
 	// _peek does not block if false (unlike _read)
@@ -97,8 +101,13 @@ void GameEngine::execGameLoop() {
 		timeSpan = currTime - prevTime; // get the diff since last snapshot
 		prevTime = currTime;			// update the snapshots forward
 		lagTime += timeSpan;			// add the diff to the accumulator
-		double rawTime = (double)timeSpan.count();
-		if (currMode == ONGOING) worldClock.update(rawTime);
+		if (currMode == ONGOING) {
+			worldClock.update(timeSpan.count()); // increment the world clock
+			// update the timer clocks
+			for (auto timerIter = timerList.begin(); timerIter != timerList.end(); timerIter++) {
+				(*timerIter)->advanceTime(timeSpan.count());
+			}
+		}
 		// Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
@@ -131,7 +140,8 @@ void GameEngine::execGameLoop() {
 		// Set flag HERE for detecting whether the player's input has created a
 		// VICTORY or DEFEAT engine state
 
-//		while (timeSpan >= duration_cast<duration<double>>(MS_PER_UPDATE)) {
+//		while (timeSpan >= duration_cast<duration<double>>(SECONDS_PER_UPDATE)) {
+//		LOGMSG("lag: " << lagTime.count());
 		while (lagTime >= updateTimeStep) {
 			update(); // Perform game update routines based on engine state
 			lagTime -= updateTimeStep;

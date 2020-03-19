@@ -46,8 +46,11 @@ class GameEngine {
 		Actor* getPlayerPtr() { return (&player); }
 		GameMap* getMeatspacePtr() { return (&meatspace); }
 		GameGUI* getGUIPtr() { return (&gui); }
+		CountdownTimer* getGravityWell() { return gravityWell; }
 
 		Chrono worldClock;
+		std::chrono::duration<double> lagTime;
+//		int getLagTime() { return (int)lagTime.rep; }
 
 	private:
 		bool loadConfiguration(std::string configFile); // Loads external config
@@ -60,7 +63,8 @@ class GameEngine {
 		Drone lemur;
 		std::list<Actor*> sentientActors; // Actors who will be taking actions
 		std::list<GameEvent*> eventList; // event registry
-		GameEvent *gravityWell;
+		std::list<CountdownTimer*> timerList; // timer registry
+		CountdownTimer *gravityWell;
 		// Properties
 		uint screenWidth; // Width of terminal in # of monospace chars
 		uint screenHeight; // Height of terminal in # of monospace chars
