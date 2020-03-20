@@ -220,7 +220,7 @@ void MessageReadout::display() {
 	// Obtain the starting position and set some defaults
 	// FIXME: Does not handle text wrapping!
 	int cursorXPosition = this->origin.x + 1;
-	int cursorYPosition = this->origin.y + height - 3;
+	int cursorYPosition = this->origin.y + height - 2;
 	terminal_color("white"); // Default text color, can be overridden inline
 	terminal_layer(9);
 	if (this->logObject->messageList.size() > 0) {
@@ -228,7 +228,7 @@ void MessageReadout::display() {
 		for ( ; msgLogIter != this->logObject->messageList.rend(); msgLogIter++) {
 //			terminal_print(cursorXPosition, cursorYPosition--, (*msgLogIter).c_str());
 			dimensions_t stringDims = terminal_measure_ext(this->width, this->height, (*msgLogIter).c_str());
-			if (cursorYPosition >= this->origin.y) {
+			if (cursorYPosition > this->origin.y) {
 				terminal_print_ext(cursorXPosition, cursorYPosition--, stringDims.width, stringDims.height, TK_ALIGN_DEFAULT, (*msgLogIter).c_str());
 			}
 		}
@@ -389,7 +389,7 @@ uint Vitals::display(uint xPos, uint yPos) {
 	terminal_print(xPos + xOffset, yPos + yOffset, ", ");
 	xOffset += 2;
 	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().y).c_str());
-	xOffset = 1;
+	xOffset = 2;
 	yOffset++;
 	// current time
 	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
