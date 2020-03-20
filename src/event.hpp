@@ -37,7 +37,7 @@ class CountdownTimer : public GameEvent {
 		CountdownTimer(uint remainingTime);
 		void update(); // add or remove time from the timer
 		void execute();
-		int getRemainingTime() { return remainder; }
+		double getRemainingTime() { return remainder; }
 		void advanceTime(double increment);
 		std::string getRemainingTimeString();
 

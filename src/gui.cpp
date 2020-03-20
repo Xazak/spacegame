@@ -243,7 +243,9 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	auxiliary = dynamic_cast<DataDisplay *>(layoutIndex->up);
 	auxiliary->addTimer(engine->getGravityWell());
 	// put MTR at root->R->D->D		o: r->R->D->D, statpanel, maxHeight * 33%
-//	layoutIndex->down = new DataDisplay();
+	layoutIndex->down = new DataDisplay(15, layoutIndex->downPanelOrigin(), statPanelWidth, statPanelHeight, avatar);
+	monitor = dynamic_cast<DataDisplay *>(layoutIndex->down);
+	// FIXME: add stuff to the monitor
 	// The command prompt is drawn specially over the top the UI, is therefore
 	// not part of the base layout tree
 	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin + msgPanelHeight - 3), msgPanelWidth);

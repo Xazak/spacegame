@@ -20,17 +20,20 @@ class Chrono {
 		uint getHours() { return hours; }
 		uint getMinutes() { return minutes; }
 		uint getSeconds() { return seconds; }
-		uint getLastDelta() { return delta; }
 		static std::string timeToString(double timeValue);
+		static void getTimeValues(uint target[], double inputValue);
 
 	private:
 		double rawTimeValue;
-		uint delta;
 		uint days;
 		uint hours;
 		uint minutes;
 		uint seconds;
 		uint milliseconds;
+		static double dayFactor;
+		static double hourFactor;
+		static double minuteFactor;
+		static double msecFactor;
 };
 
 #endif // SPACEGAME_CHRONOMETER

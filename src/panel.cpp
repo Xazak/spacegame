@@ -81,10 +81,10 @@ cpair Splitter::rightPanelOrigin() {
 	cpair offsetOrigin = this->origin;
 	if (this->verticalSplit) {
 		uint xOffset = this->width;
-		offsetOrigin.x += xOffset + 1;
+		offsetOrigin.x += xOffset;
 	} else {
 		uint yOffset = this->height;
-		offsetOrigin.y += yOffset + 1;
+		offsetOrigin.y += yOffset;
 	}
 //	LOGMSG("rightPanel origin: " << offsetOrigin);
 	return offsetOrigin;
@@ -299,8 +299,11 @@ void DataDisplay::addTimer(CountdownTimer *timerPtr) {
 }
 //addTimer
 void DataDisplay::display() {
-	uint cursorXPosition = this->origin.x + 1;
-	uint cursorYPosition = this->origin.y + 1;
+	// The cursor starts inside the 'bleed' edge of the display
+	// Individual panels are responsible for setting the right offset
+	uint cursorXPosition = this->origin.x;
+	uint cursorYPosition = this->origin.y;
+//	LOGMSG("Displaying panel #" << this->id << " at " << cursorXPosition << ", " << cursorYPosition);
 	terminal_color("white"); // Default text color, can be overridden inline
 	terminal_layer(9);
 	/* xxx DISABLED -- old method
@@ -357,7 +360,7 @@ void DataDisplay::DataObject::displayTitle(uint xPos, uint yPos) {
 		uint titleWidth = terminal_measure(titleBar.c_str()).width;
 		titleWidth += 3;
 //		LOGMSG("displaying a titlebar, length: " << titleWidth);
-		while (titleWidth < width) {
+		while (titleWidth <= this->width) {
 			titleBar += "-";
 			titleWidth++;
 		};
@@ -371,12 +374,14 @@ Vitals::Vitals() :
 {	}
 uint Vitals::display(uint xPos, uint yPos) {
 	// Displays some simple information about player vitals
-//	LOGMSG("displaying vitals");
-	displayTitle(xPos, yPos);
-	uint xOffset = 0;
+//	LOGMSG("displaying vitals at " << xPos << ", " << yPos);
+	uint xOffset = 1;
 	uint yOffset = 1;
+	displayTitle(xPos + xOffset, yPos + yOffset);
+	xOffset++;
+	yOffset++;
 	// name
-	terminal_print(xPos, yPos + yOffset, target->getName().c_str());
+	terminal_print(xPos + xOffset, yPos + yOffset, target->getName().c_str());
 	yOffset++;
 	// location coordinates
 	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().x).c_str());
@@ -384,31 +389,147 @@ uint Vitals::display(uint xPos, uint yPos) {
 	terminal_print(xPos + xOffset, yPos + yOffset, ", ");
 	xOffset += 2;
 	terminal_print(xPos + xOffset, yPos + yOffset, to_string(target->getLocation().y).c_str());
-	xOffset = 0;
+	xOffset = 1;
 	yOffset++;
+	// current time
+	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+	yOffset++;
+
+	// end display methods
 	height = yOffset; // update this object's height to the actual value
 	return yOffset;
 }
 // **********
 // **** Timer
 Clock::Clock(CountdownTimer *timerPtr) :
-	localClock(timerPtr)
+	DataObject("GRAVITY WELL", 9),
+	localClock(timerPtr),
+	digitZero	{ upLeft, horizBar, upRight, vertBar, 0x2508, vertBar, downLeft, horizBar, downRight },
+	digitOne	{ serifUL, upRight, empty, empty, vertBar, empty, serifDL, downTee, serifDR },
+	digitTwo	{ serifUL, horizBar, upRight, upLeft, horizBar, downRight, downLeft, horizBar, serifDR },
+	digitThree	{ serifUL, horizBar, upRight, empty, serifLT, rightTee, serifDL, horizBar, downRight },
+	digitFour	{ serifLU, empty, serifRU, downLeft, horizBar, rightTee, empty, empty, serifRD },
+	digitFive	{ upLeft, horizBar, serifUR, downLeft, horizBar, upRight, serifDL, horizBar, downRight },
+	digitSix	{ upLeft, horizBar, serifUR, leftTee, horizBar, upRight, downLeft, horizBar, downRight },
+	digitSeven	{ serifUL, horizBar, upRight, empty, empty, vertBar, empty, empty, serifRD },
+	digitEight	{ upLeft, horizBar, upRight, leftTee, horizBar, rightTee, downLeft, horizBar, downRight },
+	digitNine	{ upLeft, horizBar, upRight, downLeft, horizBar, rightTee, empty, empty, serifRD }
 {
 	// Displays the time remaining on the given event's countdown
+	// initialize the digit arrays
 }
 uint Clock::display(uint xPos, uint yPos) {
-//	LOGMSG("displaying a clock");
-	uint xOffset = 0;
+//	LOGMSG("displaying a clock at " << xPos << ", " << yPos);
+	uint xOffset = 1;
 	uint yOffset = 1;
-	// current time
-	terminal_print(xPos + xOffset, yPos + yOffset, GameGUI::engine->worldClock.getCurrentTimeString().c_str());
+	displayTitle(xPos + xOffset, yPos + yOffset);
 	yOffset++;
-	// remaining event time
-//	targetEvent->getRemainingTime();
-	//Clock::displayTimeReadout(timeValue);
-	// FIXME: this is a debug output
-	string outputString;
-	outputString += localClock->getRemainingTimeString();
-	terminal_print(xPos + xOffset, yPos + yOffset, outputString.c_str());
+	// get remaining event time
+	uint timeValue[5] = {0};
+	Chrono::getTimeValues(timeValue, localClock->getRemainingTime());
+	// change clock color depending on remaining time
+	if (localClock->getRemainingTime() < 5) {
+		terminal_color("red");
+	} else {
+		terminal_color("grey");
+	}
+	yOffset += drawReadout(timeValue, xPos + xOffset, yPos + yOffset);
+
+	// end display methods
+	this->height = yOffset;
 	return this->height;
+}
+uint Clock::drawReadout(uint input[], uint xPos, uint yPos) {
+	// All offsets should have been factored into the x/yPos already!
+	xPos++;
+	// draw a +/- or AM/PM symbol here?
+	terminal_put(xPos, yPos + 1, 0x2500);
+	xPos++;
+	drawClockDigits(input[1], 2, xPos, yPos);
+	xPos += 6;
+	drawColon(xPos, yPos);
+	xPos += 1;
+	drawClockDigits(input[2], 2, xPos, yPos);
+	xPos += 6;
+	drawColon(xPos, yPos);
+	xPos += 1;
+	drawClockDigits(input[3], 2, xPos, yPos);
+	xPos += 6;
+	drawPeriod(xPos, yPos);
+	xPos += 1;
+	drawClockDigits(input[4], 3, xPos, yPos);
+	return 3;
+}
+void Clock::drawClockDigits(uint value, uint numLength, uint xPos, uint yPos) {
+	// iterate across the 3x3 blocks of each digit in turn
+//	LOGMSG("clock digit: " << value << " of l: " << numLength << " at " << xPos << ", " << yPos);
+	uint hundDigit = value / 100;
+	uint tensDigit = value / 10;
+	if (tensDigit >= 10) tensDigit %= 10;
+	uint onesDigit = value % 10;
+	int *digitArray = nullptr;
+	// select the first digit to draw
+	uint targetDigit = 0;
+
+	while (numLength > 0) {
+		if (numLength == 3) targetDigit = hundDigit;
+		else if (numLength == 2) targetDigit = tensDigit;
+		else if (numLength == 1) targetDigit = onesDigit;
+		digitArray = getDigitArray(targetDigit);
+		for (uint xOffset = 0; xOffset < 3; xOffset++) {
+			for (uint yOffset = 0; yOffset < 3; yOffset++) {
+				terminal_put(xPos + xOffset, yPos + yOffset, digitArray[xOffset + yOffset * 3]);
+			}
+		}
+		xPos += 3;
+		numLength--;
+	};
+}
+void Clock::drawColon(uint xPos, uint yPos) {
+	terminal_put(xPos, yPos + 1, 0x2022);
+	terminal_put(xPos, yPos + 2, 0x2022);
+}
+void Clock::drawPeriod(uint xPos, uint yPos) {
+	terminal_put(xPos, yPos, ' ');
+	terminal_put(xPos, yPos + 1, ' ');
+	terminal_put(xPos, yPos + 2, 0x2022);
+}
+int* Clock::getDigitArray(uint value) {
+	int *arrayPtr = nullptr;
+	switch(value) {
+		case 0:
+			arrayPtr = digitZero;
+			break;
+		case 1:
+			arrayPtr = digitOne;
+			break;
+		case 2:
+			arrayPtr = digitTwo;
+			break;
+		case 3:
+			arrayPtr = digitThree;
+			break;
+		case 4:
+			arrayPtr = digitFour;
+			break;
+		case 5:
+			arrayPtr = digitFive;
+			break;
+		case 6:
+			arrayPtr = digitSix;
+			break;
+		case 7:
+			arrayPtr = digitSeven;
+			break;
+		case 8:
+			arrayPtr = digitEight;
+			break;
+		case 9:
+			arrayPtr = digitNine;
+			break;
+		default:
+			ERRMSG("Cannot draw digit: value out of range - " << value);
+			break;
+	}
+	return arrayPtr;
 }

@@ -126,8 +126,41 @@ struct Vitals : public DataDisplay::DataObject {
 struct Clock : public DataDisplay::DataObject {
 	Clock(CountdownTimer *timerPtr);
 	uint display(uint xPos, uint yPos);
+	uint drawReadout(uint input[], uint xPos, uint yPos);
 	CountdownTimer* localClock;
-};
+	// need to define the set of character display methods
+	void drawClockDigits(uint value, uint length, uint xPos, uint yPos);
+	void drawColon(uint xPos, uint yPos);
+	void drawPeriod(uint xPos, uint yPos);
+	int* getDigitArray(uint value);
+	int digitZero[9];
+	int digitOne[9];
+	int digitTwo[9];
+	int digitThree[9];
+	int digitFour[9];
+	int digitFive[9];
+	int digitSix[9];
+	int digitSeven[9];
+	int digitEight[9];
+	int digitNine[9];
+	enum ClockDigitChars {
+		// straight
+		empty = 0x0020, horizBar = 0x2550, vertBar = 0x2551,
+		// corners
+		upLeft = 0x2554, upRight = 0x2557, downLeft = 0x255A, downRight = 0x255D,
+		// connectors
+		leftTee = 0x2560, rightTee = 0x2563, upTee = 0x2566, downTee = 0x2569,
+		// serifs
+		serifUL = 0x2552, serifUR = 0x2555, serifDL = 0x2558, serifDR = 0x255B,
+		serifLT = 0x255E, // middle bar on 3
+		serifMT = 0x2562, // middle bar on 7
+		serifLU = 0x2553, // upper left on 4
+		serifRU = 0x2556, // upper right on 4
+		serifLD = 0x2559, // unused
+		serifRD = 0x255C, // lower right on 4, 9
+		serifCr = 0x256C, // middle cross of 0
+	};
 
+};
 
 #endif // SPACEGAME_GUI_PANEL
