@@ -87,6 +87,12 @@ void Actor::moveByRel(int xOffset, int yOffset) {
 void Actor::moveByRel(cpair inputOffset) {
 	this->moveByRel(inputOffset.x, inputOffset.y);
 }
+bool Actor::isAt(uint xPos, uint yPos) {
+	return (this->location.isEqual(xPos, yPos));
+}
+bool Actor::isAt(cpair inputLocation) {
+	return this->isAt(inputLocation.x, inputLocation.y);
+}
 
 // *** PLAYER METHODS
 Player::Player() :

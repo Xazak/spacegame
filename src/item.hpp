@@ -33,6 +33,7 @@ class Item : public Actor {
 			bool obstructFlag = false,
 			bool occludesFlag = true);
 //		~Item();
+		
 		// needs a name, sigil, color, position, [obstructs], [occludes]
 		// ASSUME occludes (inoccludes objects are probably very special)
 		// Will need to set up the Container, Portable, etc modules according
@@ -45,13 +46,12 @@ class Item : public Actor {
 // **** Large Items (NEVER portable, USUALLY obstructs)
 struct Door : public Item {
 	Door(int xPos, int yPos, GameMap* inputMap);
-	int getSigil();
 //	void update();
 	bool isOpen;
 	int closedSigil;
 	int openSigil;
-};
 
+};
 // **** Small Items (ALWAYS portable, NEVER obstructs)
 struct Wrench : public Item {
 	Wrench(int xPos, int yPos, GameMap* inputMap);

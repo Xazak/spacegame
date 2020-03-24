@@ -248,7 +248,7 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	// FIXME: add stuff to the monitor
 	// The command prompt is drawn specially over the top the UI, is therefore
 	// not part of the base layout tree
-	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin + msgPanelHeight - 3), msgPanelWidth);
+	cmdPrompt = new CommandPrompt(10, cpair(0, msgBoxYOrigin + msgPanelHeight - 2), msgPanelWidth);
 //	LOGMSG("+ Requesting dump +");
 //	this->dump(); // DEBUG
 }

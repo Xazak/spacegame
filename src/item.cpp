@@ -32,12 +32,6 @@ Door::Door(int xPos, int yPos, GameMap* inputMap) :
 	this->aperture->close(*this);
 
 }
-/*
-int Door::getSigil() {
-	// Returns the correct sigil value based on its internal state
-	return (this->aperture->isOpen() ? openSigil : closedSigil);
-}
-*/
 // **** Small Items
 Wrench::Wrench(int xPos, int yPos, GameMap* inputMap) :
 Item("wrench", 0x00A5, 0xFF666699, xPos, yPos, inputMap, false, true)

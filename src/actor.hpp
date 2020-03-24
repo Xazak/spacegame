@@ -61,6 +61,9 @@ class Actor {
 		void		moveByRel(int xOffset, int yOffset);
 		void		moveByRel(cpair inputOffset);
 		//setColor
+		// TESTS
+		bool		isAt(uint xPos, uint yPos);
+		bool		isAt(cpair inputPosition);
 	//  PROPERTIES - Guaranteed
 		bool		obstructs;
 		bool		occludes;

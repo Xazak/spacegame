@@ -68,7 +68,7 @@ bool GameEngine::initialize(std::string configFile) {
 	// Initialize the starting Event list
 	GameEvent::registerEngine(this);
 //	GameEvent *gravityWell = new CountdownTimer(30000);
-	gravityWell = new CountdownTimer(10);
+	gravityWell = new CountdownTimer(1000);
 	eventList.push_back(gravityWell);
 	timerList.push_back(gravityWell);
 
@@ -151,15 +151,20 @@ void GameEngine::execGameLoop() {
 		// The value is normalized by updateTimeStep before it is passed
 //		LOGMSG("Requesting GUI render with lagTime == " << lagTime.count());
 		gui.render(lagTime / updateTimeStep);
-		if (currMode == DEFEAT) break;
+		if (currMode == DEFEAT || currMode == VICTORY) break;
 	};
 	// if we made it here, the game stopped but the window is still open
-	ERRMSG("Game loop broken due to engine state");
 	if (currMode == DEFEAT) {
 		// print a defeat banner
+		gui.addMessage("You have been defeated!");
+	} else if (currMode == VICTORY) {
+		// print a victory banner
+		gui.addMessage("You have won the game!");
 	}
+	gui.render(lagTime / updateTimeStep);
 	while (terminal_read() != TK_Q) {
 		gui.render(lagTime / updateTimeStep);
+		if (terminal_peek() == TK_CLOSE) break;
 	}
 }
 void GameEngine::update() {

@@ -183,7 +183,11 @@ void Viewport::display() {
 			terminal_put(currentXPos, currentYPos, 0x0020);
 			// Paint the terrain layer
 			terminal_layer(2);
-			terminal_color(mapSource->getTileColor(echs, whye));
+			int tileColor = mapSource->getTileColor(echs, whye);
+			if (mapSource->getOccupant(echs, whye)) {
+				tileColor -= 0xFF000000; // don't composite a terrain tile with an Actor
+			}
+			terminal_color(tileColor);
 			terminal_put(currentXPos, currentYPos, mapSource->getTileSigil(echs, whye));
 		}
 	}
@@ -191,7 +195,7 @@ void Viewport::display() {
 	terminal_layer(3);
 	for (list<Actor*>::iterator furnishIter = mapSource->furnishings.begin(); furnishIter != mapSource->furnishings.end(); furnishIter++) {
 		int displayColor = (*furnishIter)->getColor();
-//		if (mapSource->getOccupant((*furnishIter)->location)) displayColor -= 0x66000000;
+		if (mapSource->getOccupant((*furnishIter)->location)) displayColor -= 0xBB000000; // color change on door movement
 		terminal_color(displayColor);
 		terminal_put(cursorXOrigin + (*furnishIter)->getLocation().x, cursorYOrigin + (*furnishIter)->getLocation().y, (*furnishIter)->getSigil());
 	}
