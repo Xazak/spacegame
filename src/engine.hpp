@@ -55,6 +55,8 @@ class GameEngine {
 	private:
 		bool loadConfiguration(std::string configFile); // Loads external config
 		std::string generateBLTConfigString(); // Generates a BearLibTerminal configuration string for terminal_set()
+		bool saveGame(std::string fileName); // creates a game save file
+		bool loadGame(std::string fileName); // loads a game save file
 		// Game objects
 		GameParser parser;
 		GameGUI gui;

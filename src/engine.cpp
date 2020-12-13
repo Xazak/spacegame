@@ -32,7 +32,7 @@ GameEngine::GameEngine() :
 }
 
 // *** CORE FUNCTIONS
-bool GameEngine::initialize(std::string configFile) {
+bool GameEngine::initialize(string configFile) {
 	// Sets up the initial game state; this is NOT in the constructor because
 	// we want to keep track of whether an error has arisen from the GameEngine
 	// class or some other sub-module of the system
@@ -94,8 +94,9 @@ void GameEngine::execGameLoop() {
 	lagTime = timeSpan;
 	duration<double> updateTimeStep = duration<double>(SECONDS_PER_UPDATE);
 
-	// TK_CLOSE == true when the terminal window is closed
-	// _peek does not block if false (unlike _read)
+	// *** THE CORE GAME LOOP
+	// TK_CLOSE == true WHEN the terminal window is closed
+	// terminal_peek does not block if false (unlike terminal_read)
 	while (terminal_peek() != TK_CLOSE) {
 		currTime = steady_clock::now(); // get snapshot of current timepoint
 		timeSpan = currTime - prevTime; // get the diff since last snapshot
@@ -103,18 +104,59 @@ void GameEngine::execGameLoop() {
 		lagTime += timeSpan;			// add the diff to the accumulator
 		if (currMode == ONGOING) {
 			worldClock.update(timeSpan.count()); // increment the world clock
-			// update the timer clocks
+			// update any running game timers
 			for (auto timerIter = timerList.begin(); timerIter != timerList.end(); timerIter++) {
 				(*timerIter)->advanceTime(timeSpan.count());
 			}
 		}
-		// Handle player inputs
+		// **** Handle player inputs
 		if (terminal_has_input()) { // Is there control input waiting?
 			// Parse the command input by reading it from terminal_
 			// Need to trap meta and debug calls before passing to the parser
 			int inputValue = terminal_read(); // Find out what key was struck
 			char inputKey = char(terminal_state(TK_CHAR));
 //			LOGMSG("@@@ Keypress: " << inputKey);
+			// NEW METHOD:
+			// ? Is the game currently paused?
+			// > Y: use the MetaParser (do meta commands, move thru menus)
+			// > N: use the GameParser (do player actions)
+			// **** NEW METHOD
+			if (currMode == PAUSED) {
+				// make sure there's a window raised or something
+				// interpret command as meta input: menu move, save, quit, &c
+				if (inputValue == TK_Q) { // quit is a special case right now
+					gui.addMessage("Press q again to quit the game.");
+					break; // force the while loop to halt
+					// FIXME: Creating an actual QUIT signal here will allow
+					// the engine to exit correctly from any depth rather than
+					// relying on a feature of the C++ loop to work...
+				//} else { // pass it to the metaparser
+				} else if (inputValue == TK_S) {
+					// save the game
+					gui.addMessage("DEBUG: saving game");
+					saveGame("testSave.txt");
+				} else if (inputValue == TK_P) {
+					gui.addMessage("Wrench dropping temporarily disabled.");
+				}
+			} else {
+				// check for any special debugging keys
+				// interpret command as game input, CLI raise, etc (old method)
+				if (inputValue == TK_ESCAPE) {
+					togglePause();
+				} else if (terminal_check(TK_SHIFT) &&
+							inputValue == TK_SEMICOLON) { // raise the CLI
+//					LOGMSG("Entering CLI mode");
+					this->cliMode = true;
+					gui.raiseCLI();
+				} else if (inputValue >= TK_A &&
+							inputValue <= TK_Z) { // don't pass meta keys
+//					LOGMSG("@@@ Keypress: " << inputKey);
+					// reject input if game is paused
+					if (currMode != PAUSED) parser.interpret(inputKey);
+				}
+			}
+			// **** OLD METHOD
+			/*
 			if (inputValue == TK_Q) { // Press Q to quit
 				break;
 			} else if (inputValue == TK_ESCAPE) { // (test) pause
@@ -134,8 +176,9 @@ void GameEngine::execGameLoop() {
 //				meatspace.allActors.push_back(myWrench);
 			} else if (inputValue >= TK_A && inputValue <= TK_Z) { // don't pass meta keys
 //				LOGMSG("@@@ Keypress: " << inputKey);
-				if (this->currMode != PAUSED) parser.interpret(inputKey);
+				if (currMode != PAUSED) parser.interpret(inputKey); // reject input if game is paused
 			}
+			*/
 		}
 		// Set flag HERE for detecting whether the player's input has created a
 		// VICTORY or DEFEAT engine state
@@ -152,6 +195,9 @@ void GameEngine::execGameLoop() {
 //		LOGMSG("Requesting GUI render with lagTime == " << lagTime.count());
 		gui.render(lagTime / updateTimeStep);
 		if (currMode == DEFEAT || currMode == VICTORY) break;
+		else if (currMode == PAUSED) {
+			// draw the main menu on the screen
+		}
 	};
 	// if we made it here, the game stopped but the window is still open
 	if (currMode == DEFEAT) {
@@ -271,11 +317,11 @@ void GameEngine::interpretLongCommand(const char * inputBuffer) {
 	gui.hideCLI();
 }
 // *** UTILITIES
-bool GameEngine::loadConfiguration(std::string inputFile) {
-	std::ifstream config(inputFile); // Open the configuration file
+bool GameEngine::loadConfiguration(string inputFile) {
+	ifstream config(inputFile); // Open the configuration file
 	if (!config) { // Was the config file opened successfully?
 		// If not, display an error and exit
-		cerr << "The configuration file could not be opened." << std::endl;
+		cerr << "The configuration file could not be opened." << endl;
 		return false;
 	}
 	stringstream lineStream; // Allows parsing single lines by chars
@@ -294,15 +340,15 @@ bool GameEngine::loadConfiguration(std::string inputFile) {
 		// FIXME: Set up some kind of value defaults if anything's not set
 		if (configKey != "") { // Prevent trying blank lines (ie trailing lines)
 			if (configKey == "screenWidth") {
-				screenWidth = std::stoul(configValue, nullptr, 0);
+				screenWidth = stoul(configValue, nullptr, 0);
 			} else if (configKey == "screenHeight") {
-				screenHeight = std::stoul(configValue, nullptr, 0);
+				screenHeight = stoul(configValue, nullptr, 0);
 			} else if (configKey == "font") {
 				terminalFontPath = configValue;
 			} else if (configKey == "fontSize") {
-				terminalFontSize = std::stoul(configValue, nullptr, 0);
+				terminalFontSize = stoul(configValue, nullptr, 0);
 			} else { // No matching config key was found!
-				std::cerr << "*** Configuration key " << configKey << " is not recognized by the game." << std::endl;
+				cerr << "*** Configuration key " << configKey << " is not recognized by the game." << endl;
 			}
 		}
 	}
@@ -339,3 +385,19 @@ string GameEngine::generateBLTConfigString() {
 	fullOptionString.append(";"); // Terminating character
 	return fullOptionString;
 }
+bool GameEngine::saveGame(string fileName) {
+	// Creates a game save at the specified file name.
+	// Returns true ONLY if it was successful.
+	bool successFlag = false;
+	gui.addMessage("Saving game to " + fileName);
+	return successFlag;
+}
+bool GameEngine::loadGame(string fileName) {
+	// Loads the specified game save.
+	// Returns true ONLY if it was successful.
+	bool successFlag = false;
+	ERRMSG("Game loading has not been implemented!");
+	return successFlag;
+}
+
+

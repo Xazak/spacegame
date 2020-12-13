@@ -207,7 +207,6 @@ void GameGUI::initialize(uint maxWidth, uint maxHeight, GameEngine* enginePtr, A
 	for (uint foo = 0; foo < (windowWidth * windowHeight); foo++) {
 		GameGUI::frameBuffer[foo] = 0;
 	}
-	globalMsgLog.add("Press Q or Alt+F4 to exit.");
 	// SPLITTERS have IDs from 0 - 9
 	// ALL OTHER PANELS have IDs from 10+
 	// drawing method
@@ -446,11 +445,13 @@ void GameGUI::displayPauseBanner() {
 	// Draws a banner across the screen to indicate that the game is paused
 	terminal_layer(10);
 	terminal_color(0xFFFF0000);
-	uint xOrigin = 0;
-	uint yOrigin = (windowHeight / 3) * 2;
-	string pauseMessage = "/- PAUSED -/";
-	for (uint xOffset = 0; xOffset < windowWidth; (xOffset += pauseMessage.length()) ) {
-		terminal_printf((xOrigin + xOffset), yOrigin, pauseMessage.c_str());
+	for (uint index = 0; index < 2; index++) { // draw more than one banner
+		uint xOrigin = 0;
+		uint yOrigin = (windowHeight / 3) * (index + 1);
+		string pauseMessage = "/- PAUSED -/";
+		for (uint xOffset = 0; xOffset < windowWidth; (xOffset += pauseMessage.length()) ) {
+			terminal_printf((xOrigin + xOffset), yOrigin, pauseMessage.c_str());
+		}
 	}
 }
 void GameGUI::raiseCLI() {

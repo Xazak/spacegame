@@ -161,6 +161,9 @@ void GameParser::interpret(char inputKey) {
 		case ActionType::INVENTORY:
 			LOGMSG("Action: INVENTORY unimplemented");
 		break;
+		case ActionType::META_SAVE:
+			LOGMSG("Action: META_SAVE unimplemented");
+		break;
 		default:
 			ERRMSG("No context handler for ActionType #" << (int)localContext.type);
 		break;
