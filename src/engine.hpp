@@ -8,6 +8,7 @@ DESC Contains definitions of the GameEngine class
 
 #include "parser.hpp"
 #include "map.hpp"
+#include "tile.hpp"
 #include "actor.hpp"
 #include "chrono.hpp"
 #include "gui.hpp"
@@ -39,7 +40,7 @@ class GameEngine {
 		void pauseOff();
 		void togglePause();
 		void interpretLongCommand(const char * inputBuffer);
-		
+
 		// GET
 		uint getScreenWidth()	{ return screenWidth; }
 		uint getScreenHeight()	{ return screenHeight; }

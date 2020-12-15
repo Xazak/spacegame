@@ -33,6 +33,7 @@ class GameMap {
 		~GameMap();
 		void generateMap();
 		void generateMap(uint newWidth, uint newHeight);
+		void emptyMap(uint newWidth, uint newHeight); // for loading savegames
 		// GETS
 		uint getWidth() { return width; }
 		uint getHeight() { return height; }

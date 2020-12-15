@@ -388,16 +388,54 @@ string GameEngine::generateBLTConfigString() {
 bool GameEngine::saveGame(string fileName) {
 	// Creates a game save at the specified file name.
 	// Returns true ONLY if it was successful.
-	bool successFlag = false;
 	gui.addMessage("Saving game to " + fileName);
-	return successFlag;
+	// Object List, in order of initialization
+	// Parser and GUI do not need persistence
+	// Meatspace: a GameMap, containing a 2d array of Tiles and two uints
+	// Player
+	// Lemur
+	// [lists] (sentients, events, timers)
+	// Gravity well
+	ofstream output(fileName); // open the save game file for writing
+	if (!output) {
+		cerr << filename << " could not be opened for saving the game!" << endl;
+		return false;
+	}
+	output << "# * MEATSPACE - GameMap" << endl;
+	output << meatspace.getWidth() << ", " << meatspace.getHeight() << endl;
+
+	return true;
+}
+// functions that write primitives to the specified output
+ostream& operator<< (ostream &output, const Tile &inputTile) {
+	// The explicit Tile ctor takes the following values in this order
+	// output << inputFile.tileType << ", "; // FIXME
+	output << inputTile.sigil << ", ";		// int
+	output << inputTile.color << ", ";		// int
+	output << inputTile.bkcolor << ", ";	// int
+	output << inputTile.name << ", ";		// string
+	// The four flags that set the Tile's behavior
+	// If the tile contains anything (flag 4) then the next line will be the
+	// list of items that are contained in the tile
+	output << inputTile.explored;
+	output << inputTile.obstructs;
+	output << inputTile.opaque;
+	// - END Tile ctor values, only add the Contents if the last flag is true
+	if (inputTile.contents) output << true << endl << inputTile.contents;
+	else output << false << endl;
+	// Note that the tile's Occupant and Furniture will be added via their list
+	return output;
 }
 bool GameEngine::loadGame(string fileName) {
 	// Loads the specified game save.
 	// Returns true ONLY if it was successful.
-	bool successFlag = false;
-	ERRMSG("Game loading has not been implemented!");
-	return successFlag;
-}
+//	ERRMSG("Game loading has not been implemented!");
+	ifstream input(fileName);
+	if (!input) {
+		cerr << fileName << " could not be opened for loading!" << endl;
+		return false;
+	}
 
+	return true;
+}
 

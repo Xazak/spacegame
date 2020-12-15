@@ -64,7 +64,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 	// Generates rooms and places them into the map array
 	mapArray = new Tile*[width * height]; // Create an empty pointer map
 	mapIndexIter.linkTo(this); // Init the public iterator
-	// Create the actual tile objects
+	// Generate the individual map tiles
 	// mapArray[x + y * width]
 	/* DISABLED: Build a test room
 	for (uint xOffset = 0; xOffset < width; xOffset++) {
@@ -193,6 +193,7 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 	Door *localDoor = new Door(12, 9, this);
 	registerFurniture(localDoor, 12, 9);
 	// *** END TEST STRUCTURE
+
 //	LOGMSG("Tilemap created: " << width << "x" << height);
 	/*
 	clog << "TEMPLATE DUMP:" << endl;
@@ -205,6 +206,11 @@ void GameMap::generateMap(uint newWidth, uint newHeight) {
 		clog << endl;
 	}
 	*/
+}
+void GameMap::emptyMap(uint newWidth, uint newHeight) {
+	// Creates a blank game map of the specified size for later editing
+	mapArray = new Tile*[width * height];
+	mapIndexIter.linkTo(this);
 }
 int GameMap::getTileSigil(uint xPos, uint yPos) {
 	return this->mapArray[xPos + yPos * width]->sigil;
