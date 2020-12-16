@@ -390,7 +390,9 @@ bool GameEngine::saveGame(string fileName) {
 	// Returns true ONLY if it was successful.
 	gui.addMessage("Saving game to " + fileName);
 	// Object List, in order of initialization
-	// Parser and GUI do not need persistence
+	// Parser does NOT need persistence (maybe config?)
+	// GUI *does* need persistence for saving contents of msg log
+	// -> have the message log to its own file(s)?
 	// Meatspace: a GameMap, containing a 2d array of Tiles and two uints
 	// Player
 	// Lemur
@@ -403,10 +405,49 @@ bool GameEngine::saveGame(string fileName) {
 	}
 	output << "# * MEATSPACE - GameMap" << endl;
 	output << meatspace.getWidth() << ", " << meatspace.getHeight() << endl;
+	// the individual game tiles are now serially written to the savegame
+	// QUERY: Should the player/lmr/AUR be written as actors on the
+	// sentientActors list? or individually? will there be any other "sentient"
+	// actors throughout the game?
+	// The player object is now written to the savegame
+	// The LMR object is now written to the savegame
+	// AURITA is now written
+	// The list of events is written
+	// The timer registry is written
+	// The message log is written
 
 	return true;
 }
 // functions that write primitives to the specified output
+ostream& operator<< (ostream &output, const Actor &inputActor) {
+	// Writes an Actor object to file such that it can be reloaded
+	// Note that any child types are wrappers around this class and are
+	// responsible for writing their own data to the file... (FIXME)
+	// Ctor values:
+	output << inputActor.getName() << ", "; // string
+	output << inputActor.getSigil() << ", "; // int
+	output << inputActor.getColor() << ", "; // int
+	output << inputActor.location() << ", "; // cpair
+	// FIXME: All actors assumed to be in meatspace right now...
+//	output << inputActor.getLocality() << ", "; // GameMap*
+	output << inputActor.obstructs << inputActor.occludes << endl;
+	// end ctor values
+	// Optional properties:
+	// The first line is a list of flags indicating which options are present
+	// The following lines, one per option, contain that option's data
+	output << (bool)inputActor.intent;	 // -> Sentience
+	output << (bool)inputActor.contents; // -> Container
+	output << (bool)inputActor.portable; // -> Portable (no data)
+	output << (bool)inputActor.aperture; // -> Openable (no data)
+	// additional option package flags continue
+	output << endl;
+	// Property data packages:
+	if (inputActor.intent) output << inputActor.intent;
+	if (inputActor.contents) output << inputActor.contents;
+	if (inputActor.portable) output << true << endl;
+	if (inputActor.aperture) output << true << endl;
+	// additional data packages should be listed here in the SAME order above
+}
 ostream& operator<< (ostream &output, const Tile &inputTile) {
 	// The explicit Tile ctor takes the following values in this order
 	// output << inputFile.tileType << ", "; // FIXME
@@ -426,6 +467,16 @@ ostream& operator<< (ostream &output, const Tile &inputTile) {
 	// Note that the tile's Occupant and Furniture will be added via their list
 	return output;
 }
+ostream& operator<< (ostream &output, const Container &inputContainer) {
+	// A container is first made empty at a specific size, and then added to
+	output << inputContainer.getCapacity() << ", " << inputContainer.getSize()
+	// the items that are in the container are now written to the file
+	// FIXME
+	return output;
+}
+
+
+
 bool GameEngine::loadGame(string fileName) {
 	// Loads the specified game save.
 	// Returns true ONLY if it was successful.

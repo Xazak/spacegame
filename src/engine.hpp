@@ -64,10 +64,10 @@ class GameEngine {
 		GameMap meatspace;
 		Player player;
 		Drone lemur;
+		CountdownTimer *gravityWell;
 		std::list<Actor*> sentientActors; // Actors who will be taking actions
 		std::list<GameEvent*> eventList; // event registry
 		std::list<CountdownTimer*> timerList; // timer registry
-		CountdownTimer *gravityWell;
 		// Properties
 		uint screenWidth; // Width of terminal in # of monospace chars
 		uint screenHeight; // Height of terminal in # of monospace chars
