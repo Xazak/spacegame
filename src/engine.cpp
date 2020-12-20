@@ -5,14 +5,17 @@ DESC Contains implementation of game engine
 */
 
 #include "BearLibTerminal.h"
-#include "engine.hpp"
+#include "engine.hpp"	// INCLUDES:
+						// parser.hpp, map.hpp, tile.hpp, actor.hpp,
+						// chrono.hpp, gui.hpp, event.hpp, <string>, <list>,
+						// <chrono>
 #include "item.hpp"
+#include "openable.hpp"
+#include "container.hpp"
 #include "main.hpp"
-#include "chrono.hpp"	// In-game time functions
 #include <iostream>		// Provides access to stdin/stdout (cout, cerr, etc)
 #include <sstream>		// Object for conversion from std::string to input stream
-#include <fstream>		// Simple file input/output
-#include <chrono>		// steady_clock, maybe others? system time?
+//#include <fstream>		// Simple file input/output
 
 using namespace std;
 
@@ -400,25 +403,34 @@ bool GameEngine::saveGame(string fileName) {
 	// Gravity well
 	ofstream output(fileName); // open the save game file for writing
 	if (!output) {
-		cerr << filename << " could not be opened for saving the game!" << endl;
+		cerr << fileName << " could not be opened for saving the game!" << endl;
 		return false;
 	}
+	// FIXME: does the Engine itself need any persistence?
 	output << "# * MEATSPACE - GameMap" << endl;
-	output << meatspace.getWidth() << ", " << meatspace.getHeight() << endl;
+	writeToText(output, meatspace);
+//	output << meatspace;
 	// the individual game tiles are now serially written to the savegame
 	// QUERY: Should the player/lmr/AUR be written as actors on the
 	// sentientActors list? or individually? will there be any other "sentient"
 	// actors throughout the game?
-	// The player object is now written to the savegame
-	// The LMR object is now written to the savegame
-	// AURITA is now written
-	// The list of events is written
-	// The timer registry is written
-	// The message log is written
+	output << "# * PLAYER - Actor::Player" << endl;
+//	output << player;
+	output << "# * LEMUR - Actor::Drone" << endl;
+//	output << lemur;
+	output << "# * AURITA - Actor::___" << endl;
+//	output << aurita;
+	output << "# * EVENT LIST - GameEvent" << endl;
+//	output << eventList;
+	output << "# * TIMER LIST - GameTimer" << endl;
+//	output << timerList;
+	// The message log is written/copied?
 
+	output.close();
 	return true;
 }
-// functions that write primitives to the specified output
+// functions that WRITE game primitives to the specified output
+// << Actor
 ostream& operator<< (ostream &output, const Actor &inputActor) {
 	// Writes an Actor object to file such that it can be reloaded
 	// Note that any child types are wrappers around this class and are
@@ -427,8 +439,9 @@ ostream& operator<< (ostream &output, const Actor &inputActor) {
 	output << inputActor.getName() << ", "; // string
 	output << inputActor.getSigil() << ", "; // int
 	output << inputActor.getColor() << ", "; // int
-	output << inputActor.location() << ", "; // cpair
+//	output << inputActor.location() << ", "; // cpair
 	// FIXME: All actors assumed to be in meatspace right now...
+	// these pointers need to be redefined to match object IDs
 //	output << inputActor.getLocality() << ", "; // GameMap*
 	output << inputActor.obstructs << inputActor.occludes << endl;
 	// end ctor values
@@ -438,16 +451,26 @@ ostream& operator<< (ostream &output, const Actor &inputActor) {
 	output << (bool)inputActor.intent;	 // -> Sentience
 	output << (bool)inputActor.contents; // -> Container
 	output << (bool)inputActor.portable; // -> Portable (no data)
-	output << (bool)inputActor.aperture; // -> Openable (no data)
+	output << (bool)inputActor.aperture; // -> Openable + state flag
 	// additional option package flags continue
 	output << endl;
 	// Property data packages:
 	if (inputActor.intent) output << inputActor.intent;
 	if (inputActor.contents) output << inputActor.contents;
-	if (inputActor.portable) output << true << endl;
-	if (inputActor.aperture) output << true << endl;
+	if (inputActor.aperture) output << inputActor.aperture->isOpen();
 	// additional data packages should be listed here in the SAME order above
+	output << endl;
+	return output;
 }
+// << GameMap
+void GameEngine::writeToText(ostream &output, const GameMap &inputMap) {
+//ostream& operator<< (ostream &output, const GameMap &inputMap) {
+	output << inputMap.getWidth() << ", " << inputMap.getHeight() << endl;
+	// The map's tiles are now serially written to the savegame
+	// FIXME ^^^
+//	return output;
+}
+// << Tile
 ostream& operator<< (ostream &output, const Tile &inputTile) {
 	// The explicit Tile ctor takes the following values in this order
 	// output << inputFile.tileType << ", "; // FIXME
@@ -467,16 +490,35 @@ ostream& operator<< (ostream &output, const Tile &inputTile) {
 	// Note that the tile's Occupant and Furniture will be added via their list
 	return output;
 }
-ostream& operator<< (ostream &output, const Container &inputContainer) {
-	// A container is first made empty at a specific size, and then added to
-	output << inputContainer.getCapacity() << ", " << inputContainer.getSize()
-	// the items that are in the container are now written to the file
-	// FIXME
+// << Sentience
+ostream& operator<< (ostream &output, const Sentience &inputMind) {
+	// this needs to be typechecked and resolved to a player or an NPC (?)
 	return output;
 }
+// << Container
+ostream& operator<< (ostream &output, const Container &inputContainer) {
+	// A container is first made empty at a specific size, and then added to
+	output << inputContainer.getCapacity() << ", " << inputContainer.getSize();
+	output << endl;
+	// the items that are in the container will now be written to the file
+	// FIXME: Need a reliable container iterator before this can work!
+	// If the player is saving mid-game, it's a bad idea to edit things!
+	/*while (!inputContainer.isEmpty()) {
+		Actor* target = inputContainer.peek();
+		output << target;
+		inputContainer.remove(target);
+	}*/
+	return output;
+}
+// OTHERS:
+// Chrono
+// Context
+// Engine itself?
+// Event
+// Gui -> message log, others?
+// Item ?
 
-
-
+// functions for READING data from a save game object
 bool GameEngine::loadGame(string fileName) {
 	// Loads the specified game save.
 	// Returns true ONLY if it was successful.
@@ -489,4 +531,4 @@ bool GameEngine::loadGame(string fileName) {
 
 	return true;
 }
-
+// istream& operator>> ? builds the same objects as the savegame methods

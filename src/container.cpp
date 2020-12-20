@@ -23,11 +23,11 @@ bool Container::add(Actor *object) {
 	return true;
 }
 void Container::remove(Actor *object) {
-	// iterate across the itemList of the actor to find a match
-	// if not found, fail silently
-	// check for emptiness? or just fail?
+	// Removes the specified object from this container
+	// Does NOT perform memory deletion or pointer reassignment!
 	itemList.remove(object);
 }
+Actor* Container::peek() { return itemList.front(); }
 void Container::setCapacity(uint inputSize) {
 	// Throws an error if the inventory is not empty
 	if (itemList.size() > 0) {

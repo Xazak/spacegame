@@ -41,13 +41,13 @@ class Actor {
 		virtual ~Actor() {}
 		virtual void update() {}
 		// GETS
-		std::string	getName() { return this->name; }
-		cpair		getLocation() { return this->location; }
+		std::string	getName() const { return name; }
+		cpair		getLocation() const { return location; }
 		std::string	getLocString();
-		GameMap*	getLocality() { return this->locality; }
+		GameMap*	getLocality() const { return locality; }
 //		virtual int	getSigil() { return this->sigil; }
-		int			getSigil() { return this->sigil; }
-		int			getColor() { return this->color; }
+		int			getSigil() const { return sigil; }
+		int			getColor() const { return color; }
 		// SETS
 		//setName
 		void		setAbsLocation(int newXPos, int newYPos);

@@ -19,9 +19,10 @@ class Container {
 		~Container();
 		bool add(Actor *object);
 		void remove(Actor *object);
+		Actor* peek(); // returns ptr to last added object
 		void setCapacity(uint inputSize);
-		uint getCapacity() { return capacity; }
-		uint getSize() { return itemList.size(); }
+		uint getCapacity() const { return capacity; }
+		uint getSize() const { return itemList.size(); }
 		bool hasRoom();
 		bool isEmpty();
 		bool isFull();

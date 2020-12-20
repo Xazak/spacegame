@@ -16,6 +16,7 @@ DESC Contains definitions of the GameEngine class
 #include <string>
 #include <list>
 #include <chrono>
+#include <fstream>
 //#include <random>
 
 class GameEngine {
@@ -57,6 +58,7 @@ class GameEngine {
 		bool loadConfiguration(std::string configFile); // Loads external config
 		std::string generateBLTConfigString(); // Generates a BearLibTerminal configuration string for terminal_set()
 		bool saveGame(std::string fileName); // creates a game save file
+		void writeToText(std::ostream &output, const GameMap &inputMap);
 		bool loadGame(std::string fileName); // loads a game save file
 		// Game objects
 		GameParser parser;

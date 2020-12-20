@@ -35,8 +35,8 @@ class GameMap {
 		void generateMap(uint newWidth, uint newHeight);
 		void emptyMap(uint newWidth, uint newHeight); // for loading savegames
 		// GETS
-		uint getWidth() { return width; }
-		uint getHeight() { return height; }
+		uint getWidth() const { return width; }
+		uint getHeight() const { return height; }
 		uint getSize() { return (width * height); }
 		int getTileSigil(uint xPos, uint yPos);
 		int getTileColor(uint xPos, uint yPos);
