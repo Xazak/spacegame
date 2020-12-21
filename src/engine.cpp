@@ -401,119 +401,123 @@ bool GameEngine::saveGame(string fileName) {
 	// Lemur
 	// [lists] (sentients, events, timers)
 	// Gravity well
-	ofstream output(fileName); // open the save game file for writing
-	if (!output) {
+	ofstream saveFile(fileName); // open the save game file for writing
+	if (!saveFile) {
 		cerr << fileName << " could not be opened for saving the game!" << endl;
 		return false;
 	}
-	// FIXME: does the Engine itself need any persistence?
-	output << "# * MEATSPACE - GameMap" << endl;
-	writeToText(output, meatspace);
-//	output << meatspace;
-	// the individual game tiles are now serially written to the savegame
-	// QUERY: Should the player/lmr/AUR be written as actors on the
-	// sentientActors list? or individually? will there be any other "sentient"
-	// actors throughout the game?
-	output << "# * PLAYER - Actor::Player" << endl;
-//	output << player;
-	output << "# * LEMUR - Actor::Drone" << endl;
-//	output << lemur;
-	output << "# * AURITA - Actor::___" << endl;
-//	output << aurita;
-	output << "# * EVENT LIST - GameEvent" << endl;
-//	output << eventList;
-	output << "# * TIMER LIST - GameTimer" << endl;
-//	output << timerList;
+	// The GameEngine does not need persistence: either it recreates the
+	// targets for its pointers, or the data is loaded from config
+	saveFile << "# * MEATSPACE - GameMap" << endl;
+	saveAsText(saveFile, meatspace);
+	// The Player/LMR/AURITA will be written explicitly in that order to ensure
+	// correct data structure; any other sentient actors may be written out
+	// from the list at a later date
+	saveFile << "# * PLAYER - Actor::Player" << endl;
+//	saveFile << player;
+	saveFile << "# * LEMUR - Actor::Drone" << endl;
+//	saveFile << lemur;
+	saveFile << "# * AURITA - Actor::___" << endl;
+//	saveFile << aurita;
+	saveFile << "# * EVENT LIST - GameEvent" << endl;
+//	saveFile << eventList;
+	saveFile << "# * TIMER LIST - GameTimer" << endl;
+//	saveFile << timerList;
 	// The message log is written/copied?
 
-	output.close();
+	saveFile.close();
 	return true;
 }
-// functions that WRITE game primitives to the specified output
+// functions that WRITE game primitives to the specified saveFile
+// << GameMap
+void GameEngine::saveAsText(ostream &saveFile, const GameMap &inputMap) {
+//ostream& operator<< (ostream &saveFile, const GameMap &inputMap) {
+	saveFile << inputMap.getWidth() << ", " << inputMap.getHeight() << endl;
+	// The map's tiles are now serially written to the savegame
+	// FIXME ^^^
+//	return saveFile;
+}
 // << Actor
-ostream& operator<< (ostream &output, const Actor &inputActor) {
+void GameEngine::saveAsText(ostream &saveFile, const Actor &inputActor) {
+//ostream& operator<< (ostream &saveFile, const Actor &inputActor) {
+	// Note that this does NOT preserve any Child typing! Such data should be
+	// written before invoking this...
 	// Writes an Actor object to file such that it can be reloaded
 	// Note that any child types are wrappers around this class and are
 	// responsible for writing their own data to the file... (FIXME)
 	// Ctor values:
-	output << inputActor.getName() << ", "; // string
-	output << inputActor.getSigil() << ", "; // int
-	output << inputActor.getColor() << ", "; // int
-//	output << inputActor.location() << ", "; // cpair
+	saveFile << inputActor.getName() << ", "; // string
+	saveFile << inputActor.getSigil() << ", "; // int
+	saveFile << inputActor.getColor() << ", "; // int
+//	saveFile << inputActor.location() << ", "; // cpair
 	// FIXME: All actors assumed to be in meatspace right now...
 	// these pointers need to be redefined to match object IDs
-//	output << inputActor.getLocality() << ", "; // GameMap*
-	output << inputActor.obstructs << inputActor.occludes << endl;
+//	saveFile << inputActor.getLocality() << ", "; // GameMap*
+	saveFile << inputActor.obstructs << inputActor.occludes << endl;
 	// end ctor values
 	// Optional properties:
 	// The first line is a list of flags indicating which options are present
 	// The following lines, one per option, contain that option's data
-	output << (bool)inputActor.intent;	 // -> Sentience
-	output << (bool)inputActor.contents; // -> Container
-	output << (bool)inputActor.portable; // -> Portable (no data)
-	output << (bool)inputActor.aperture; // -> Openable + state flag
+	saveFile << (bool)inputActor.intent;	 // -> Sentience
+	saveFile << (bool)inputActor.contents; // -> Container
+	saveFile << (bool)inputActor.portable; // -> Portable (no data)
+	saveFile << (bool)inputActor.aperture; // -> Openable + state flag
 	// additional option package flags continue
-	output << endl;
+	saveFile << endl;
 	// Property data packages:
-	if (inputActor.intent) output << inputActor.intent;
-	if (inputActor.contents) output << inputActor.contents;
-	if (inputActor.aperture) output << inputActor.aperture->isOpen();
+	if (inputActor.intent) saveFile << inputActor.intent;
+	if (inputActor.contents) saveFile << inputActor.contents;
+	if (inputActor.aperture) saveFile << inputActor.aperture->isOpen();
 	// additional data packages should be listed here in the SAME order above
-	output << endl;
-	return output;
-}
-// << GameMap
-void GameEngine::writeToText(ostream &output, const GameMap &inputMap) {
-//ostream& operator<< (ostream &output, const GameMap &inputMap) {
-	output << inputMap.getWidth() << ", " << inputMap.getHeight() << endl;
-	// The map's tiles are now serially written to the savegame
-	// FIXME ^^^
-//	return output;
+	saveFile << endl;
+//	return saveFile;
 }
 // << Tile
-ostream& operator<< (ostream &output, const Tile &inputTile) {
+void GameEngine::saveAsText(ostream &saveFile, const Tile &inputTile) {
+//ostream& operator<< (ostream &saveFile, const Tile &inputTile) {
 	// The explicit Tile ctor takes the following values in this order
-	// output << inputFile.tileType << ", "; // FIXME
-	output << inputTile.sigil << ", ";		// int
-	output << inputTile.color << ", ";		// int
-	output << inputTile.bkcolor << ", ";	// int
-	output << inputTile.name << ", ";		// string
+	// saveFile << inputFile.tileType << ", "; // FIXME
+	saveFile << inputTile.sigil << ", ";		// int
+	saveFile << inputTile.color << ", ";		// int
+	saveFile << inputTile.bkcolor << ", ";	// int
+	saveFile << inputTile.name << ", ";		// string
 	// The four flags that set the Tile's behavior
 	// If the tile contains anything (flag 4) then the next line will be the
 	// list of items that are contained in the tile
-	output << inputTile.explored;
-	output << inputTile.obstructs;
-	output << inputTile.opaque;
+	saveFile << inputTile.explored;
+	saveFile << inputTile.obstructs;
+	saveFile << inputTile.opaque;
 	// - END Tile ctor values, only add the Contents if the last flag is true
-	if (inputTile.contents) output << true << endl << inputTile.contents;
-	else output << false << endl;
+	if (inputTile.contents) saveFile << true << endl << inputTile.contents;
+	else saveFile << false << endl;
 	// Note that the tile's Occupant and Furniture will be added via their list
-	return output;
+//	return saveFile;
 }
 // << Sentience
-ostream& operator<< (ostream &output, const Sentience &inputMind) {
+void GameEngine::saveAsText(ostream &saveFile, const Sentience &inputMind) {
+//ostream& operator<< (ostream &saveFile, const Sentience &inputMind) {
 	// this needs to be typechecked and resolved to a player or an NPC (?)
-	return output;
+//	return saveFile;
 }
 // << Container
-ostream& operator<< (ostream &output, const Container &inputContainer) {
+void GameEngine::saveAsText(ostream &saveFile, const Container &inputContainer) {
+//ostream& operator<< (ostream &saveFile, const Container &inputContainer) {
 	// A container is first made empty at a specific size, and then added to
-	output << inputContainer.getCapacity() << ", " << inputContainer.getSize();
-	output << endl;
+	saveFile << inputContainer.getCapacity() << ", " << inputContainer.getSize();
+	saveFile << endl;
 	// the items that are in the container will now be written to the file
 	// FIXME: Need a reliable container iterator before this can work!
 	// If the player is saving mid-game, it's a bad idea to edit things!
 	/*while (!inputContainer.isEmpty()) {
 		Actor* target = inputContainer.peek();
-		output << target;
+		saveFile << target;
 		inputContainer.remove(target);
 	}*/
-	return output;
+//	return saveFile;
 }
 // OTHERS:
 // Chrono
 // Context
-// Engine itself?
 // Event
 // Gui -> message log, others?
 // Item ?
@@ -523,11 +527,18 @@ bool GameEngine::loadGame(string fileName) {
 	// Loads the specified game save.
 	// Returns true ONLY if it was successful.
 //	ERRMSG("Game loading has not been implemented!");
-	ifstream input(fileName);
-	if (!input) {
+	ifstream inputFile(fileName);
+	if (!inputFile) {
 		cerr << fileName << " could not be opened for loading!" << endl;
 		return false;
 	}
+	// METHOD
+	// meatspace - GameMap -> Tile (Furniture, Container (Item))
+	// player - Actor::Player -> Container (Item), pSentience, ...
+	// lemur - Actor::Drone -> Container (Item), dSentience, ...
+	// aurita - Actor::___
+	// eventList - list<GameEvent*>
+	// timerList - list<CountdownTimer*>
 
 	return true;
 }

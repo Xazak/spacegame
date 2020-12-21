@@ -58,7 +58,11 @@ class GameEngine {
 		bool loadConfiguration(std::string configFile); // Loads external config
 		std::string generateBLTConfigString(); // Generates a BearLibTerminal configuration string for terminal_set()
 		bool saveGame(std::string fileName); // creates a game save file
-		void writeToText(std::ostream &output, const GameMap &inputMap);
+		void saveAsText(std::ostream &saveFile, const GameMap &inputMap);
+		void saveAsText(std::ostream &saveFile, const Actor &inputActor);
+		void saveAsText(std::ostream &saveFile, const Tile &inputTile);
+		void saveAsText(std::ostream &saveFile, const Sentience &inputMind);
+		void saveAsText(std::ostream &saveFile, const Container &inputContainer);
 		bool loadGame(std::string fileName); // loads a game save file
 		// Game objects
 		GameParser parser;
